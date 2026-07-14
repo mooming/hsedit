@@ -2,13 +2,23 @@
 
 ## Overview
 
-HS Edit is a minimal core editor that delegates everything to modules. The core provides:
-- ncurses initialization/shutdown
+HS Edit is a **minimal core editor** that delegates everything to modules. The core provides:
 - Module discovery and registration
-- Input capture and command dispatch
-- Rendering infrastructure (windows, buffers)
+- Command dispatch (router)
+- Event bus
 
-Modules provide all functionality: editing, navigation, file I/O, search, etc.
+Modules provide ALL functionality:
+- **Terminal Module**: ncurses initialization, input capture, rendering
+- **Navigation Module**: cursor movement
+- **Editing Module**: character insertion/deletion
+- **File Manager Module**: file I/O
+- **Search Module**: search/replace
+- **Undo Module**: undo/redo
+- **Config Module**: configuration
+- **Command Mode Module**: `:` command line
+- And more...
+
+The core editor has **zero knowledge of ncurses**. It just dispatches commands between modules.
 
 ## Categories
 
@@ -19,12 +29,15 @@ Setup project infrastructure: directory structure, build system, git workflows.
 Infrastructure that other components depend on: module system, test framework, protocol.
 
 ### 3. Core Editor
-Minimal editor: input capture, command dispatch, rendering infrastructure, window/buffer management.
+Minimal editor: module discovery, command dispatch, event bus. No ncurses knowledge.
 
-### 4. Basic Modules
-Feature modules that provide editing functionality: file I/O, navigation, editing, search, undo/redo, config.
+### 4. Terminal Module
+Module that wraps ncurses: initialization, input capture, rendering.
 
-### 5. Polish & Documentation
+### 5. Basic Modules
+Feature modules: navigation, editing, file I/O, search, undo/redo, config, command mode.
+
+### 6. Polish & Documentation
 Performance optimization, testing, documentation, CI/CD.
 
 ---
@@ -33,8 +46,8 @@ Performance optimization, testing, documentation, CI/CD.
 
 ### 1. Project Foundation
 
-- [ ] Create directory structure (`src/`, `modules/`, `pages/`, `docs/`, `tests/`)
-- [ ] Create `CMakeLists.txt` (C++17, ncurses linking)
+- [ ] Create directory structure (`src/`, `modules/terminal`, `modules/navigation`, ..., `docs/`, `tests/`)
+- [ ] Create `CMakeLists.txt` (C++17, ncurses linking for Terminal Module only)
 - [ ] Create `.gitignore`
 - [ ] Verify build system works (`cmake ..`, `cmake --build .`)
 
@@ -76,27 +89,26 @@ Performance optimization, testing, documentation, CI/CD.
 
 ### 3. Core Editor
 
-#### 3.1 ncurses Initialization
-- [ ] Initialize ncurses (`initscr`, `cbreak`, `noecho`, `keypad`)
-- [ ] Handle terminal resize (`KEY_RESIZE`)
-- [ ] Restore terminal on exit (`endwin`)
+The core editor is a **pure dispatcher**:
+1. Scan `modules/`
+2. Load Terminal Module (which init ncurses)
+3. Load other modules
+4. Main loop: ask Terminal Module for input → dispatch → modules respond → loop
+
+**The core editor has ZERO knowledge of ncurses.**
+
+#### 3.1 Module Discovery
+- [ ] Scan `modules/` directory for executables
+- [ ] Run `module --reveal` for each executable
+- [ ] Parse registration response
+- [ ] Store module capabilities in registry
 
 **Verification:**
-- [ ] Terminal is in raw mode
-- [ ] Special keys (arrows, F-keys) are captured
-- [ ] Terminal is restored on exit
+- [ ] All modules in `modules/` are discovered
+- [ ] `--reveal` responses are parsed correctly
+- [ ] Module capabilities are stored correctly
 
-#### 3.2 Input Capture
-- [ ] Capture keystrokes (`getch`)
-- [ ] Parse key events (regular keys, special keys, modifiers)
-- [ ] Implement event bus (publish key events)
-
-**Verification:**
-- [ ] All key combinations are captured
-- [ ] Events are published correctly
-- [ ] Modifier keys (Ctrl, Alt) work
-
-#### 3.3 Command Dispatch
+#### 3.2 Command Dispatch
 - [ ] Implement command router (key → command → module)
 - [ ] Implement module capability lookup
 - [ ] Implement command execution (spawn module, send command, read response)
@@ -107,35 +119,58 @@ Performance optimization, testing, documentation, CI/CD.
 - [ ] Commands execute and return results
 - [ ] Callbacks update editor state
 
-#### 3.4 Rendering Infrastructure
-- [ ] Implement screen buffer (double buffering)
-- [ ] Implement window management (create, destroy, resize)
-- [ ] Implement buffer management (create, destroy, associate with window)
-- [ ] Implement text drawing primitives (`draw_char`, `draw_line`, `draw_text`)
-- [ ] Implement refresh (draw screen buffer to terminal)
+#### 3.3 Event Bus
+- [ ] Implement event publisher/subscriber
+- [ ] Implement core events: `ModuleLoaded`, `ModuleUnloaded`, `EditorStarted`, `EditorStopped`
+- [ ] Modules can subscribe to events
 
 **Verification:**
-- [ ] Can draw text at any position
-- [ ] Multiple windows display correctly
-- [ ] Screen refreshes without flicker
-
-#### 3.5 Window/Buffer Management
-- [ ] Implement `Window` struct (viewport)
-- [ ] Implement `Buffer` struct (text content)
-- [ ] Implement window-buffer association
-- [ ] Implement window switching
-- [ ] Implement buffer creation/destruction
-
-**Verification:**
-- [ ] Windows can show different buffers
-- [ ] Can switch window to different buffer
-- [ ] Buffers persist when no windows reference them
+- [ ] Events are published on correct operations
+- [ ] Modules receive events they subscribed to
 
 ---
 
-### 4. Basic Modules
+### 4. Terminal Module
 
-#### 4.1 Navigation Module
+This module wraps ncurses and provides:
+- ncurses initialization/shutdown
+- Input capture (keystrokes)
+- Rendering (drawing into screen buffer)
+
+#### 4.1 ncurses Initialization
+- [ ] Initialize ncurses (`initscr`, `cbreak`, `noecho`, `keypad`)
+- [ ] Handle terminal resize (`KEY_RESIZE`)
+- [ ] Restore terminal on exit (`endwin`)
+
+**Verification:**
+- [ ] Terminal is in raw mode
+- [ ] Special keys (arrows, F-keys) are captured
+- [ ] Terminal is restored on exit
+
+#### 4.2 Input Capture
+- [ ] Implement `get_input()` command (calls `getch()`, returns key code)
+- [ ] Publish `InputReceived` event with key code
+
+**Verification:**
+- [ ] `get_input()` returns correct key codes
+- [ ] Events are published correctly
+
+#### 4.3 Rendering
+- [ ] Implement `draw_char(y, x, ch, color, attr)` command
+- [ ] Implement `draw_text(y, x, text, color, attr)` command
+- [ ] Implement `clear()` command
+- [ ] Implement `refresh()` command (pushes screen buffer to terminal)
+
+**Verification:**
+- [ ] Can draw characters at any position
+- [ ] Colors and attributes work
+- [ ] `refresh()` pushes buffer to terminal without flicker
+
+---
+
+### 5. Basic Modules
+
+#### 5.1 Navigation Module
 - [ ] Handle arrow keys (up, down, left, right)
 - [ ] Handle home/end
 - [ ] Handle page up/down
@@ -147,12 +182,13 @@ Performance optimization, testing, documentation, CI/CD.
 - [ ] Home/end work
 - [ ] Page up/down work
 
-#### 4.2 Editing Module
+#### 5.2 Editing Module
 - [ ] Handle character insertion (printable keys)
 - [ ] Handle backspace
 - [ ] Handle delete
 - [ ] Handle Enter (line break)
 - [ ] Handle tab (insert spaces or tab character)
+- [ ] Register key bindings for editing keys
 
 **Verification:**
 - [ ] Can type text and see it on screen
@@ -160,7 +196,21 @@ Performance optimization, testing, documentation, CI/CD.
 - [ ] Enter creates new line
 - [ ] Tab inserts correct whitespace
 
-#### 4.3 File Manager Module
+#### 5.3 Window Manager Module
+- [ ] Handle window creation (`:window new`)
+- [ ] Handle window destruction (`:window close`)
+- [ ] Handle window splitting (`:split`, `:vsplit`)
+- [ ] Handle window switching (`:window next`, `:window prev`)
+- [ ] Handle buffer-window association
+- [ ] Handle window resizing
+
+**Verification:**
+- [ ] Can create/destroy windows
+- [ ] Can split screen into multiple windows
+- [ ] Can switch between windows
+- [ ] Windows show different buffers
+
+#### 5.4 File Manager Module
 - [ ] Implement `:open <path>` command
 - [ ] Implement `:save` command
 - [ ] Implement `:saveas <path>` command
@@ -174,43 +224,40 @@ Performance optimization, testing, documentation, CI/CD.
 - [ ] Can save with different filename
 - [ ] Error messages are clear
 
-#### 4.4 Undo/Redo Module
-- [ ] Implement undo stack
-- [ ] Implement redo stack
+#### 5.5 Undo Module
 - [ ] Handle `:undo` command
 - [ ] Handle `:redo` command
-- [ ] Handle undo on line breaks, insertions, deletions
-- [ ] Limit undo stack size (e.g., 1000 operations)
+- [ ] Maintain undo/redo stacks
+- [ ] Limit stack size (e.g., 1000 operations)
 
 **Verification:**
 - [ ] Undo reverses last edit
 - [ ] Redo re-applies undone edit
 - [ ] Undo/redo works across line breaks
 
-#### 4.5 Search Module
+#### 5.6 Search Module
 - [ ] Handle `:search <pattern>` command
 - [ ] Handle `:searchb <pattern>` command (backward)
 - [ ] Handle `:next` command (next match)
 - [ ] Handle `:prev` command (previous match)
-- [ ] Highlight search matches
-- [ ] Case-sensitive/insensitive option
+- [ ] Notify Terminal Module to highlight matches
 
 **Verification:**
 - [ ] Search finds correct matches
 - [ ] Next/prev moves between matches
 - [ ] Search highlights are visible
 
-#### 4.6 Replace Module
+#### 5.7 Replace Module
 - [ ] Handle `:replace <old> <new>` command (single)
 - [ ] Handle `:replaceall <old> <new>` command
-- [ ] Confirm before replace (optional)
+- [ ] Notify Undo Module to record changes
 - [ ] Show count of replacements
 
 **Verification:**
 - [ ] Replace works correctly
 - [ ] Replace all updates all occurrences
 
-#### 4.7 Config Module
+#### 5.8 Config Module
 - [ ] Handle `:set key value` command
 - [ ] Handle `:get key` command
 - [ ] Handle `:unset key` command
@@ -222,9 +269,9 @@ Performance optimization, testing, documentation, CI/CD.
 - [ ] Config persists across restarts
 - [ ] Validations work (e.g., tab_width must be int)
 
-#### 4.8 Command Mode Module
+#### 5.9 Command Mode Module
 - [ ] Handle `:` key (enter command mode)
-- [ ] Show command input line at bottom
+- [ ] Draw command input line at bottom (via Terminal Module)
 - [ ] Execute commands (route to appropriate module)
 - [ ] Exit command mode on Enter or Escape
 - [ ] Show command history (up/down arrows)
@@ -237,9 +284,9 @@ Performance optimization, testing, documentation, CI/CD.
 
 ---
 
-### 5. Polish & Documentation
+### 6. Polish & Documentation
 
-#### 5.1 Performance Optimization
+#### 6.1 Performance Optimization
 - [ ] Profile editor (identify bottlenecks)
 - [ ] Optimize rendering (only redraw changed regions)
 - [ ] Optimize module communication (batch commands)
@@ -250,7 +297,7 @@ Performance optimization, testing, documentation, CI/CD.
 - [ ] Large files (>10MB) open within 2 seconds
 - [ ] Memory usage stays below 50MB for typical use
 
-#### 5.2 Testing
+#### 6.2 Testing
 - [ ] Unit tests for core data structures
 - [ ] Unit tests for protocol parsing
 - [ ] Integration tests for module system
@@ -262,7 +309,7 @@ Performance optimization, testing, documentation, CI/CD.
 - [ ] Test coverage > 80%
 - [ ] CI/CD pipeline runs tests on PR
 
-#### 5.3 Documentation
+#### 6.3 Documentation
 - [ ] Write module development guide
 - [ ] Write user manual
 - [ ] Add inline code documentation (doxygen)
@@ -282,17 +329,19 @@ Performance optimization, testing, documentation, CI/CD.
 |----------|----------|--------|
 | 1. Project Foundation | Week 1 | 🚧 In Progress |
 | 2. Core Systems | Week 2 | 📋 Planned |
-| 3. Core Editor | Week 3-4 | 📋 Planned |
-| 4. Basic Modules | Week 5-8 | 📋 Planned |
-| 5. Polish & Documentation | Week 9-10 | 📋 Planned |
+| 3. Core Editor | Week 3 | 📋 Planned |
+| 4. Terminal Module | Week 4 | 📋 Planned |
+| 5. Basic Modules | Week 5-8 | 📋 Planned |
+| 6. Polish & Documentation | Week 9-10 | 📋 Planned |
 
 ## Next Steps
 
 1. **Start Category 1** — Project Foundation (CMakeLists.txt, directory structure)
 2. **Then Category 2** — Core Systems (module system, test framework)
-3. **Then Category 3** — Core Editor (minimal: input, render, dispatch)
-4. **Then Category 4** — Basic Modules (navigation, editing, file I/O, etc.)
-5. **Finally Category 5** — Polish & Documentation
+3. **Then Category 3** — Core Editor (minimal: discovery, dispatch, event bus)
+4. **Then Category 4** — Terminal Module (ncurses wrapper)
+5. **Then Category 5** — Basic Modules (navigation, editing, file I/O, etc.)
+6. **Finally Category 6** — Polish & Documentation
 
 ## Resources
 
