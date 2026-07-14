@@ -4,199 +4,138 @@
 
 This plan outlines the implementation phases for HS Edit, a modular TUI text editor. The editor follows a microservices architecture with modules as independent executables communicating via standard I/O.
 
-## Phases
+## Categories
 
-### Phase 1: Project Foundation (Week 1-2)
+### 1. Project Foundation
+Setup project infrastructure: directory structure, build system, git workflows.
 
-**Goal:** Set up project structure, build system, and basic editor framework.
+### 2. Core Systems
+Infrastructure that other components depend on: module system, test framework, protocol.
 
-#### 1.1 Project Structure
-- [ ] Create directory layout (`src/`, `modules/`, `pages/`, `docs/`)
-- [ ] Create `CMakeLists.txt` with:
-  - C++17 standard
-  - ncurses linking
-  - Module build targets
+### 3. Basic Functions
+Core editor capabilities: input handling, rendering, page-based buffer, event system, KV stores.
+
+### 4. Basic Modules
+Feature modules that provide editing functionality: file I/O, navigation, search, undo/redo, config.
+
+### 5. Polish & Documentation
+Performance optimization, testing, documentation, CI/CD.
+
+---
+
+## Tasks
+
+### 1. Project Foundation
+
+- [ ] Create directory structure (`src/`, `modules/`, `pages/`, `docs/`, `tests/`)
+- [ ] Create `CMakeLists.txt` (C++17, ncurses linking)
 - [ ] Create `.gitignore`
+- [ ] Set up initial project skeleton (main.cpp, basic includes)
+- [ ] Verify build system works (`cmake ..`, `cmake --build .`)
 
 **Verification:**
-- [ ] `cmake ..` succeeds
-- [ ] `cmake --build .` produces executable
+- [ ] Project compiles without errors
+- [ ] Executable runs (displays "Hello" or similar)
 - [ ] Directory structure matches specification
 
-#### 1.2 Core Data Structures
-- [ ] Implement `ProtocolMessage` struct
-- [ ] Implement `ModuleInfo` struct
-- [ ] Implement `KeyBinding` struct
-- [ ] Implement `Page` struct
-- [ ] Implement `PageTable` class
-- [ ] Implement `Buffer` struct
-- [ ] Implement `Window` struct
+---
 
-**Verification:**
-- [ ] All structs compile without errors
-- [ ] Unit tests for basic struct operations (if applicable)
+### 2. Core Systems
 
-#### 1.3 Module Discovery System
+#### 2.1 Module System
 - [ ] Implement `ModuleRegistry` class
 - [ ] Implement directory scanning for `modules/`
-- [ ] Implement `--reveal` command handler
-- [ ] Implement registration parsing
+- [ ] Implement `--reveal` command handling
+- [ ] Implement registration parsing (`[call] register:...`)
+- [ ] Implement module spawn/execute/cleanup (IPC)
+- [ ] Implement line-based message protocol
+- [ ] Implement `[call]` callback parser
 
 **Verification:**
 - [ ] Test module discovery with sample modules
 - [ ] Test `--reveal` command response parsing
-- [ ] Unit tests for ModuleRegistry
+- [ ] Test module spawn and command execution
+- [ ] Unit tests for protocol parsing
 
-#### 1.4 Protocol Implementation
-- [ ] Implement line-based message parsing
-- [ ] Implement `[call]` callback parser
-- [ ] Implement message serialization
-- [ ] Implement protocol constants
-
-**Verification:**
-- [ ] Unit tests for message parsing
-- [ ] Unit tests for callback parsing
-- [ ] Round-trip test (serialize → parse → compare)
-
-#### 1.5 Basic Editor Framework
-- [ ] Implement `Editor` main class
-- [ ] Implement `InputHandler` (ncurses integration)
-- [ ] Implement `RenderEngine` (basic rendering)
-- [ ] Implement `Router` (command dispatch)
+#### 2.2 Test Framework
+- [ ] Set up CTest or Google Test
+- [ ] Create test utilities (mock stdin/stdout)
+- [ ] Create test helpers for protocol messages
 
 **Verification:**
-- [ ] Editor starts and displays basic screen
-- [ ] Key events are captured
-- [ ] Basic text can be rendered
-
-**Commit:** `Phase 1: Project Foundation`
+- [ ] Test framework compiles and runs
+- [ ] Sample test passes
+- [ ] Protocol parsing tests pass
 
 ---
 
-### Phase 2: Core Editor Features (Week 3-4)
+### 3. Basic Functions
 
-**Goal:** Implement core editor functionality (input, rendering, basic editing).
-
-#### 2.1 Input Handling
+#### 3.1 Input Handling
 - [ ] Implement key event parsing (regular keys, special keys, modifiers)
 - [ ] Implement keybinding system (map key → command)
 - [ ] Implement command mode (colon key → command input)
+- [ ] Implement event subscription system (modules subscribe to events)
 
 **Verification:**
 - [ ] All key combinations work (arrows, F-keys, Ctrl combos)
 - [ ] Command mode activates with `:`
 - [ ] Commands can be executed from command line
+- [ ] Event subscription works (modules receive events)
 
-#### 2.2 Rendering Engine
+#### 3.2 Rendering
 - [ ] Implement screen buffer (double buffering)
 - [ ] Implement window management (create, destroy, resize)
 - [ ] Implement text rendering (lines, colors, attributes)
 - [ ] Implement status bar
+- [ ] Implement cursor rendering
 
 **Verification:**
 - [ ] Text renders correctly at any position
 - [ ] Multiple windows display correctly
 - [ ] Colors and attributes work
-- [ ] Status bar shows cursor position
+- [ ] Status bar shows cursor position and mode
 
-#### 2.3 Basic Editing
-- [ ] Implement character insertion
-- [ ] Implement character deletion (backspace, delete)
-- [ ] Implement line break (Enter key)
-- [ ] Implement cursor movement (arrow keys, home, end)
-
-**Verification:**
-- [ ] Can type text and see it on screen
-- [ ] Backspace/delete work correctly
-- [ ] Enter creates new line
-- [ ] Cursor moves correctly with all navigation keys
-
-#### 2.4 Page-Based Text Storage
-- [ ] Implement `PageTable::find_page()`
-- [ ] Implement `PageTable::split_page()`
+#### 3.3 Page-Based Buffer
+- [ ] Implement `Page` struct (vector of lines)
+- [ ] Implement `PageTable` class (line range → page mapping)
+- [ ] Implement page splitting (when too large)
 - [ ] Implement page loading (from disk)
 - [ ] Implement page saving (to disk)
+- [ ] Implement page merging (when small enough)
 
 **Verification:**
 - [ ] Text persists across editor restarts
 - [ ] Pages split correctly when growing
+- [ ] Pages merge when shrinking
 - [ ] Large files (>10MB) work without memory issues
 
-**Commit:** `Phase 2: Core Editor Features`
-
----
-
-### Phase 3: Module System (Week 5-6)
-
-**Goal:** Implement full module system with IPC and on-demand execution.
-
-#### 3.1 Module Execution
-- [ ] Implement process spawning (fork/exec)
-- [ ] Implement pipe setup (stdin/stdout)
-- [ ] Implement command sending
-- [ ] Implement response reading
-- [ ] Implement process cleanup
+#### 3.4 Function Calls
+- [ ] Implement `[call]` callback system (module → editor)
+- [ ] Implement `switch_mode` command
+- [ ] Implement `move_cursor` command
+- [ ] Implement `set_highlights` command
+- [ ] Implement `open_buffer` command
+- [ ] Implement `close_buffer` command
 
 **Verification:**
-- [ ] Modules spawn and execute correctly
-- [ ] Commands are sent and responses received
-- [ ] Processes are cleaned up after execution
-- [ ] Error handling for module failures
+- [ ] Modules can call editor functions
+- [ ] Callbacks update editor state correctly
+- [ ] Error handling for invalid callbacks
 
-#### 3.2 Command Dispatch
-- [ ] Implement command lookup (key → command → module)
-- [ ] Implement command routing (router → module)
-- [ ] Implement `[call]` callback processing
-
-**Verification:**
-- [ ] Key bindings trigger correct modules
-- [ ] Commands execute and return results
-- [ ] Callbacks update editor state
-
-#### 3.3 Base Modules
-- [ ] **Command Mode Module**
-  - [ ] Handle `:` key
-  - [ ] Show command input line
-  - [ ] Execute commands (e.g., `:q`, `:w`)
-  
-- [ ] **Navigation Module**
-  - [ ] Handle arrow keys
-  - [ ] Handle home/end
-  - [ ] Handle page up/down
-  
-- [ ] **File Manager Module**
-  - [ ] Handle `:open <path>`
-  - [ ] Handle `:save`
-  - [ ] Handle `:quit`
+#### 3.5 Event Subscription
+- [ ] Implement event bus (publish/subscribe)
+- [ ] Implement core events: `BufferOpen`, `BufferClose`, `BufferModified`, `CursorMoved`
+- [ ] Implement module event handlers
 
 **Verification:**
-- [ ] Command mode works (`:` → input line → execute)
-- [ ] Navigation keys move cursor correctly
-- [ ] Can open, edit, and save files
-- [ ] Can quit editor with `:q`
+- [ ] Events are published on correct operations
+- [ ] Modules receive events they subscribed to
+- [ ] Event ordering is correct
 
-**Commit:** `Phase 3: Module System`
-
----
-
-### Phase 4: Advanced Features (Week 7-8)
-
-**Goal:** Implement advanced features (multi-window, config, search).
-
-#### 4.1 Multi-Window Support
-- [ ] Implement window splitting (horizontal, vertical)
-- [ ] Implement window switching
-- [ ] Implement buffer-window association
-- [ ] Implement window resizing
-
-**Verification:**
-- [ ] Can split screen into multiple windows
-- [ ] Each window shows different buffer
-- [ ] Can switch focus between windows
-- [ ] Resizing works correctly
-
-#### 4.2 Config System
-- [ ] Implement config file parsing (`config.txt`)
+#### 3.6 KV Stores
+- [ ] Implement `Config` class (key-value store)
+- [ ] Implement config file parsing (`config.txt` with `key = value`)
 - [ ] Implement typed getters (int, bool, string)
 - [ ] Implement config hot-reload
 - [ ] Implement module config extension
@@ -206,41 +145,98 @@ This plan outlines the implementation phases for HS Edit, a modular TUI text edi
 - [ ] Typed getters return correct types
 - [ ] Config changes apply without restart
 
-#### 4.3 Search and Replace
-- [ ] Implement forward search
-- [ ] Implement backward search
-- [ ] Implement replace (single)
-- [ ] Implement replace all
+---
+
+### 4. Basic Modules
+
+#### 4.1 File Load/Save
+- [ ] Implement file reading (page-based)
+- [ ] Implement file writing (page-based)
+- [ ] Implement `:open <path>` command
+- [ ] Implement `:save` command
+- [ ] Implement `:saveas <path>` command
+- [ ] Handle file not found errors
+- [ ] Handle permission errors
 
 **Verification:**
-- [ ] Search finds correct matches
-- [ ] Replace works correctly
-- [ ] Replace all updates all occurrences
+- [ ] Can open any text file
+- [ ] Can save edits to file
+- [ ] Can save with different filename
+- [ ] Error messages are clear
 
-#### 4.4 Undo/Redo
+#### 4.2 Basic Edits
+- [ ] Implement character insertion
+- [ ] Implement character deletion (backspace, delete)
+- [ ] Implement line break (Enter key)
+- [ ] Implement cursor movement (arrow keys, home, end)
+- [ ] Implement page up/down
+- [ ] Implement word navigation
+
+**Verification:**
+- [ ] Can type text and see it on screen
+- [ ] Backspace/delete work correctly
+- [ ] Enter creates new line
+- [ ] Cursor moves correctly with all navigation keys
+
+#### 4.3 Undo/Redo
 - [ ] Implement undo stack
 - [ ] Implement redo stack
-- [ ] Implement undo command
-- [ ] Implement redo command
+- [ ] Implement undo command (`:undo`)
+- [ ] Implement redo command (`:redo`)
+- [ ] Limit undo stack size (e.g., 1000 operations)
 
 **Verification:**
 - [ ] Undo reverses last edit
 - [ ] Redo re-applies undone edit
 - [ ] Undo/redo works across line breaks
+- [ ] Undo stack doesn't grow unbounded
 
-**Commit:** `Phase 4: Advanced Features`
+#### 4.4 Search
+- [ ] Implement forward search (`:search <pattern>`)
+- [ ] Implement backward search (`:searchb <pattern>`)
+- [ ] Implement next match (`:next`)
+- [ ] Implement previous match (`:prev`)
+- [ ] Highlight search matches
+- [ ] Case-sensitive/insensitive option
+
+**Verification:**
+- [ ] Search finds correct matches
+- [ ] Next/prev moves between matches
+- [ ] Search highlights are visible
+- [ ] Case options work correctly
+
+#### 4.5 Replace
+- [ ] Implement single replace (`:replace <old> <new>`)
+- [ ] Implement replace all (`:replaceall <old> <new>`)
+- [ ] Confirm before replace (optional)
+- [ ] Show count of replacements
+
+**Verification:**
+- [ ] Replace works correctly
+- [ ] Replace all updates all occurrences
+- [ ] Confirmation prompt works
+
+#### 4.6 Config Module
+- [ ] Implement `:set key value` command
+- [ ] Implement `:get key` command
+- [ ] Implement `:unset key` command
+- [ ] Save config to `config.txt`
+
+**Verification:**
+- [ ] Can set/get/unset config values
+- [ ] Config persists across restarts
+- [ ] Validations work (e.g., tab_width must be int)
 
 ---
 
-### Phase 5: Polish and Documentation (Week 9-10)
-
-**Goal:** Optimize performance, write documentation, add tests.
+### 5. Polish & Documentation
 
 #### 5.1 Performance Optimization
 - [ ] Profile editor (identify bottlenecks)
 - [ ] Optimize rendering (only redraw changed regions)
 - [ ] Optimize page loading (LRU cache)
 - [ ] Optimize module communication (batch commands)
+- [ ] Optimize search (compile regex, use efficient algorithms)
 
 **Verification:**
 - [ ] Editor responds to input within 50ms
@@ -252,6 +248,7 @@ This plan outlines the implementation phases for HS Edit, a modular TUI text edi
 - [ ] Unit tests for protocol parsing
 - [ ] Integration tests for module system
 - [ ] End-to-end tests for editing workflow
+- [ ] Set up CI/CD (GitHub Actions)
 
 **Verification:**
 - [ ] All tests pass
@@ -261,33 +258,34 @@ This plan outlines the implementation phases for HS Edit, a modular TUI text edi
 #### 5.3 Documentation
 - [ ] Write module development guide
 - [ ] Write user manual
-- [ ] Add inline code documentation
+- [ ] Add inline code documentation (doxygen)
 - [ ] Update TECHNICAL_DESIGN.md with implementation notes
+- [ ] Update README.md with latest status
 
 **Verification:**
 - [ ] Module guide is clear and complete
 - [ ] User manual covers all features
 - [ ] Code is documented with doxygen comments
 
-**Commit:** `Phase 5: Polish and Documentation`
-
 ---
 
 ## Timeline
 
-| Phase | Duration | Status |
-|-------|----------|--------|
-| Phase 1: Project Foundation | Week 1-2 | 🚧 In Progress |
-| Phase 2: Core Editor Features | Week 3-4 | 📋 Planned |
-| Phase 3: Module System | Week 5-6 | 📋 Planned |
-| Phase 4: Advanced Features | Week 7-8 | 📋 Planned |
-| Phase 5: Polish and Documentation | Week 9-10 | 📋 Planned |
+| Category | Duration | Status |
+|----------|----------|--------|
+| 1. Project Foundation | Week 1 | 🚧 In Progress |
+| 2. Core Systems | Week 2-3 | 📋 Planned |
+| 3. Basic Functions | Week 4-6 | 📋 Planned |
+| 4. Basic Modules | Week 7-9 | 📋 Planned |
+| 5. Polish & Documentation | Week 10-11 | 📋 Planned |
 
 ## Next Steps
 
-1. **Start Phase 1.1** — Create project structure and CMakeLists.txt
-2. **Implement core data structures** — ProtocolMessage, ModuleInfo, Page, Buffer, Window
-3. **Implement module discovery** — Directory scanning and --reveal command
+1. **Start Category 1** — Project Foundation (CMakeLists.txt, directory structure)
+2. **Then Category 2** — Core Systems (module system, test framework)
+3. **Then Category 3** — Basic Functions (input, rendering, buffer)
+4. **Then Category 4** — Basic Modules (file I/O, navigation, search)
+5. **Finally Category 5** — Polish & Documentation
 
 ## Resources
 
