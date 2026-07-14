@@ -2,7 +2,13 @@
 
 ## Overview
 
-This plan outlines the implementation phases for HS Edit, a modular TUI text editor. The editor follows a microservices architecture with modules as independent executables communicating via standard I/O.
+HS Edit is a minimal core editor that delegates everything to modules. The core provides:
+- ncurses initialization/shutdown
+- Module discovery and registration
+- Input capture and command dispatch
+- Rendering infrastructure (windows, buffers)
+
+Modules provide all functionality: editing, navigation, file I/O, search, etc.
 
 ## Categories
 
@@ -12,11 +18,11 @@ Setup project infrastructure: directory structure, build system, git workflows.
 ### 2. Core Systems
 Infrastructure that other components depend on: module system, test framework, protocol.
 
-### 3. Basic Functions
-Core editor capabilities: input handling, rendering, page-based buffer, event system, KV stores.
+### 3. Core Editor
+Minimal editor: input capture, command dispatch, rendering infrastructure, window/buffer management.
 
 ### 4. Basic Modules
-Feature modules that provide editing functionality: file I/O, navigation, search, undo/redo, config.
+Feature modules that provide editing functionality: file I/O, navigation, editing, search, undo/redo, config.
 
 ### 5. Polish & Documentation
 Performance optimization, testing, documentation, CI/CD.
@@ -30,12 +36,11 @@ Performance optimization, testing, documentation, CI/CD.
 - [ ] Create directory structure (`src/`, `modules/`, `pages/`, `docs/`, `tests/`)
 - [ ] Create `CMakeLists.txt` (C++17, ncurses linking)
 - [ ] Create `.gitignore`
-- [ ] Set up initial project skeleton (main.cpp, basic includes)
 - [ ] Verify build system works (`cmake ..`, `cmake --build .`)
 
 **Verification:**
 - [ ] Project compiles without errors
-- [ ] Executable runs (displays "Hello" or similar)
+- [ ] Executable runs (displays nothing or "Hello")
 - [ ] Directory structure matches specification
 
 ---
@@ -69,92 +74,97 @@ Performance optimization, testing, documentation, CI/CD.
 
 ---
 
-### 3. Basic Functions
+### 3. Core Editor
 
-#### 3.1 Input Handling
-- [ ] Implement key event parsing (regular keys, special keys, modifiers)
-- [ ] Implement keybinding system (map key → command)
-- [ ] Implement command mode (colon key → command input)
-- [ ] Implement event subscription system (modules subscribe to events)
+#### 3.1 ncurses Initialization
+- [ ] Initialize ncurses (`initscr`, `cbreak`, `noecho`, `keypad`)
+- [ ] Handle terminal resize (`KEY_RESIZE`)
+- [ ] Restore terminal on exit (`endwin`)
 
 **Verification:**
-- [ ] All key combinations work (arrows, F-keys, Ctrl combos)
-- [ ] Command mode activates with `:`
-- [ ] Commands can be executed from command line
-- [ ] Event subscription works (modules receive events)
+- [ ] Terminal is in raw mode
+- [ ] Special keys (arrows, F-keys) are captured
+- [ ] Terminal is restored on exit
 
-#### 3.2 Rendering
+#### 3.2 Input Capture
+- [ ] Capture keystrokes (`getch`)
+- [ ] Parse key events (regular keys, special keys, modifiers)
+- [ ] Implement event bus (publish key events)
+
+**Verification:**
+- [ ] All key combinations are captured
+- [ ] Events are published correctly
+- [ ] Modifier keys (Ctrl, Alt) work
+
+#### 3.3 Command Dispatch
+- [ ] Implement command router (key → command → module)
+- [ ] Implement module capability lookup
+- [ ] Implement command execution (spawn module, send command, read response)
+- [ ] Implement `[call]` callback processing
+
+**Verification:**
+- [ ] Key bindings trigger correct modules
+- [ ] Commands execute and return results
+- [ ] Callbacks update editor state
+
+#### 3.4 Rendering Infrastructure
 - [ ] Implement screen buffer (double buffering)
 - [ ] Implement window management (create, destroy, resize)
-- [ ] Implement text rendering (lines, colors, attributes)
-- [ ] Implement status bar
-- [ ] Implement cursor rendering
+- [ ] Implement buffer management (create, destroy, associate with window)
+- [ ] Implement text drawing primitives (`draw_char`, `draw_line`, `draw_text`)
+- [ ] Implement refresh (draw screen buffer to terminal)
 
 **Verification:**
-- [ ] Text renders correctly at any position
+- [ ] Can draw text at any position
 - [ ] Multiple windows display correctly
-- [ ] Colors and attributes work
-- [ ] Status bar shows cursor position and mode
+- [ ] Screen refreshes without flicker
 
-#### 3.3 Page-Based Buffer
-- [ ] Implement `Page` struct (vector of lines)
-- [ ] Implement `PageTable` class (line range → page mapping)
-- [ ] Implement page splitting (when too large)
-- [ ] Implement page loading (from disk)
-- [ ] Implement page saving (to disk)
-- [ ] Implement page merging (when small enough)
+#### 3.5 Window/Buffer Management
+- [ ] Implement `Window` struct (viewport)
+- [ ] Implement `Buffer` struct (text content)
+- [ ] Implement window-buffer association
+- [ ] Implement window switching
+- [ ] Implement buffer creation/destruction
 
 **Verification:**
-- [ ] Text persists across editor restarts
-- [ ] Pages split correctly when growing
-- [ ] Pages merge when shrinking
-- [ ] Large files (>10MB) work without memory issues
-
-#### 3.4 Function Calls
-- [ ] Implement `[call]` callback system (module → editor)
-- [ ] Implement `switch_mode` command
-- [ ] Implement `move_cursor` command
-- [ ] Implement `set_highlights` command
-- [ ] Implement `open_buffer` command
-- [ ] Implement `close_buffer` command
-
-**Verification:**
-- [ ] Modules can call editor functions
-- [ ] Callbacks update editor state correctly
-- [ ] Error handling for invalid callbacks
-
-#### 3.5 Event Subscription
-- [ ] Implement event bus (publish/subscribe)
-- [ ] Implement core events: `BufferOpen`, `BufferClose`, `BufferModified`, `CursorMoved`
-- [ ] Implement module event handlers
-
-**Verification:**
-- [ ] Events are published on correct operations
-- [ ] Modules receive events they subscribed to
-- [ ] Event ordering is correct
-
-#### 3.6 KV Stores
-- [ ] Implement `Config` class (key-value store)
-- [ ] Implement config file parsing (`config.txt` with `key = value`)
-- [ ] Implement typed getters (int, bool, string)
-- [ ] Implement config hot-reload
-- [ ] Implement module config extension
-
-**Verification:**
-- [ ] Config values load correctly
-- [ ] Typed getters return correct types
-- [ ] Config changes apply without restart
+- [ ] Windows can show different buffers
+- [ ] Can switch window to different buffer
+- [ ] Buffers persist when no windows reference them
 
 ---
 
 ### 4. Basic Modules
 
-#### 4.1 File Load/Save
-- [ ] Implement file reading (page-based)
-- [ ] Implement file writing (page-based)
+#### 4.1 Navigation Module
+- [ ] Handle arrow keys (up, down, left, right)
+- [ ] Handle home/end
+- [ ] Handle page up/down
+- [ ] Handle word navigation (Ctrl+left, Ctrl+right)
+- [ ] Register key bindings (`KEY_UP`, `KEY_DOWN`, etc.)
+
+**Verification:**
+- [ ] Arrow keys move cursor correctly
+- [ ] Home/end work
+- [ ] Page up/down work
+
+#### 4.2 Editing Module
+- [ ] Handle character insertion (printable keys)
+- [ ] Handle backspace
+- [ ] Handle delete
+- [ ] Handle Enter (line break)
+- [ ] Handle tab (insert spaces or tab character)
+
+**Verification:**
+- [ ] Can type text and see it on screen
+- [ ] Backspace/delete work correctly
+- [ ] Enter creates new line
+- [ ] Tab inserts correct whitespace
+
+#### 4.3 File Manager Module
 - [ ] Implement `:open <path>` command
 - [ ] Implement `:save` command
 - [ ] Implement `:saveas <path>` command
+- [ ] Implement `:new` command (empty buffer)
 - [ ] Handle file not found errors
 - [ ] Handle permission errors
 
@@ -164,38 +174,24 @@ Performance optimization, testing, documentation, CI/CD.
 - [ ] Can save with different filename
 - [ ] Error messages are clear
 
-#### 4.2 Basic Edits
-- [ ] Implement character insertion
-- [ ] Implement character deletion (backspace, delete)
-- [ ] Implement line break (Enter key)
-- [ ] Implement cursor movement (arrow keys, home, end)
-- [ ] Implement page up/down
-- [ ] Implement word navigation
-
-**Verification:**
-- [ ] Can type text and see it on screen
-- [ ] Backspace/delete work correctly
-- [ ] Enter creates new line
-- [ ] Cursor moves correctly with all navigation keys
-
-#### 4.3 Undo/Redo
+#### 4.4 Undo/Redo Module
 - [ ] Implement undo stack
 - [ ] Implement redo stack
-- [ ] Implement undo command (`:undo`)
-- [ ] Implement redo command (`:redo`)
+- [ ] Handle `:undo` command
+- [ ] Handle `:redo` command
+- [ ] Handle undo on line breaks, insertions, deletions
 - [ ] Limit undo stack size (e.g., 1000 operations)
 
 **Verification:**
 - [ ] Undo reverses last edit
 - [ ] Redo re-applies undone edit
 - [ ] Undo/redo works across line breaks
-- [ ] Undo stack doesn't grow unbounded
 
-#### 4.4 Search
-- [ ] Implement forward search (`:search <pattern>`)
-- [ ] Implement backward search (`:searchb <pattern>`)
-- [ ] Implement next match (`:next`)
-- [ ] Implement previous match (`:prev`)
+#### 4.5 Search Module
+- [ ] Handle `:search <pattern>` command
+- [ ] Handle `:searchb <pattern>` command (backward)
+- [ ] Handle `:next` command (next match)
+- [ ] Handle `:prev` command (previous match)
 - [ ] Highlight search matches
 - [ ] Case-sensitive/insensitive option
 
@@ -203,29 +199,41 @@ Performance optimization, testing, documentation, CI/CD.
 - [ ] Search finds correct matches
 - [ ] Next/prev moves between matches
 - [ ] Search highlights are visible
-- [ ] Case options work correctly
 
-#### 4.5 Replace
-- [ ] Implement single replace (`:replace <old> <new>`)
-- [ ] Implement replace all (`:replaceall <old> <new>`)
+#### 4.6 Replace Module
+- [ ] Handle `:replace <old> <new>` command (single)
+- [ ] Handle `:replaceall <old> <new>` command
 - [ ] Confirm before replace (optional)
 - [ ] Show count of replacements
 
 **Verification:**
 - [ ] Replace works correctly
 - [ ] Replace all updates all occurrences
-- [ ] Confirmation prompt works
 
-#### 4.6 Config Module
-- [ ] Implement `:set key value` command
-- [ ] Implement `:get key` command
-- [ ] Implement `:unset key` command
+#### 4.7 Config Module
+- [ ] Handle `:set key value` command
+- [ ] Handle `:get key` command
+- [ ] Handle `:unset key` command
 - [ ] Save config to `config.txt`
+- [ ] Load config on startup
 
 **Verification:**
 - [ ] Can set/get/unset config values
 - [ ] Config persists across restarts
 - [ ] Validations work (e.g., tab_width must be int)
+
+#### 4.8 Command Mode Module
+- [ ] Handle `:` key (enter command mode)
+- [ ] Show command input line at bottom
+- [ ] Execute commands (route to appropriate module)
+- [ ] Exit command mode on Enter or Escape
+- [ ] Show command history (up/down arrows)
+
+**Verification:**
+- [ ] `:` activates command mode
+- [ ] Commands execute correctly
+- [ ] Can exit command mode
+- [ ] History works
 
 ---
 
@@ -234,7 +242,6 @@ Performance optimization, testing, documentation, CI/CD.
 #### 5.1 Performance Optimization
 - [ ] Profile editor (identify bottlenecks)
 - [ ] Optimize rendering (only redraw changed regions)
-- [ ] Optimize page loading (LRU cache)
 - [ ] Optimize module communication (batch commands)
 - [ ] Optimize search (compile regex, use efficient algorithms)
 
@@ -274,17 +281,17 @@ Performance optimization, testing, documentation, CI/CD.
 | Category | Duration | Status |
 |----------|----------|--------|
 | 1. Project Foundation | Week 1 | 🚧 In Progress |
-| 2. Core Systems | Week 2-3 | 📋 Planned |
-| 3. Basic Functions | Week 4-6 | 📋 Planned |
-| 4. Basic Modules | Week 7-9 | 📋 Planned |
-| 5. Polish & Documentation | Week 10-11 | 📋 Planned |
+| 2. Core Systems | Week 2 | 📋 Planned |
+| 3. Core Editor | Week 3-4 | 📋 Planned |
+| 4. Basic Modules | Week 5-8 | 📋 Planned |
+| 5. Polish & Documentation | Week 9-10 | 📋 Planned |
 
 ## Next Steps
 
 1. **Start Category 1** — Project Foundation (CMakeLists.txt, directory structure)
 2. **Then Category 2** — Core Systems (module system, test framework)
-3. **Then Category 3** — Basic Functions (input, rendering, buffer)
-4. **Then Category 4** — Basic Modules (file I/O, navigation, search)
+3. **Then Category 3** — Core Editor (minimal: input, render, dispatch)
+4. **Then Category 4** — Basic Modules (navigation, editing, file I/O, etc.)
 5. **Finally Category 5** — Polish & Documentation
 
 ## Resources
