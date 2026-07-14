@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>ncurses Tutorial — Section 13 (continued)</title>
+<style>
+:root{--bg:#1a1b26;--surface:#24283b;--surface2:#2f3347;--text:#c0caf5;--text-dim:#565f89;--accent:#7aa2f7;--accent2:#bb9af7;--green:#9ece6a;--orange:#ff9e64;--red:#f7768e;--cyan:#7dcfff;--yellow:#e0af68;--border:#3b4261;--code-bg:#16161e}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'JetBrains Mono','Fira Code','SF Mono',Consolas,monospace;background:var(--bg);color:var(--text);line-height:1.7;font-size:15px;padding:40px 48px;max-width:880px;margin:0 auto}
+h1{font-size:32px;color:var(--accent);margin-bottom:8px}
+h1 .subtitle{font-size:16px;color:var(--text-dim);display:block;margin-top:8px;font-weight:normal}
+h2{font-size:24px;color:var(--accent2);margin-top:48px;margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+h3{font-size:18px;color:var(--cyan);margin-top:32px;margin-bottom:12px}
+h4{font-size:15px;color:var(--yellow);margin-top:24px;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px}
+p{margin-bottom:16px}
+pre{background:var(--code-bg);border:1px solid var(--border);border-radius:8px;padding:16px 20px;overflow-x:auto;margin:16px 0 24px;font-size:13.5px;line-height:1.6}
+code{font-family:inherit}
+pre code{color:var(--text)}
+.kw{color:var(--accent2)}.fn{color:var(--accent)}.type{color:var(--cyan)}.str{color:var(--green)}.cmt{color:var(--text-dim);font-style:italic}.num{color:var(--orange)}.inc{color:var(--yellow)}.macro{color:var(--orange)}.punct{color:var(--text-dim)}
+.box{border-left:4px solid;padding:16px 20px;margin:20px 0;border-radius:0 8px 8px 0}
+.box-info{border-color:var(--accent);background:rgba(122,162,247,.08)}.box-tip{border-color:var(--green);background:rgba(158,206,106,.08)}.box-warn{border-color:var(--orange);background:rgba(255,158,100,.08)}.box-danger{border-color:var(--red);background:rgba(247,118,142,.08)}
+.box-title{font-weight:bold;font-size:13px;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.box-info .box-title{color:var(--accent)}.box-tip .box-title{color:var(--green)}.box-warn .box-title{color:var(--orange)}.box-danger .box-title{color:var(--red)}
+hr{border:none;border-top:1px solid var(--border);margin:48px 0}
+</style>
+</head>
+<body>
+<h1 class="anchor" id="top">ncurses Tutorial (Part 5)</h1>
+<span class="subtitle">Building Your Editor — Complete Skeleton</span>
+
+<section id="editor-apply">
+<h2>13. Building Your Editor — Complete Skeleton</h2>
+<p>Here's a complete minimal editor using ncurses. This is a starting point you can extend:</p>
+<pre><code><span class="kw">#include</span> <span class="str">&lt;ncurses.h&gt;</span>
+<span class="kw">#include</span> <span class="str">&lt;vector&gt;</span>
+<span class="kw">#include</span> <span class="str">&lt;string&gt;</span>
+
+<span class="kw">struct</span> Buffer <span class="punct">{</span>
+    std::vector&lt;std::string&gt; lines<span class="punct">;</span>
+    <span class="kw">int</span> cy = <span class="num">0</span><span class="punct">,</span> cx = <span class="num">0</span><span class="punct">;</span>
+
+    <span class="kw">void</span> <span class="fn">insert_char</span><span class="punct">(</span><span class="kw">char</span> c<span class="punct">)</span> <span class="punct">{</span>
+        <span class="kw">if</span> <span class="punct">(</span>cy &lt; lines.size<span class="punct">())</span> <span class="punct">{</span>
+            lines[cy].insert<span class="punct">(</span>cx<span class="punct">,</span> <span class="num">1</span><span class="punct">,</span> c<span class="punct">);</span>
+        <span class="punct">}</span> <span class="kw">else</span> <span class="punct">{</span>
+            lines.push_back<span class="punct">(</span><span class="str">"</span><span class="num">1</span><span class="str">"</span><span class="punct">,</span> c<span class="punct">);</span>
+        <span class="punct">}</span>
+        ++cx<span class="punct">;</span>
+    <span class="punct">}</span>
+
+    <span class="kw">void</span> <span class="fn">backspace</span><span class="punct">()</span> <span class="punct">{</span>
+        <span class="kw">if</span> <span class="punct">(</span>cx &gt; <span class="num">0</span><span class="punct">)</span> <span class="punct">{</span>
+            lines[cy].erase(cx - <span class="num">1</span><span class="punct">,</span> <span class="num">1</span><span class="punct">);</span>
+            --cx<span class="punct">;</span>
+        <span class="punct">}</span>
+    <span class="punct">}</span>
+
+    <span class="kw">void</span> <span class="fn">move_up</span><span class="punct">()</span> <span class="punct">{</span> <span class="kw">if</span> <span class="punct">(</span>cy &gt; <span class="num">0</span><span class="punct">)</span> --cy<span class="punct">;</span> <span class="punct">}</span>
+    <span class="kw">void</span> <span class="fn">move_down</span><span class="punct">()</span> <span class="punct">{</span>
+        <span class="kw">if</span> <span class="punct">(</span>cy &lt; (</span><span class="kw">int</span><span class="punct">)</span>lines.size<span class="punct">()</span> - <span class="num">1</span><span class="punct">)</span> ++cy<span class="punct">;</span>
+    <span class="punct">}</span>
+<span class="punct">};</span>
+
+<span class="kw">void</span> <span class="fn">render</span><span class="punct">(</span><span class="kw">const</span> Buffer&amp; b<span class="punct">)</span> <span class="punct">{</span>
+    <span class="fn">erase</span><span class="punct">();</span>
+    <span class="kw">for</span> <span class="punct">(</span><span class="kw">int</span> i = <span class="num">0</span><span class="punct">;</span> i &lt; LINES - <span class="num">1</span><span class="punct">;</span> ++i<span class="punct">)</span> <span class="punct">{</span>
+        <span class="kw">if</span> <span class="punct">(</span>i &lt; (</span><span class="kw">int</span><span class="punct">)</span>b.lines.size<span class="punct">())</span>
+            <span class="fn">mvprintw</span><span class="punct">(</span>i<span class="punct">,</span> <span class="num">0</span><span class="punct">,</span> <span class="str">"%s"</span><span class="punct">,</span> b.lines[i].c_str<span class="punct">());</span>
+    <span class="punct">}</span>
+    <span class="fn">mvprintw</span><span class="punct">(</span>LINES - <span class="num">1</span><span class="punct">,</span> <span class="num">0</span><span class="punct">,</span> <span class="str">"L:%d C:%d,%d"</span><span class="punct">,</span>
+        <span class="punct">(</span><span class="kw">int</span><span class="punct">)</span>b.lines.size<span class="punct">(),</span> b.cy<span class="punct">,</span> b.cx<span class="punct">);</span>
+    <span class="fn">refresh</span><span class="punct">();</span>
+<span class="punct">}</span>
+
+<span class="kw">int</span> <span class="fn">main</span><span class="punct">()</span> <span class="punct">{</span>
+    initscr<span class="punct">();</span>
+    cbreak<span class="punct">();</span>
+    noecho<span class="punct">();</span>
+    keypad<span class="punct">(</span>stdscr<span class="punct">,</span> TRUE<span class="punct">);</span>
+    curs_set<span class="punct">(</span><span class="num">1</span><span class="punct">);</span>
+    timeout<span class="punct">(</span>-<span class="num">1</span><span class="punct">);</span>
+
+    Buffer buf<span class="punct">;</span>
+    buf.lines.push_back<span class="punct">(</span><span class="str">"Welcome to your editor!"</span><span class="punct">);</span>
+    buf.lines.push_back<span class="punct">(</span><span class="str">"Press q to quit."</span><span class="punct">);</span>
+
+    <span class="kw">while</span> <span class="punct">(</span><span class="num">true</span><span class="punct">)</span> <span class="punct">{</span>
+        render<span class="punct">(</span>buf<span class="punct">);</span>
+        <span class="kw">int</span> key = <span class="fn">getch</span><span class="punct">();</span>
+
+        <span class="kw">switch</span> <span class="punct">(</span>key<span class="punct">)</span> <span class="punct">{</span>
+            <span class="kw">case</span> KEY_UP:    buf.move_up<span class="punct">();</span>    <span class="kw">break</span><span class="punct">;</span>
+            <span class="kw">case</span> KEY_DOWN:  buf.move_down<span class="punct">();</span>  <span class="kw">break</span><span class="punct">;</span>
+            <span class="kw">case</span> KEY_LEFT:  <span class="kw">if</span> <span class="punct">(</span>buf.cx &gt; <span class="num">0</span><span class="punct">)</span> --buf.cx<span class="punct">;</span> <span class="kw">break</span><span class="punct">;</span>
+            <span class="kw">case</span> KEY_RIGHT: ++buf.cx<span class="punct">;</span>          <span class="kw">break</span><span class="punct">;</span>
+            <span class="kw">case</span> KEY_BACKSPACE: buf.backspace<span class="punct">();</span> <span class="kw">break</span><span class="punct">;</span>
+            <span class="kw">case</span> KEY_DC:    <span class="kw">if</span> <span class="punct">(</span>buf.cx &lt; buf.lines[buf.cy].size<span class="punct">())</span>
+                             buf.lines[buf.cy].erase<span class="punct">(</span>buf.cx<span class="punct">,</span> <span class="num">1</span><span class="punct">);</span>
+                            <span class="kw">break</span><span class="punct">;</span>
+            <span class="kw">case</span> KEY_ENTER:
+            <span class="kw">case</span> <span class="str">'\n'</span><span class="punct">:</span>
+                <span class="punct">{</span>
+                    std::string before = buf.lines[buf.cy].substr<span class="punct">(</span><span class="num">0</span><span class="punct">,</span> buf.cx<span class="punct">);</span>
+                    std::string after  = buf.lines[buf.cy].substr<span class="punct">(</span>buf.cx<span class="punct">);</span>
+                    buf.lines[buf.cy] = before<span class="punct">;</span>
+                    buf.lines.insert<span class="punct">(</span>buf.lines.begin<span class="punct">()</span> + buf.cy + <span class="num">1</span><span class="punct">,</span> after<span class="punct">);</span>
+                    ++buf.cy<span class="punct">;</span>
+                    buf.cx = <span class="num">0</span><span class="punct">;</span>
+                <span class="punct">}</span>
+                <span class="kw">break</span><span class="punct">;</span>
+            <span class="kw">case</span> KEY_RESIZE:<span class="punct">;</span>   <span class="cmt">// ignore</span> <span class="kw">break</span><span class="punct">;</span>
+            <span class="kw">case</span> <span class="str">'q'</span><span class="punct">:</span> <span class="kw">return</span> <span class="num">0</span><span class="punct">;</span>
+            <span class="kw">default</span><span class="punct">:</span>
+                <span class="kw">if</span> <span class="punct">(</span>key &gt;= <span class="num">32</span> <span class="kw">and</span> key &lt; <span class="num">127</span><span class="punct">)</span>
+                    buf.insert_char<span class="punct">(</span><span class="kw">char</span><span class="punct">(</span>key<span class="punct">));</span>
+                <span class="kw">break</span><span class="punct">;</span>
+        <span class="punct">}</span>
+    <span class="punct">}</span>
+<span class="punct">}</span></code></pre>
+
+<h3>Next Steps for Your Editor</h3>
+<ol>
+  <li><strong>Add a command layer:</strong> Create a command dispatch system where each key maps to a command object.</li>
+  <li><strong>Add a status bar:</strong> Show file name, cursor position, mode (normal/command).</li>
+  <li><strong>Add a command line:</strong> When the user types <code>:</code>, show an input line at the bottom.</li>
+  <li><strong>Add file I/O:</strong> Read/write files from disk.</li>
+  <li><strong>Add undo/redo:</strong> Maintain a history of editing operations.</li>
+  <li><strong>Add syntax highlighting:</strong> Parse text and apply colors based on language rules.</li>
+</ol>
+
+<div class="box box-tip">

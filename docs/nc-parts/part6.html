@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>ncurses Tutorial — Appendix</title>
+<style>
+:root{--bg:#1a1b26;--surface:#24283b;--surface2:#2f3347;--text:#c0caf5;--text-dim:#565f89;--accent:#7aa2f7;--accent2:#bb9af7;--green:#9ece6a;--orange:#ff9e64;--red:#f7768e;--cyan:#7dcfff;--yellow:#e0af68;--border:#3b4261;--code-bg:#16161e}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'JetBrains Mono','Fira Code','SF Mono',Consolas,monospace;background:var(--bg);color:var(--text);line-height:1.7;font-size:15px;padding:40px 48px;max-width:880px;margin:0 auto}
+h1{font-size:32px;color:var(--accent);margin-bottom:8px}
+h1 .subtitle{font-size:16px;color:var(--text-dim);display:block;margin-top:8px;font-weight:normal}
+h2{font-size:24px;color:var(--accent2);margin-top:48px;margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+h3{font-size:18px;color:var(--cyan);margin-top:32px;margin-bottom:12px}
+p{margin-bottom:16px}
+pre{background:var(--code-bg);border:1px solid var(--border);border-radius:8px;padding:16px 20px;overflow-x:auto;margin:16px 0 24px;font-size:13.5px;line-height:1.6}
+code{font-family:inherit}
+pre code{color:var(--text)}
+.kw{color:var(--accent2)}.fn{color:var(--accent)}.str{color:var(--green)}.cmt{color:var(--text-dim);font-style:italic}.inc{color:var(--yellow)}
+.box{border-left:4px solid;padding:16px 20px;margin:20px 0;border-radius:0 8px 8px 0}
+.box-tip{border-color:var(--green);background:rgba(158,206,106,.08)}
+.box-title{font-weight:bold;font-size:13px;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;color:var(--green)}
+ul{margin:12px 0 16px 24px}
+li{margin-bottom:6px}
+</style>
+</head>
+<body>
+<h1 class="anchor" id="top">ncurses Tutorial — Appendix</h1>
+<span class="subtitle">Quick Reference &amp; Tips</span>
+
+<h2>Quick Reference: Essential Functions</h2>
+<table>
+<tr><th>Function</th><th>What it does</th></tr>
+<tr><td><code>initscr()</code></td><td>Initialize ncurses. Call first.</td></tr>
+<tr><td><code>endwin()</code></td><td>Restore terminal. Call last.</td></tr>
+<tr><td><code>cbreak()</code></td><td>Each key press arrives immediately.</td></tr>
+<tr><td><code>noecho()</code></td><td>Don't echo typed characters.</td></tr>
+<tr><td><code>keypad(stdscr, TRUE)</code></td><td>Enable special key codes.</td></tr>
+<tr><td><code>getch()</code></td><td>Get a key press (blocking).</td></tr>
+<tr><td><code>nodelay(win, TRUE)</code></td><td>Non-blocking getch (returns ERR).</td></tr>
+<tr><td><code>timeout(ms)</code></td><td>Blocking getch with timeout.</td></tr>
+<tr><td><code>printw("fmt", ...)</code></td><td>Print formatted text at cursor.</td></tr>
+<tr><td><code>mvprintw(y, x, "fmt", ...)</code></td><td>Print at specific position.</td></tr>
+<tr><td><code>wprintw(win, "fmt", ...)</code></td><td>Print to a window.</td></tr>
+<tr><td><code>refresh()</code></td><td>Draw everything to terminal.</td></tr>
+<tr><td><code>wrefresh(win)</code></td><td>Draw a specific window.</td></tr>
+<tr><td><code>erase()</code></td><td>Clear the screen.</td></tr>
+<tr><td><code>move(y, x)</code></td><td>Move cursor.</td></tr>
+<tr><td><code>curs_set(1)</code></td><td>Show cursor (0=hidden).</td></tr>
+<tr><td><code>flushinp()</code></td><td>Clear input buffer.</td></tr>
+<tr><td><code>start_color()</code></td><td>Enable color support.</td></tr>
+<tr><td><code>init_pair(id, fg, bg)</code></td><td>Define a color pair.</td></tr>
+<tr><td><code>attron(COLOR_PAIR(id))</code></td><td>Apply a color pair.</td></tr>
+<tr><td><code>KEY_RESIZE</code></td><td>Terminal was resized.</td></tr>
+</table>
+
+<h2>Common Mistakes</h2>
+<ul>
+  <li><strong>Forgetting <code>refresh()</code>:</strong> ncurses buffers output. Without refresh, nothing appears on screen.</li>
+  <li><strong>Forgetting <code>keypad(stdscr, TRUE)</code>:</strong> Arrow keys and F-keys won't work.</li>
+  <li><strong>Coordinates are (y, x):</strong> Row first, then column. Not (x, y).</li>
+  <li><strong>Not calling <code>endwin()</code> on crash:</strong> Terminal is left broken. Use a destructor or atexit handler.</li>
+  <li><strong>Using <code>printw</code> after a keypress:</strong> <code>printw</code> changes the cursor position. If you're drawing in a specific spot, you may need to reposition.</li>
+</ul>
+
+<h2>Further Reading</h2>
+<ul>
+  <li><strong>Man pages:</strong> <code>man ncurses</code>, <code>man curs_addwstr</code>, etc.</li>
+  <li><strong>ncurses FAQ:</strong> <code>ncurses-faq</code> (comes with the library)</li>
+  <li><strong>Examples:</strong> <code>/usr/share/doc/ncurses/examples/</code> (Linux)</li>
+  <li><strong>Online:</strong> <code>https://invisible-island.net/ncurses/ncurses.html</code></li>
+</ul>
+
+<div class="box box-tip">
+  <div class="box-title">Next Steps</div>
+  1. Open the tutorial in your browser and read through each section.<br>
+  2. Compile and run the "First Program" example.<br>
+  3. Try modifying it: add colors, sub-windows, mouse support.<br>
+  4. When you're ready to build your editor, come back and we'll design the architecture together.
+</div>
+
+</body>
+</html>

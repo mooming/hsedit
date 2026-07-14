@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ncurses Tutorial — Building a TUI Editor in C++</title>
+<style>
+:root{--bg:#1a1b26;--surface:#24283b;--surface2:#2f3347;--text:#c0caf5;--text-dim:#565f89;--accent:#7aa2f7;--accent2:#bb9af7;--green:#9ece6a;--orange:#ff9e64;--red:#f7768e;--cyan:#7dcfff;--yellow:#e0af68;--border:#3b4261;--code-bg:#16161e}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'JetBrains Mono','Fira Code','SF Mono',Consolas,monospace;background:var(--bg);color:var(--text);line-height:1.7;font-size:15px}
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:260px;background:var(--surface);border-right:1px solid var(--border);padding:24px 0;overflow-y:auto;z-index:10}
+.sidebar h2{font-size:14px;color:var(--accent);text-transform:uppercase;letter-spacing:2px;padding:0 20px;margin-bottom:16px}
+.sidebar a{display:block;padding:6px 20px;color:var(--text-dim);text-decoration:none;font-size:13px;transition:all .15s;border-left:3px solid transparent}
+.sidebar a:hover{color:var(--text);background:var(--surface2);border-left-color:var(--accent)}
+.sidebar a.active{color:var(--accent);border-left-color:var(--accent);background:var(--surface2)}
+.main{margin-left:260px;padding:40px 48px;max-width:880px}
+h1{font-size:32px;color:var(--accent);margin-bottom:8px}
+h1 .subtitle{font-size:16px;color:var(--text-dim);display:block;margin-top:8px;font-weight:normal}
+h2{font-size:24px;color:var(--accent2);margin-top:48px;margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+h3{font-size:18px;color:var(--cyan);margin-top:32px;margin-bottom:12px}
+h4{font-size:15px;color:var(--yellow);margin-top:24px;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px}
+p{margin-bottom:16px}
+ul,ol{margin:12px 0 16px 24px}
+li{margin-bottom:6px}
+pre{background:var(--code-bg);border:1px solid var(--border);border-radius:8px;padding:16px 20px;overflow-x:auto;margin:16px 0 24px;font-size:13.5px;line-height:1.6}
+code{font-family:inherit}
+pre code{color:var(--text)}
+.kw{color:var(--accent2)}.fn{color:var(--accent)}.type{color:var(--cyan)}.str{color:var(--green)}.cmt{color:var(--text-dim);font-style:italic}.num{color:var(--orange)}.inc{color:var(--yellow)}.macro{color:var(--orange)}.punct{color:var(--text-dim)}
+.box{border-left:4px solid;padding:16px 20px;margin:20px 0;border-radius:0 8px 8px 0}
+.box-info{border-color:var(--accent);background:rgba(122,162,247,.08)}.box-tip{border-color:var(--green);background:rgba(158,206,106,.08)}.box-warn{border-color:var(--orange);background:rgba(255,158,100,.08)}.box-danger{border-color:var(--red);background:rgba(247,118,142,.08)}
+.box-title{font-weight:bold;font-size:13px;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.box-info .box-title{color:var(--accent)}.box-tip .box-title{color:var(--green)}.box-warn .box-title{color:var(--orange)}.box-danger .box-title{color:var(--red)}
+table{width:100%;border-collapse:collapse;margin:16px 0 24px;font-size:14px}
+th{text-align:left;color:var(--accent);font-weight:600;padding:10px 16px;border-bottom:2px solid var(--accent);font-size:13px;text-transform:uppercase;letter-spacing:1px}
+td{padding:10px 16px;border-bottom:1px solid var(--border)}
+td code{background:var(--surface2);padding:2px 6px;border-radius:4px;font-size:13px;color:var(--cyan)}
+.diagram{background:var(--code-bg);border:1px solid var(--border);border-radius:8px;padding:20px;margin:20px 0;text-align:center;font-size:13px;line-height:1.8}
+.diagram .label{color:var(--accent);font-weight:bold}
+.diagram .arrow{color:var(--text-dim)}
+@media(max-width:900px){.sidebar{display:none}.main{margin-left:0;padding:24px 20px}}
+</style>
+</head>
+<body>
+<nav class="sidebar">
+<h2>ncurses Tutorial</h2>
+<a href="#overview">1. Overview &amp; Philosophy</a>
+<a href="#setup">2. Setup &amp; Installation</a>
+<a href="#hello">3. First Program</a>
+<a href="#windows">4. Windows &amp; Coordinates</a>
+<a href="#input">5. Input Handling</a>
+<a href="#output">6. Output &amp; Drawing</a>
+<a href="#colors">7. Colors</a>
+<a href="#keypad">8. Keypad &amp; Special Keys</a>
+<a href="#echo">9. Echo, Cursor &amp; Visibility</a>
+<a href="#events">10. Event Loop Pattern</a>
+<a href="#resize">11. Terminal Resize</a>
+<a href="#portability">12. Cross-Platform Notes</a>
+<a href="#editor-apply">13. Building Your Editor</a>
+</nav>
+<div class="main">
+<h1 class="anchor" id="top">ncurses Tutorial</h1>
+<span class="subtitle">A practical guide for building a TUI text editor in C++</span>
+
+<section id="overview">
+<h2>1. Overview &amp; Philosophy</h2>
+<p><strong>ncurses</strong> (new curses) provides a <em>terminal-independent</em> API for creating text-based user interfaces. It abstracts away differences between Linux, macOS, and Windows terminals.</p>
+<div class="diagram">
+<span class="label">Your C++ Code</span><br>
+<span class="arrow">│</span><br>
+<span class="arrow">│</span> <span class="label">ncurses library</span><br>
+<span class="arrow">│</span><br>
+<span class="arrow">▼</span><br>
+<span class="label">Terminal</span>
+</div>
+<h3>Key Concepts</h3>
+<ul>
+  <li><strong>Raw mode:</strong> Characters you type aren't echoed — your program decides what to display.</li>
+  <li><strong>Windows:</strong> Rectangular terminal regions. <code>stdscr</code> is the full screen.</li>
+  <li><strong>Coordinates:</strong> <code>(y, x)</code> — row first, then column. This is the #1 beginner mistake.</li>
+  <li><strong>Buffered output:</strong> ncurses draws to an internal buffer. Call <code>refresh()</code> to display at once (prevents flicker).</li>
+</ul>
+<div class="box box-info">
+  <div class="box-title">Why ncurses?</div>
+  Available everywhere. Lightweight. Mature (30+ years). Small enough API to learn in a day.
+</div>
+</section>
+
+<section id="setup">
+<h2>2. Setup &amp; Installation</h2>
+<h3>Linux</h3>
+<pre><code><span class="inc">#include</span> <span class="str">&lt;ncurses.h&gt;</span>
+sudo apt install libncurses-dev    <span class="cmt">// Ubuntu/Debian</span>
+sudo dnf install ncurses-devel     <span class="cmt">// Fedora</span></code></pre>
+<h3>macOS</h3>
+<pre><code><span class="cmt">// ncurses comes with macOS. No install needed.</span>
+brew install ncurses    <span class="cmt">// for newer version</span></code></pre>
+<h3>Windows (MSYS2)</h3>
+<pre><code><span class="cmt">// Install MSYS2 from https://msys2.org</span>
+pacman -S mingw-w64-x86_64-ncurses</code></pre>
+<h3>Compiling</h3>
+<pre><code><span class="cmt">// Basic:</span>
+g++ -o my_editor my_editor.cpp -lncurses
+
+<span class="cmt">// With Unicode support (recommended):</span>
+g++ -o my_editor my_editor.cpp -lncursesw</code></pre>
+<div class="box box-tip">
+  <div class="box-title">Tip</div>
+  Use <code>-lncursesw</code> for Unicode. The <code>w</code> means "wide character."
+</div>
+</section>
+
+<section id="hello">
+<h2>3. Your First Program</h2>
+<p>Every ncurses program follows the same skeleton: <code>initscr()</code> → configure → loop → <code>endwin()</code>.</p>
+<pre><code><span class="inc">#include</span> <span class="str">&lt;ncurses.h&gt;</span>
+
+<span class="kw">int</span> <span class="fn">main</span><span class="punct">()</span> <span class="punct">{</span>
+    <span class="cmt">// 1. Initialize ncurses</span>
+    initscr<span class="punct">();</span>
+
+    <span class="cmt">// 2. Configure terminal</span>
+    cbreak<span class="punct">();</span>          <span class="cmt">// Each key press arrives immediately (no Enter needed)</span>
+    noecho<span class="punct">();</span>          <span class="cmt">// Don't echo typed characters automatically</span>
+    keypad<span class="punct">(</span>stdscr<span class="punct">,</span> TRUE<span class="punct">);</span>  <span class="cmt">// Enable special key codes (arrows, F1...)</span>
+
+    <span class="cmt">// 3. Write text</span>
+    mvprintw<span class="punct">(</span><span class="num">0</span><span class="punct">,</span> <span class="num">0</span><span class="punct">,</span> <span class="str">"Hello, ncurses!"</span><span class="punct">);</span>
+
+    <span class="cmt">// 4. Force display</span>
+    refresh<span class="punct">();</span>
+
+    <span class="cmt">// 5. Wait for any key</span>
+    getch<span class="punct">();</span>
+
+    <span class="cmt">// 6. Restore terminal state</span>
+    endwin<span class="punct">();</span>
+    <span class="kw">return</span> <span class="num">0</span><span class="punct">;</span>
+<span class="punct">}</span></code></pre>
+<div class="box box-warn">
+  <div class="box-title">Always call endwin()</div>
+  If your program crashes without <code>endwin()</code>, your terminal is left broken (no echo, no line editing). Always call it.
+</div>
+</section>
+
+<section id="windows">
+<h2>4. Windows &amp; Coordinates</h2>
+<p>A <strong>window</strong> in ncurses is a rectangular drawing area. Think of it as a canvas within the terminal.</p>
+<h3>Creating Windows</h3>
+<pre><code><span class="cmt">// stdscr — full terminal screen (created automatically)</span>
+<span class="cmt">// newwin(rows, cols, start_y, start_x)</span>
+WINDOW* win = <span class="fn">newwin</span><span class="punct">(</span><span class="num">10</span><span class="punct">,</span> <span class="num">40</span><span class="punct">,</span> <span class="num">2</span><span class="punct">,</span> <span class="num">5</span><span class="punct">);</span>
+
+<span class="cmt">// Write to the sub-window</span>
+<span class="fn">wprintw</span><span class="punct">(</span>win<span class="punct">,</span> <span class="str">"Inside sub-window"</span><span class="punct">);</span>
+<span class="fn">wrefresh</span><span class="punct">(</span>win<span class="punct">);</span></code></pre>
+<h3>Coordinate System</h3>
+<div class="diagram">
+<span class="label">Terminal Coordinates</span><br><br>
+(0,0) ──────────→ x (column)<br>
+<span class="arrow">│</span><br>
+<span class="arrow">↓</span><br>
+y (row)
+</div>
+<p><code>mvprintw(y, x, "text")</code> — <em>y first, then x</em>.</p>
+<h3>Querying Dimensions</h3>
+<pre><code><span class="kw">int</span> rows   = <span class="fn">LINES</span><span class="punct">;</span>
+<span class="kw">int</span> cols   = <span class="fn">COLS</span><span class="punct">;</span>
+<span class="kw">int</span> cur_y  = <span class="fn">getcury</span><span class="punct">(</span>stdscr<span class="punct">);</span>
+<span class="kw">int</span> cur_x  = <span class="fn">getcurx</span><span class="punct">(</span>stdscr<span class="punct">);</span></code></pre>
+</section>
+
+</div><!-- .main -->
+</body>
+</html>

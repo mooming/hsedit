@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>ncurses Tutorial — Sections 5-9</title>
+<style>
+:root{--bg:#1a1b26;--surface:#24283b;--surface2:#2f3347;--text:#c0caf5;--text-dim:#565f89;--accent:#7aa2f7;--accent2:#bb9af7;--green:#9ece6a;--orange:#ff9e64;--red:#f7768e;--cyan:#7dcfff;--yellow:#e0af68;--border:#3b4261;--code-bg:#16161e}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'JetBrains Mono','Fira Code','SF Mono',Consolas,monospace;background:var(--bg);color:var(--text);line-height:1.7;font-size:15px;padding:40px 48px;max-width:880px;margin:0 auto}
+h1{font-size:32px;color:var(--accent);margin-bottom:8px}
+h1 .subtitle{font-size:16px;color:var(--text-dim);display:block;margin-top:8px;font-weight:normal}
+h2{font-size:24px;color:var(--accent2);margin-top:48px;margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+h3{font-size:18px;color:var(--cyan);margin-top:32px;margin-bottom:12px}
+h4{font-size:15px;color:var(--yellow);margin-top:24px;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px}
+p{margin-bottom:16px}
+ul,ol{margin:12px 0 16px 24px}
+li{margin-bottom:6px}
+pre{background:var(--code-bg);border:1px solid var(--border);border-radius:8px;padding:16px 20px;overflow-x:auto;margin:16px 0 24px;font-size:13.5px;line-height:1.6}
+code{font-family:inherit}
+pre code{color:var(--text)}
+.kw{color:var(--accent2)}.fn{color:var(--accent)}.type{color:var(--cyan)}.str{color:var(--green)}.cmt{color:var(--text-dim);font-style:italic}.num{color:var(--orange)}.inc{color:var(--yellow)}.macro{color:var(--orange)}.punct{color:var(--text-dim)}
+.box{border-left:4px solid;padding:16px 20px;margin:20px 0;border-radius:0 8px 8px 0}
+.box-info{border-color:var(--accent);background:rgba(122,162,247,.08)}.box-tip{border-color:var(--green);background:rgba(158,206,106,.08)}.box-warn{border-color:var(--orange);background:rgba(255,158,100,.08)}.box-danger{border-color:var(--red);background:rgba(247,118,142,.08)}
+.box-title{font-weight:bold;font-size:13px;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.box-info .box-title{color:var(--accent)}.box-tip .box-title{color:var(--green)}.box-warn .box-title{color:var(--orange)}.box-danger .box-title{color:var(--red)}
+table{width:100%;border-collapse:collapse;margin:16px 0 24px;font-size:14px}
+th{text-align:left;color:var(--accent);font-weight:600;padding:10px 16px;border-bottom:2px solid var(--accent);font-size:13px;text-transform:uppercase;letter-spacing:1px}
+td{padding:10px 16px;border-bottom:1px solid var(--border)}
+td code{background:var(--surface2);padding:2px 6px;border-radius:4px;font-size:13px;color:var(--cyan)}
+.diagram{background:var(--code-bg);border:1px solid var(--border);border-radius:8px;padding:20px;margin:20px 0;text-align:center;font-size:13px;line-height:1.8}
+.diagram .label{color:var(--accent);font-weight:bold}
+.diagram .arrow{color:var(--text-dim)}
+hr{border:none;border-top:1px solid var(--border);margin:48px 0}
+</style>
+</head>
+<body>
+<h1 class="anchor" id="top">ncurses Tutorial (Part 2)</h1>
+<span class="subtitle">Input, Output, Colors, Keypad, Event Loop</span>
+
+<section id="input">
+<h2>5. Input Handling</h2>
+<h3>Basic getch()</h3>
+<pre><code><span class="cmt">// Blocking: waits for a key press</span>
+<span class="kw">int</span> key = <span class="fn">getch</span><span class="punct">();</span>
+
+<span class="cmt">// Non-blocking: returns ERR (-1) if no key pressed</span>
+<span class="fn">nodelay</span><span class="punct">(</span>stdscr<span class="punct">,</span> TRUE<span class="punct">);</span>
+<span class="kw">int</span> key = <span class="fn">getch</span><span class="punct">();</span>   <span class="cmt">// Returns ERR if nothing pressed</span></code></pre>
+<h3>Common Key Codes</h3>
+<table>
+<tr><th>Constant</th><th>Meaning</th></tr>
+<tr><td><code>KEY_UP</code></td><td>Up arrow</td></tr>
+<tr><td><code>KEY_DOWN</code></td><td>Down arrow</td></tr>
+<tr><td><code>KEY_LEFT</code></td><td>Left arrow</td></tr>
+<tr><td><code>KEY_RIGHT</code></td><td>Right arrow</td></tr>
+<tr><td><code>KEY_HOME</code></td><td>Home key</td></tr>
+<tr><td><code>KEY_END</code></td><td>End key</td></tr>
+<tr><td><code>KEY_BACKSPACE</code></td><td>Backspace</td></tr>
+<tr><td><code>KEY_DC</code></td><td>Delete key</td></tr>
+<tr><td><code>KEY_IC</code></td><td>Insert key</td></tr>
+<tr><td><code>KEY_ENTER</code></td><td>Enter/Return</td></tr>
+<tr><td><code>KEY_RESIZE</code></td><td>Terminal resized</td></tr>
+<tr><td><code>KEY_F(n)</code></td><td>F1..F12 (e.g. KEY_F(1))</td></tr>
+<tr><td><code>KEY_MOUSE</code></td><td>Mouse event</td></tr>
+</table>
+
+<h3>Modifiers (Ctrl, Shift, Alt)</h3>
+<pre><code><span class="cmt">// Ctrl combinations are single bytes:</span>
+<span class="kw">int</span> key = <span class="fn">getch</span><span class="punct">();</span>
+<span class="kw">if</span> <span class="punct">(</span>key == <span class="num">3</span><span class="punct">)</span>  <span class="cmt">// Ctrl+C (ASCII 3)</span>
+<span class="kw">if</span> <span class="punct">(</span>key == <span class="num">21</span><span class="punct">)</span> <span class="cmt">// Ctrl+U</span>
+<span class="kw">if</span> <span class="punct">(</span>key == <span class="num">19</span><span class="punct">)</span> <span class="cmt">// Ctrl+S  (common: save)</span>
+<span class="kw">if</span> <span class="punct">(</span>key == <span class="num">1</span><span class="punct">)</span>  <span class="cmt">// Ctrl+A  (common: command mode)</span>
+
+<span class="cmt">// Alt + character: ncurses sends ESC first, then the character</span>
+<span class="kw">if</span> <span class="punct">(</span>key == <span class="num">27</span><span class="punct">)</span> <span class="punct">{</span>  <span class="cmt">// ESC pressed — check if followed by a char</span>
+    <span class="fn">nodelay</span><span class="punct">(</span>stdscr<span class="punct">,</span> TRUE<span class="punct">);</span>
+    <span class="kw">int</span> next = <span class="fn">getch</span><span class="punct">();</span>
+    <span class="kw">if</span> <span class="punct">(</span>next != ERR<span class="punct">)</span> <span class="punct">{</span>
+        <span class="cmt">// Alt+key: ESC + character = 27 + next</span>
+        <span class="fn">handle_alt_key</span><span class="punct">(</span>next<span class="punct">);</span>
+    <span class="punct">}</span>
+<span class="punct">}</span></code></pre>
+<h3>Input Buffers</h3>
+<pre><code><span class="cmt">// Clear the input buffer (discard pending keystrokes)</span>
+<span class="fn">flushinp</span><span class="punct">();</span>
+
+<span class="cmt">// Set a timeout — getch returns ERR after ms milliseconds</span>
+<span class="fn">timeout</span><span class="punct">(</span><span class="num">100</span><span class="punct">);</span>    <span class="cmt">// 100ms timeout</span>
+<span class="fn">halfdelay</span><span class="punct">(</span><span class="num">5</span><span class="punct">);</span>   <span class="cmt">// 0.5 second timeout (halfdelay mode)</span></code></pre>
+</section>
+
+<hr>
+
+<section id="output">
+<h2>6. Output &amp; Drawing</h2>
+<h3>Writing Text</h3>
+<pre><code><span class="cmt">// Print at current cursor position</span>
+<span class="fn">printw</span><span class="punct">(</span><span class="str">"Hello at cursor"</span><span class="punct">);</span>
+
+<span class="cmt">// Print at specific (y, x) position</span>
+<span class="fn">mvprintw</span><span class="punct">(</span><span class="num">5</span><span class="punct">,</span> <span class="num">10</span><span class="punct">,</span> <span class="str">"Hello at (5,10)"</span><span class="punct">);</span>
+
+<span class="cmt">// For a specific window</span>
+<span class="fn">wprintw</span><span class="punct">(</span>win<span class="punct">,</span> <span class="str">"In sub-window"</span><span class="punct">);</span>
+<span class="fn">mvwprintw</span><span class="punct">(</span>win<span class="punct">,</span> <span class="num">2</span><span class="punct">,</span> <span class="num">3</span><span class="punct">,</span> <span class="str">"Specific spot"</span><span class="punct">);</span>
+
+<span class="cmt">// Individual character</span>
+<span class="fn">addch</span><span class="punct">(</span><span class="str">'A'</span><span class="punct">);</span>
+<span class="fn">mvaddch</span><span class="punct">(</span><span class="num">3</span><span class="punct">,</span> <span class="num">4</span><span class="punct">,</span> <span class="str">'X'</span><span class="punct">);</span></code></pre>
+<h3>Attributes (Bold, Underline, etc.)</h3>
+<pre><code><span class="cmt">// Set attributes</span>
+<span class="fn">attron</span><span class="punct">(</span>A_BOLD<span class="punct">);</span>        <span class="cmt">// Bold text</span>
+<span class="fn">printw</span><span class="punct">(</span><span class="str">"This is bold"</span><span class="punct">);</span>
+<span class="fn">attroff</span><span class="punct">(</span>A_BOLD<span class="punct">);</span>       <span class="cmt">// Turn off bold</span>
+
+<span class="cmt">// Multiple attributes combined</span>
+<span class="fn">attron</span><span class="punct">(</span>A_BOLD | A_UNDERLINE<span class="punct">);</span>
+
+<span class="cmt">// Common attributes:</span>
+<span class="cmt">// A_BOLD, A_DIM, A_UNDERLINE, A_REVERSE, A_BLINK</span>
+<span class="cmt">// A_PROTECT, A_INVIS, A_STANDOUT</span></code></pre>
+<h3>Clearing</h3>
+<pre><code><span class="fn">clear</span><span class="punct">();</span>         <span class="cmt">// Clear entire screen</span>
+<span class="fn">erase</span><span class="punct">();</span>         <span class="cmt">// Same as clear() but for stdscr</span>
+<span class="fn">wclear</span><span class="punct">(</span>win<span class="punct">);</span>    <span class="cmt">// Clear a specific window</span>
+<span class="fn">clearok</span><span class="punct">(</span>stdscr<span class="punct">,</span> TRUE<span class="punct">);</span>  <span class="cmt">// Force clear on next refresh</span></code></pre>
+<h3>Scrolling</h3>
+<pre><code><span class="fn">scroll</span><span class="punct">(</span>stdscr<span class="punct">);</span>     <span class="cmt">// Scroll window up by one line</span>
+<span class="fn">scrl</span><span class="punct">(</span><span class="num">-3</span><span class="punct">);</span>          <span class="cmt">// Scroll down by 3 lines</span>
+<span class="fn">scrl</span><span class="punct">(</span><span class="num">2</span><span class="punct">);</span>           <span class="cmt">// Scroll up by 2 lines</span></code></pre>
+<h3>Lines and Boxes</h3>
+<pre><code><span class="cmt">// Draw a box around a window</span>
+<span class="fn">box</span><span class="punct">(</span>win<span class="punct">,</span> <span class="num">0</span><span class="punct">,</span> <span class="num">0</span><span class="punct">);</span>     <span class="cmt">// Default border characters</span>
+<span class="fn">box</span><span class="punct">(</span>win<span class="punct">,</span> <span class="str">'|'</span><span class="punct">,</span> <span class="str">'-'</span><span class="punct">);</span>   <span class="cmt">// Custom border chars</span>
+
+<span class="cmt">// Draw a horizontal/vertical line</span>
+<span class="fn">hline</span><span class="punct">(</span><span class="str">'='</span><span class="punct">,</span> <span class="num">20</span><span class="punct">);</span>      <span class="cmt">// 20 '=' chars at current position</span>
+<span class="fn">mvhline</span><span class="punct">(</span><span class="num">5</span><span class="punct">,</span>

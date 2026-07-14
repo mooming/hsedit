@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ncurses Tutorial — Building a TUI Editor in C++</title>
+<style>
+:root{--bg:#1a1b26;--surface:#24283b;--surface2:#2f3347;--text:#c0caf5;--text-dim:#565f89;--accent:#7aa2f7;--accent2:#bb9af7;--green:#9ece6a;--orange:#ff9e64;--red:#f7768e;--cyan:#7dcfff;--yellow:#e0af68;--border:#3b4261;--code-bg:#16161e}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'JetBrains Mono','Fira Code','SF Mono',Consolas,monospace;background:var(--bg);color:var(--text);line-height:1.7;font-size:15px}
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:260px;background:var(--surface);border-right:1px solid var(--border);padding:24px 0;overflow-y:auto;z-index:10}
+.sidebar h2{font-size:14px;color:var(--accent);text-transform:uppercase;letter-spacing:2px;padding:0 20px;margin-bottom:16px}
+.sidebar a{display:block;padding:6px 20px;color:var(--text-dim);text-decoration:none;font-size:13px;transition:all .15s;border-left:3px solid transparent}
+.sidebar a:hover{color:var(--text);background:var(--surface2);border-left-color:var(--accent)}
+.sidebar a.active{color:var(--accent);border-left-color:var(--accent);background:var(--surface2)}
+.main{margin-left:260px;padding:40px 48px;max-width:880px}
+h1{font-size:32px;color:var(--accent);margin-bottom:8px}
+h1 .subtitle{font-size:16px;color:var(--text-dim);display:block;margin-top:8px;font-weight:normal}
+h2{font-size:24px;color:var(--accent2);margin-top:48px;margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+h3{font-size:18px;color:var(--cyan);margin-top:32px;margin-bottom:12px}
+h4{font-size:15px;color:var(--yellow);margin-top:24px;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px}
+p{margin-bottom:16px}
+ul,ol{margin:12px 0 16px 24px}
+li{margin-bottom:6px}
+pre{background:var(--code-bg);border:1px solid var(--border);border-radius:8px;padding:16px 20px;overflow-x:auto;margin:16px 0 24px;font-size:13.5px;line-height:1.6}
+code{font-family:inherit}
+pre code{color:var(--text)}
+.kw{color:var(--accent2)}.fn{color:var(--accent)}.type{color:var(--cyan)}.str{color:var(--green)}.cmt{color:var(--text-dim);font-style:italic}.num{color:var(--orange)}.inc{color:var(--yellow)}.macro{color:var(--orange)}.punct{color:var(--text-dim)}
+.box{border-left:4px solid;padding:16px 20px;margin:20px 0;border-radius:0 8px 8px 0}
+.box-info{border-color:var(--accent);background:rgba(122,162,247,.08)}.box-tip{border-color:var(--green);background:rgba(158,206,106,.08)}.box-warn{border-color:var(--orange);background:rgba(255,158,100,.08)}.box-danger{border-color:var(--red);background:rgba(247,118,142,.08)}
+.box-title{font-weight:bold;font-size:13px;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.box-info .box-title{color:var(--accent)}.box-tip .box-title{color:var(--green)}.box-warn .box-title{color:var(--orange)}.box-danger .box-title{color:var(--red)}
+table{width:100%;border-collapse:collapse;margin:16px 0 24px;font-size:14px}
+th{text-align:left;color:var(--accent);font-weight:600;padding:10px 16px;border-bottom:2px solid var(--accent);font-size:13px;text-transform:uppercase;letter-spacing:1px}
+td{padding:10px 16px;border-bottom:1px solid var(--border)}
+td code{background:var(--surface2);padding:2px 6px;border-radius:4px;font-size:13px;color:var(--cyan)}
+.diagram{background:var(--code-bg);border:1px solid var(--border);border-radius:8px;padding:20px;margin:20px 0;text-align:center}
+.diagram svg{max-width:100%;height:auto}
+.diagram .label{fill:var(--accent);font-weight:bold}
+.diagram .arrow{fill:var(--text-dim)}
+.diagram .box-shape{fill:var(--surface2);stroke:var(--accent);stroke-width:1.5}
+.diagram .box-shape-accent{fill:var(--surface);stroke:var(--accent2);stroke-width:1.5}
+.diagram .box-shape-green{fill:var(--surface2);stroke:var(--green);stroke-width:1.5}
+.diagram .box-text{fill:var(--text);font-size:12px;font-family:monospace}
+.diagram .box-text-accent{fill:var(--accent);font-size:12px;font-family:monospace}
+.diagram .arrow-line{stroke:var(--text-dim);stroke-width:1.5;fill:none}
+.diagram .arrow-head{fill:var(--text-dim)}
+.diagram .coord-text{fill:var(--text-dim);font-size:11px;font-family:monospace}
+.diagram .axis-label{fill:var(--accent);font-size:13px;font-family:monospace}
+.diagram .origin-text{fill:var(--accent);font-size:12px;font-family:monospace;font-weight:bold}
+@media(max-width:900px){.sidebar{display:none}.main{margin-left:0;padding:24px 20px}}
+</style>
+</head>
+<body>
+
+<nav class="sidebar">
+<h2>ncurses Tutorial</h2>
+<a href="#overview">1. Overview &amp; Philosophy</a>
+<a href="#setup">2. Setup &amp; Installation</a>
+<a href="#hello">3. First Program</a>
+<a href="#windows">4. Windows &amp; Coordinates</a>
+<a href="#input">5. Input Handling</a>
+<a href="#output">6. Output &amp; Drawing</a>
+<a href="#colors">7. Colors</a>
+<a href="#keypad">8. Keypad &amp; Special Keys</a>
+<a href="#echo">9. Echo, Cursor &amp; Visibility</a>
+<a href="#events">10. Event Loop Pattern</a>
+<a href="#resize">11. Terminal Resize</a>
+<a href="#portability">12. Cross-Platform Notes</a>
+<a href="#editor-apply">13. Building Your Editor</a>
+</nav>
+<div class="main">
+<h1 class="anchor" id="top">ncurses Tutorial</h1>
+<span class="subtitle">A practical guide for building a TUI text editor in C++</span>
+
+<section id="overview">
+<h2>1. Overview &amp; Philosophy</h2>
+<p><strong>ncurses</strong> (new curses) provides a <em>terminal-independent</em> API for creating text-based user interfaces. It abstracts away differences between Linux, macOS, and Windows terminals.</p>
+<div class="diagram">
+<svg width="320" height="180" viewBox="0 0 320 180">
+  <rect x="80" y="10" width="160" height="40" rx="6" class="box-shape"/>
+  <text x="160" y="35" text-anchor="middle" class="box-text">Your C++ Code</text>
+  <line x1="160" y1="50" x2="160" y2="80" class="arrow-line"/>
+  <rect x="80" y="80" width="160" height="40" rx="6" class="box-shape-accent"/>
+  <text x="160" y="105" text-anchor="middle" class="box-text-accent">ncurses Library</text>
+  <line x1="160" y1="120" x2="160" y2="150" class="arrow-line"/>
+  <rect x="80" y="150" width="160" height="40" rx="6" class="box-shape"/>
+  <text x="160" y="175" text-anchor="middle" class="box-text">Terminal</text>
+  <defs><marker id="ah1" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" class="arrow-head"/></marker></defs>
+</svg>
+</div>
+<h3>Key Concepts</h3>
+<ul>
+  <li><strong>Raw mode:</strong> Characters you type aren't echoed — your program decides what to display.</li>
+  <li><strong>Windows:</strong> Rectangular terminal regions. <code>stdscr</code> is the full screen.</li>
+  <li><strong>Coordinates:</strong> <code>(y, x)</code> — row first, then column. This is the #1 beginner mistake.</li>
+  <li><strong>Buffered output:</strong> ncurses draws to an internal buffer. Call <code>refresh()</code> to display at once (prevents flicker).</li>
+</ul>
+<div class="box box-info">
+  <div class="box-title">Why ncurses?</div>
+  Available everywhere. Lightweight. Mature (30+ years). Small enough API to learn in a day.
+</div>
+</section>
+
+<section id="setup">
+<h2>2. Setup &amp; Installation</h2>
+<h3>Linux</h3>
+<pre><code><span class="inc">#include</span> <span class="str">&lt;ncurses.h&gt;</span>
+sudo apt install libncurses-dev    <span class="cmt">// Ubuntu/Debian</span>
+sudo dnf install ncurses-devel     <span class="cmt">// Fedora</span></code></pre>
+<h3>macOS</h3>
+<pre><code><span class="cmt">// ncurses comes with macOS. No install needed.</span>
+brew install ncurses    <span class="cmt">// for newer version</span></code></pre>
+<h3>Windows (MSYS2)</h3>
+<pre><code><span class="cmt">// Install MSYS2 from https://msys2.org</span>
+pacman -S mingw-w64-x86_64-ncurses</code></pre>
+<h3>Compiling</h3>
+<pre><code><span class="cmt">// Basic:</span>
+g++ -o my_editor my_editor.cpp -lncurses
+
+<span class="cmt">// With Unicode support (recommended):</span>
+g++ -o my_editor my_editor.cpp -lncursesw</code></pre>
+<div class="box box-tip">
+  <div class="box-title">Tip</div>
+  Use <code>-lncursesw</code> for Unicode. The <code>w</code> means "wide character."
+</div>
+</section>
+
+<section id="hello">
+<h2>3. Your First Program</h2>
+<p>Every ncurses program follows the same skeleton: <code>initscr()</code> → configure → loop → <code>endwin()</code>.</p>
+<pre><code><span class="inc">#include</span> <span class="str">&lt;ncurses.h&gt;</span>
+
+<span class="kw">int</span> <span class="fn">main</span><span class="punct">()</span> <span class="punct">{</span>
+    <span class="cmt">// 1. Initialize ncurses</span>
+    initscr<span class="punct">();</span>
+
+    <span class="cmt">// 2. Configure terminal</span>
+    cbreak<span class="punct">();</span>          <span class="cmt">// Each key press arrives immediately (no Enter needed)</span>
+    noecho<span class="punct">();</span>          <span class="cmt">// Don't echo typed characters automatically</span>
+    keypad<span class="punct">(</span>stdscr<span class="punct">,</span> TRUE<span class="punct">);</span>  <span class="cmt">// Enable special key codes (arrows, F1...)</span>
+
+    <span class="cmt">// 3. Write text</span>
+    mvprintw<span class="punct">(</span><span class="num">0</span><span class="punct">,</span> <span class="num">0</span><span class="punct">,</span> <span class="str">"Hello, ncurses!"</span><span class="punct">);</span>
+
+    <span class="cmt">// 4. Force display</span>
+    refresh<span class="punct">();</span>
+
+    <span class="cmt">// 5. Wait for any key</span>
+    getch<span class="punct">();</span>
+
+    <span class="cmt">// 6. Restore terminal state</span>
+    endwin<span class="punct">();</span>
+    <span class="kw">return</span> <span class="num">0</span><span class="punct">;</span>
+<span class="punct">}</span></code></pre>
+<div class="box box-warn">
+  <div class="box-title">Always call endwin()</div>
+  If your program crashes without <code>endwin()</code>, your terminal is left broken (no echo, no line editing). Always call it.
+</div>
+</section>
+
+<section id="windows">
+<h2>4. Windows &amp; Coordinates</h2>
+<p>A <strong>window</strong> in ncurses is a rectangular drawing area. Think of it as a canvas within the terminal.</p>
+<h3>Creating Windows</h3>
+<pre><code><span class="cmt">// stdscr — full terminal screen (created automatically)</span>
+<span class="cmt">// newwin(rows, cols, start_y, start_x)</span>
+WINDOW* win = <span class="fn">newwin</span><span class="punct">(</span><span class="num">10</span><span class="punct">,</span> <span class="num">40</span><span class="punct">,</span> <span class="num">2</span><span class="punct">,</span> <span class="num">5</span><span class="punct">);</span>
+
+<span class="cmt">// Write to the sub-window</span>
+<span class="fn">wprintw</span><span class="punct">(</span>win<span class="punct">,</span> <span class="str">"Inside sub-window"</span><span class="punct">);</span>
+<span class="fn">wrefresh</span><span class="punct">(</span>win<span class="punct">);</span></code></pre>
+<h3>Coordinate System</h3>
+<div class="diagram">
+<svg width="280" height="240" viewBox="0 0 280 240">
+  <text x="140" y="18" text-anchor="middle" class="axis-label">Terminal Coordinate System</text>
+  <line x1="40" y1="220" x2="260" y2="220" class="arrow-line" marker-end="url(#ah2)"/>
+  <text x="268" y="225" class="axis-label">x (column)</text>
+  <line x1="40" y1="40" x2="40" y2="220" class="arrow-line" marker-end="url(#ah2)"/>
+  <text x="12" y="35" class="axis-label">y (row)</text>
+  <circle cx="40" cy="220" r="3" class="arrow-head"/>
+  <text x="48" y="236" class="origin-text">(0, 0)</text>
+  <circle cx="120" cy="220" r="2" fill="var(--text-dim)"/>
+  <text x="126" y="236" class="coord-text">(1, 0)</text>
+  <circle cx="40" cy="140" r="2" fill="var(--text-dim)"/>
+  <text x="16" y="145" class="coord-text">(0, 1)</text>
+  <circle cx="120" cy="140" r="2" fill="var(--text-dim)"/>
+  <text x="126" y="145" class="coord-text">(1, 1)</text>
+  <defs><marker id="ah2" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" class="arrow-head"/></marker></defs>
+</svg>
+</div>
+<p><code>mvprintw(y, x, "text")</code> — <em>y first, then x</em>.</p>
+<h3>Querying Dimensions</h3>
+<pre><code><span class="kw">int</span> rows   = <span class="fn">LINES</span><span class="punct">;</span>
+<span class="kw">int</span> cols   = <span class="fn">COLS</span><span class="punct">;</span>
+<span class="kw">int</span> cur_y  = <span class="fn">getcury</span><span class="punct">(</span>stdscr<span class="punct">);</span>
+<span class="kw">int</span> cur_x  = <span class="fn">getcurx</span><span class="punct">(</span>stdscr<span class="punct">);</span></code></pre>
+</section>
+
+</div><!-- .main -->
+
+<h1 class="anchor" id="top">ncurses Tutorial (Part 2)</h1>
+<span class="subtitle">Input, Output, Colors, Keypad, Event Loop</span>
+
+<section id="input">
+<h2>5. Input Handling</h2>
+<h3>Basic getch()</h3>
+<pre><code><span class="cmt">// Blocking: waits for a key press</span>
+<span class="kw">int</span> key = <span class="fn">getch</span><span class="punct">();</span>
+
+<span class="cmt">// Non-blocking: returns ERR (-1) if no key pressed</span>
+<span class="fn">nodelay</span><span class="punct">(</span>stdscr<span class="punct">,</span> TRUE<span class="punct">);</span>
+<span class="kw">int</span> key = <span class="fn">getch</span><span class="punct">();</span>   <span class="cmt">// Returns ERR if nothing pressed</span></code></pre>
+<h3>Common Key Codes</h3>
+<table>
+<tr><th>Constant</th><th>Meaning</th></tr>
+<tr><td><code>KEY_UP</code></td><td>Up arrow</td></tr>
+<tr><td><code>KEY_DOWN</code></td><td>Down arrow</td></tr>
+<tr><td><code>KEY_LEFT</code></td><td>Left arrow</td></tr>
+<tr><td><code>KEY_RIGHT</code></td><td>Right arrow</td></tr>
+<tr><td><code>KEY_HOME</code></td><td>Home key</td></tr>
+<tr><td><code>KEY_END</code></td><td>End key</td></tr>
+<tr><td><code>KEY_BACKSPACE</code></td><td>Backspace</td></tr>
+<tr><td><code>KEY_DC</code></td><td>Delete key</td></tr>
+<tr><td><code>KEY_IC</code></td><td>Insert key</td></tr>
+<tr><td><code>KEY_ENTER</code></td><td>Enter/Return</td></tr>
+<tr><td><code>KEY_RESIZE</code></td><td>Terminal resized</td></tr>
+<tr><td><code>KEY_F(n)</code></td><td>F1..F12 (e.g. KEY_F(1))</td></tr>
+<tr><td><code>KEY_MOUSE</code></td><td>Mouse event</td></tr>
+</table>
+
+<h3>Modifiers (Ctrl, Shift, Alt)</h3>
+<pre><code><span class="cmt">// Ctrl combinations are single bytes:</span>
+<span class="kw">int</span> key = <span class="fn">getch</span><span class="punct">();</span>
+<span class="kw">if</span> <span class="punct">(</span>key == <span class="num">3</span><span class="punct">)</span>  <span class="cmt">// Ctrl+C (ASCII 3)</span>
+<span class="kw">if</span> <span class="punct">(</span>key == <span class="num">21</span><span class="punct">)</span> <span class="cmt">// Ctrl+U</span>
+<span class="kw">if</span> <span class="punct">(</span>key == <span class="num">19</span><span class="punct">)</span> <span class="cmt">// Ctrl+S  (common: save)</span>
+<span class="kw">if</span> <span class="punct">(</span>key == <span class="num">1</span><span class="punct">)</span>  <span class="cmt">// Ctrl+A  (common: command mode)</span>
+
+<span class="cmt">// Alt + character: ncurses sends ESC first, then the character</span>
+<span class="kw">if</span> <span class="punct">(</span>key == <span class="num">27</span><span class="punct">)</span> <span class="punct">{</span>  <span class="cmt">// ESC pressed — check if followed by a char</span>
+    <span class="fn">nodelay</span><span class="punct">(</span>stdscr<span class="punct">,</span> TRUE<span class="punct">);</span>
+    <span class="kw">int</span> next = <span class="fn">getch</span><span class="punct">();</span>
+    <span class="kw">if</span> <span class="punct">(</span>next != ERR<span class="punct">)</span> <span class="punct">{</span>
+        <span class="cmt">// Alt+key: ESC + character = 27 + next</span>
+        <span class="fn">handle_alt_key</span><span class="punct">(</span>next<span class="punct">);</span>
+    <span class="punct">}</span>
+<span class="punct">}</span></code></pre>
+<h3>Input Buffers</h3>
+<pre><code><span class="cmt">// Clear the input buffer (discard pending keystrokes)</span>
+<span class="fn">flushinp</span><span class="punct">();</span>
+
+<span class="cmt">// Set a timeout — getch returns ERR after ms milliseconds</span>
+<span class="fn">timeout</span><span class="punct">(</span><span class="num">100</span><span class="punct">);</span>    <span class="cmt">// 100ms timeout</span>
+<span class="fn">halfdelay</span><span class="punct">(</span><span class="num">5</span><span class="punct">);</span>   <span class="cmt">// 0.5 second timeout (halfdelay mode)</span></code></pre>
+</section>
+
+<hr>
+
+<section id="output">
+<h2>6. Output &amp; Drawing</h2>
+<h3>Writing Text</h3>
+<pre><code><span class="cmt">// Print at current cursor position</span>
+<span class="fn">printw</span><span class="punct">(</span><span class="str">"Hello at cursor"</span><span class="punct">);</span>
+
+<span class="cmt">// Print at specific (y, x) position</span>
+<span class="fn">mvprintw</span><span class="punct">(</span><span class="num">5</span><span class="punct">,</span> <span class="num">10</span><span class="punct">,</span> <span class="str">"Hello at (5,10)"</span><span class="punct">);</span>
+
+<span class="cmt">// For a specific window</span>
+<span class="fn">wprintw</span><span class="punct">(</span>win<span class="punct">,</span> <span class="str">"In sub-window"</span><span class="punct">);</span>
+<span class="fn">mvwprintw</span><span class="punct">(</span>win<span class="punct">,</span> <span class="num">2</span><span class="punct">,</span> <span class="num">3</span><span class="punct">,</span> <span class="str">"Specific spot"</span><span class="punct">);</span>
+
+<span class="cmt">// Individual character</span>
+<span class="fn">addch</span><span class="punct">(</span><span class="str">'A'</span><span class="punct">);</span>
+<span class="fn">mvaddch</span><span class="punct">(</span><span class="num">3</span><span class="punct">,</span> <span class="num">4</span><span class="punct">,</span> <span class="str">'X'</span><span class="punct">);</span></code></pre>
+<h3>Attributes (Bold, Underline, etc.)</h3>
+<pre><code><span class="cmt">// Set attributes</span>
+<span class="fn">attron</span><span class="punct">(</span>A_BOLD<span class="punct">);</span>        <span class="cmt">// Bold text</span>
+<span class="fn">printw</span><span class="punct">(</span><span class="str">"This is bold"</span><span class="punct">);</span>
+<span class="fn">attroff</span><span class="punct">(</span>A_BOLD<span class="punct">);</span>       <span class="cmt">// Turn off bold</span>
+
+<span class="cmt">// Multiple attributes combined</span>
+<span class="fn">attron</span><span class="punct">(</span>A_BOLD | A_UNDERLINE<span class="punct">);</span>
+
+<span class="cmt">// Common attributes:</span>
+<span class="cmt">// A_BOLD, A_DIM, A_UNDERLINE, A_REVERSE, A_BLINK</span>
+<span class="cmt">// A_PROTECT, A_INVIS, A_STANDOUT</span></code></pre>
+<h3>Clearing</h3>
+<pre><code><span class="fn">clear</span><span class="punct">();</span>         <span class="cmt">// Clear entire screen</span>
+<span class="fn">erase</span><span class="punct">();</span>         <span class="cmt">// Same as clear() but for stdscr</span>
+<span class="fn">wclear</span><span class="punct">(</span>win<span class="punct">);</span>    <span class="cmt">// Clear a specific window</span>
+<span class="fn">clearok</span><span class="punct">(</span>stdscr<span class="punct">,</span> TRUE<span class="punct">);</span>  <span class="cmt">// Force clear on next refresh</span></code></pre>
+<h3>Scrolling</h3>
+<pre><code><span class="fn">scroll</span><span class="punct">(</span>stdscr<span class="punct">);</span>     <span class="cmt">// Scroll window up by one line</span>
+<span class="fn">scrl</span><span class="punct">(</span><span class="num">-3</span><span class="punct">);</span>          <span class="cmt">// Scroll down by 3 lines</span>
+<span class="fn">scrl</span><span class="punct">(</span><span class="num">2</span><span class="punct">);</span>           <span class="cmt">// Scroll up by 2 lines</span></code></pre>
+<h3>Lines and Boxes</h3>
+<pre><code><span class="cmt">// Draw a box around a window</span>
+<span class="fn">box</span><span class="punct">(</span>win<span class="punct">,</span> <span class="num">0</span><span class="punct">,</span> <span class="num">0</span><span class="punct">);</span>     <span class="cmt">// Default border characters</span>
+<span class="fn">box</span><span class="punct">(</span>win<span class="punct">,</span> <span class="str">'|'</span><span class="punct">,</span> <span class="str">'-'</span><span class="punct">);</span>   <span class="cmt">// Custom border chars</span>
+
+<span class="cmt">// Draw a horizontal/vertical line</span>
+<span class="fn">hline</span><span class="punct">(</span><span class="str">'='</span><span class="punct">,</span> <span class="num">20</span><span class="punct">);</span>      <span class="cmt">// 20 '=' chars at current position</span>
+<span class="fn">mvhline</span><span class="punct">(</span><span class="num">5</span><span class="punct">,</span>
+<h1 class="anchor" id="top">ncurses Tutorial (Part 3)</h1>
+<span class="subtitle">Colors, Keypad, Echo, Event Loop, Resize, Portability, Building Editor</span>
+
+<section id="colors">
+<h2>7. Colors</h2>
+<p>Colors in ncurses require initialization. Here's the pattern:</p>
+<pre><code><span class="cmt">// 1. Start color mode</span>
+<span class="fn">start_color</span><span class="punct">();</span>
+
+<span class="cmt">// 2. Define color pairs (foreground, background)</span>
+<span class="cmt">// Pair 1: white text on blue background</span>
+<span class="fn">init_pair</span><span class="punct">(</span><span class="num">1</span><span class="punct">,</span> COLOR_WHITE<span class="punct">,</span> COLOR_BLUE<span class="punct">);</span>
+<span class="cmt">// Pair 2: yellow on black (status bar)</span>
+<span class="fn">init_pair</span><span class="punct">(</span><span class="num">2</span><span class="punct">,</span> COLOR_YELLOW<span class="punct">,</span> COLOR_BLACK<span class="punct">);</span>
+<span class="cmt">// Pair 3: green on black (success)</span>
+<span class="fn">init_pair</span><span class="punct">(</span><span class="num">3</span><span class="punct">,</span> COLOR_GREEN<span class="punct">,</span> COLOR_BLACK<span class="punct">);</span>
+
+<span class="cmt">// 3. Use a color pair</span>
+<span class="fn">attron</span><span class="punct">(</span>COLOR_PAIR<span class="punct">(</span><span class="num">1</span><span class="punct">));</span>
+<span class="fn">printw</span><span class="punct">(</span><span class="str">"White on blue"</span><span class="punct">);</span>
+<span class="fn">attroff</span><span class="punct">(</span>COLOR_PAIR<span class="punct">(</span><span class="num">1</span><span class="punct">));</span>
+
+<span class="cmt">// Or combine with attributes</span>
+<span class="fn">attron</span><span class="punct">(</span>A_BOLD | COLOR_PAIR<span class="punct">(</span><span class="num">2</span><span class="punct">));</span>
+<span class="fn">printw</span><span class="punct">(</span><span class="str">"Bold yellow on black"</span><span class="punct">);</span>
+<span class="fn">attroff</span><span class="punct">(</span>A_BOLD | COLOR_PAIR<span class="punct">(</span><span class="num">2</span><span class="punct">));</span></code></pre>
+<h3>Built-in Colors</h3>
+<table>
+<tr><th>Constant</th><th>Value</th><th>Typical Color</th></tr>
+<tr><td><code>COLOR_BLACK</code></td><td>0</td><td>Black</td></tr>
+<tr><td><code>COLOR_RED</code></td><td>1</td><td>Red</td></tr>
+<tr><td><code>COLOR_GREEN</code></td><td>2</td><td>Green</td></tr>
+<tr><td><code>COLOR_YELLOW</code></td><td>3</td><td>Yellow</td></tr>
+<tr><td><code>COLOR_BLUE</code></td><td>4</td><td>Blue</td></tr>
+<tr><td><code>COLOR_MAGENTA</code></td><td>5</td><td>Magenta</td></tr>
+<tr><td><code>COLOR_CYAN</code></td><td>6</td><td>Cyan</td></tr>
+<tr><td><code>COLOR_WHITE</code></td><td>7</td><td>White</td></tr>
+</table>
+<div class="box box-warn">
+  <div class="box-title">Limitation</div>
+  Standard ncurses supports only <strong>256 color pairs</strong>. Each pair is a foreground/background combination. For more colors, you need the <code>ncursesw</code> variant with <code>use_default_colors()</code>.
+</div>
+</section>
+
+<hr>
+
+<section id="keypad">
+<h2>8. Keypad &amp; Special Keys</h2>
+<p>The <code>keypad()</code> function you call during initialization tells ncurses to translate escape sequences from special keys (arrows, F-keys) into symbolic constants.</p>
+<pre><code><span class="cmt">// MUST be called on stdscr during initialization</span>
+<span class="fn">keypad</span><span class="punct">(</span>stdscr<span class="punct">,</span> TRUE<span class="punct">);</span></code></pre>
+<p>Without <code>keypad(stdscr, TRUE)</code>, pressing the Up arrow gives you raw escape sequences (<code>ESC [ A</code>) instead of <code>KEY_UP</code>.</p>
+<div class="box box-danger">
+  <div class="box-title">Critical</div>
+  Always call <code>keypad(stdscr, TRUE)</code> or your editor won't respond to arrow keys, function keys, or any special key. This is the most common beginner error.
+</div>
+<h3>Mouse Input (Optional)</h3>
+<pre><code><span class="fn">mousemask</span><span class="punct">(</span>ALL_MOUSE_EVENTS | REPORT_MOUSE_POSITION<span class="punct">,</span> NULL<span class="punct">);</span>
+<span class="fn">ungetch</span><span class="punct">(</span>KEY_MOUSE<span class="punct">);</span>
+
+<span class="cmt">// In your event loop:</span>
+<span class="kw">int</span> key = <span class="fn">getch</span><span class="punct">();</span>
+<span class="kw">if</span> <span class="punct">(</span>key == KEY_MOUSE<span class="punct">)</span> <span class="punct">{</span>
+    MEVENT event<span class="punct">;</span>
+    <span class="kw">if</span> <span class="punct">(</span><span class="fn">getmouse</span><span class="punct">(</span>&amp;event<span class="punct">)</span> == OK<span class="punct">)</span> <span class="punct">{</span>
+        <span class="cmt">// event.x, event.y, event.bstate</span>
+    <span class="punct">}</span>
+<span class="punct">}</span></code></pre>
+</section>
+
+<hr>
+
+<section id="echo">
+<h2>9. Echo, Cursor &amp; Visibility</h2>
+<h3>Echo Control</h3>
+<pre><code><span class="fn">noecho</span><span class="punct">();</span>     <span class="cmt">// Don't show typed characters (default after noecho)</span>
+<span class="fn">echo</span><span class="punct">();</span>       <span class="cmt">// Show typed characters as you type</span></code></pre>
+<p>For an editor, you almost always want <code>noecho()</code>. For a command-line input (like a search bar), you temporarily enable echo.</p>
+<h3>Cursor Control</h3>
+<pre><code><span class="fn"> curs_set</span><span class="punct">(</span><span class="num">1</span><span class="punct">);</span>     <span class="cmt">// Visible cursor (0=hidden, 1=block, 2=underline)</span>
+<span class="fn">move</span><span class="punct">(</span>y<span class="punct">,</span> x<span class="punct">);</span>       <span class="cmt">// Move cursor to (y, x)</span></code></pre>
+<h3>Nodelay &amp; Timeout</h3>
+<pre><code><span class="cmt">// nodelay: getch returns ERR immediately if no key</span>
+<span class="fn">nodelay</span><span class="punct">(</span>stdscr<span class="punct">,</span> TRUE<span class="punct">);</span>
+
+<span class="cmt">// timeout: getch blocks for ms milliseconds, then returns ERR</span>
+<span class="fn">timeout</span><span class="punct">(</span><span class="num">50</span><span class="punct">);</span>      <span class="cmt">// 50ms timeout</span>
+
+<span class="cmt">// Blocking (default)</span>
+<span class="fn">nodelay</span><span class="punct">(</span>stdscr<span class="punct">,</span> FALSE<span class="punct">);</span>
+<span class="fn">timeout</span><span class="punct">(</span>-<span class="num">1</span><span class="punct">);</span>       <span class="cmt">// Negative = infinite wait</span></code></pre>
+</section>
+
+<hr>
+
+<section id="events">
+<h2>10. Event Loop Pattern</h2>
+<p>Here's the standard pattern for a TUI editor's main loop:</p>
+<pre><code><span class="cmt">// After initscr() and configuration...</span>
+
+<span class="kw">bool</span> running = <span class="num">true</span><span class="punct">;</span>
+<span class="kw">while</span> <span class="punct">(</span>running<span class="punct">)</span> <span class="punct">{</span>
+    <span class="cmt">// 1. Render the current state</span>
+    <span class="fn">draw_screen</span><span class="punct">();</span>
+
+    <span class="cmt">// 2. Get input (non-blocking for polling, or blocking for waiting)</span>
+    <span class="fn">timeout</span><span class="punct">(</span><span class="num">-1</span><span class="punct">);</span>     <span class="cmt">// Block until key press</span>
+    <span class="kw">int</span> key = <span class="fn">getch</span><span class="punct">();</span>
+
+    <span class="cmt">// 3. Handle the key</span>
+    <span class="kw">switch</span> <span class="punct">(</span>key<span class="punct">)</span> <span class="punct">{</span>
+        <span class="kw">case</span> KEY_UP:
+            <span class="fn">move_cursor_up</span><span class="punct">();</span>
+            <span class="kw">break</span><span class="punct">;</span>
+        <span class="kw">case</span> KEY_DOWN:
+            <span class="fn">move_cursor_down</span><span class="punct">();</span>
+            <span class="kw">break</span><span class="punct">;</span>
+        <span class="kw">case</span> <span class="str">'q'</span><span class="punct">:</span>
+            running = <span class="num">false</span><span class="punct">;</span>
+            <span class="kw">break</span><span class="punct">;</span>
+        <span class="kw">case</span> KEY_RESIZE:
+            <span class="fn">handle_resize</span><span class="punct">();</span>
+            <span class="kw">break</span><span class="punct">;</span>
+        <span class="cmt">// ... more key handlers ...</span>
+    <span class="punct">}</span>
+<span class="punct">}</span>
+
+<span class="fn">endwin</span><span class="punct">();
+<h1 class="anchor" id="top">ncurses Tutorial (Part 4)</h1>
+<span class="subtitle">Resize, Cross-Platform, Building Your Editor</span>
+
+<section id="resize">
+<h2>11. Terminal Resize</h2>
+<p>ncurses sends <code>KEY_RESIZE</code> when the user resizes the terminal. You should handle this:</p>
+<pre><code><span class="cmt">// In your event loop:</span>
+<span class="kw">case</span> KEY_RESIZE:
+    <span class="fn">handle_resize</span><span class="punct">();</span>
+    <span class="kw">break</span><span class="punct">;</span>
+
+<span class="cmt">// Resize handler:</span>
+<span class="kw">void</span> <span class="fn">handle_resize</span><span class="punct">()</span> <span class="punct">{</span>
+    <span class="cmt">// Wipe and recreate all windows to new size</span>
+    <span class="fn">delwin</span><span class="punct">(</span>status_bar<span class="punct">);</span>    <span class="cmt">// Delete old windows</span>
+    <span class="fn">delwin</span><span class="punct">(</span>editor_win<span class="punct">);</span>
+    <span class="fn">erase</span><span class="punct">();</span>
+
+    <span class="cmt">// Recreate with new dimensions</span>
+    <span class="kw">int</span> rows = LINES<span class="punct">;</span>
+    <span class="kw">int</span> cols = COLS<span class="punct">;</span>
+    status_bar = <span class="fn">newwin</span><span class="punct">(</span><span class="num">1</span><span class="punct">,</span> cols<span class="punct">,</span> rows - <span class="num">1</span><span class="punct">,</span> <span class="num">0</span><span class="punct">);</span>
+    editor_win = <span class="fn">newwin</span><span class="punct">(</span>rows - <span class="num">2</span><span class="punct">,</span> cols<span class="punct">,</span> <span class="num">0</span><span class="punct">,</span> <span class="num">0</span><span class="punct">);</span>
+<span class="punct">}</span></code></pre>
+<div class="box box-tip">
+  <div class="box-title">Tip</div>
+  On macOS, the terminal may also send a SIGWINCH signal. You can install a signal handler to set a flag, which your event loop checks alongside <code>KEY_RESIZE</code>.
+</div>
+</section>
+
+<hr>
+
+<section id="portability">
+<h2>12. Cross-Platform Notes</h2>
+<h3>Windows Considerations</h3>
+<ul>
+  <li>MSYS2/MinGW provides ncurses. Compile with the MinGW g++ from MSYS2.</li>
+  <li>Windows terminals have different defaults (no mouse support in older terminals).</li>
+  <li><code>wgetch()</code> and <code>waddwstr()</code> are the wide-character equivalents for Unicode.</li>
+  <li>Line endings: Windows uses <code>\r\n</code>. ncurses handles this, but be aware when reading/writing files.</li>
+</ul>
+<h3>macOS Considerations</h3>
+<ul>
+  <li>ncurses is included with Xcode command line tools. No extra install needed.</li>
+  <li>Use <code>brew install ncurses</code> only if you need features not in the system version.</li>
+</ul>
+<h3>Linux Considerations</h3>
+<ul>
+  <li>Package names vary: <code>libncurses-dev</code> (Debian/Ubuntu), <code>ncurses-devel</code> (Fedora/RHEL).</li>
+  <li>Some systems have both <code>libncurses</code> and <code>libncursesw</code>. Prefer <code>-lncursesw</code> for Unicode.</li>
+</ul>
+<div class="box box-tip">
+  <div class="box-title">Tip</div>
+  Use a preprocessor guard to detect the platform if you need platform-specific behavior:
+</div>
+<pre><code><span class="kw">#ifdef</span> _WIN32
+    <span class="cmt">// Windows-specific code</span>
+<span class="kw">#elif</span> __APPLE__
+    <span class="cmt">// macOS-specific code</span>
+<span class="kw">#elif</span> __linux__
+    <span class="cmt">// Linux-specific code</span>
+<span class="kw">#endif</span></code></pre>
+</section>
+
+<hr>
+
+<section id="editor-apply">
+<h2>13. Building Your Editor</h2>
+<h3>Architecture Overview</h3>
+<div class="diagram">
+<svg width="400" height="380" viewBox="0 0 400 380">
+  <text x="200" y="18" text-anchor="middle" class="axis-label">Editor Architecture</text>
+  <rect x="120" y="28" width="160" height="36" rx="6" class="box-shape"/>
+  <text x="200" y="50" text-anchor="middle" class="box-text-accent">Main Loop</text>
+  <text x="200" y="62" text-anchor="middle" class="coord-text">render → input → handle</text>
+  <line x1="200" y1="64" x2="200" y2="84" class="arrow-line"/>
+  <rect x="60" y="84" width="130" height="36" rx="6" class="box-shape-accent"/>
+  <text x="125" y="102" text-anchor="middle" class="box-text">Command Layer</text>
+  <text x="125" y="114" text-anchor="middle" class="coord-text">dispatch keys, run cmds</text>
+  <rect x="210" y="84" width="130" height="36" rx="6" class="box-shape-accent"/>
+  <text x="275" y="102" text-anchor="middle" class="box-text">Input Layer</text>
+  <text x="275" y="114" text-anchor="middle" class="coord-text">parse key codes</text>
+  <line x1="125" y1="120" x2="125" y2="140" class="arrow-line"/>
+  <line x1="275" y1="120" x2="275" y2="140" class="arrow-line"/>
+  <line x1="125" y1="140" x2="200" y2="160" class="arrow-line"/>
+  <line x1="275" y1="140" x2="200" y2="160" class="arrow-line"/>
+  <rect x="130" y="160" width="140" height="36" rx="6" class="box-shape"/>
+  <text x="200" y="182" text-anchor="middle" class="box-text">Buffer Layer</text>
+  <text x="200" y="194" text-anchor="middle" class="coord-text">text storage, editing</text>
+  <line x1="200" y1="196" x2="200" y2="216" class="arrow-line"/>
+  <rect x="130" y="216" width="140" height="36" rx="6" class="box-shape-green"/>
+  <text x="200" y="238" text-anchor="middle" class="box-text" fill="var(--green)">Render Layer</text>
+  <text x="200" y="250" text-anchor="middle" class="coord-text">ncurses, window mgmt</text>
+  <defs><marker id="ah3" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" class="arrow-head"/></marker></defs>
+</svg>
+</div>
+
+<h3>Key Design Decisions for Your Editor</h3>
+<ol>
+  <li><strong>Use wide-character functions:</strong> <code>wgetch()</code>, <code>waddwstr()</code>, <code>wprintw()</code> for Unicode support.</li>
+  <li><strong>One window for stdscr:</strong> Don't create too many sub-windows. Use <code>mvprintw</code> on <code>stdscr</code> directly for simplicity.</li>
+  <li><strong>Separate render from logic:</strong> Your command logic shouldn't know about ncurses. Use an abstraction layer.</li>
+  <li><strong>Handle KEY_RESIZE:</strong> Always handle terminal resize to avoid display corruption.</li>
+  <li><strong>Use <code>timeout(-1)</code></strong> for blocking input in your main loop, or <code>timeout(50)</code> for polling if you need periodic updates.</li>
+</ol>
+
+<h3>Minimal Editor Skeleton</h3>
+<pre><code><span class="kw">#include</span> <span class="str">&lt;ncurses.h&gt;</span>
+<span class="kw">#include</span> <span class="str">&lt;vector&gt;</span>
+<span class="kw">#include</span> <span class="str">&lt;string&gt;</span>
+
+<span class="cmt">// Text buffer (simple line-based for now)</span>
+<span class="kw">struct</span> Buffer <span class="punct">{</span>
+    std::vector&lt;std::string&gt; lines<span class="punct">;</span>
+    <span class="kw">int</span> cursor_y = <span class="num">0</span><span class="punct">;</span>
+    <span class="kw">int</span> cursor_x = <span class="num">0</span><span class="punct">;</span>
+<span class="punct">};</span>
+
+<span class="cmt">// Render the buffer to the terminal</span>
+<span class="kw">void</span> <span class="fn">render</span><span class="punct">(</span><span class="kw">const</span> Buffer&amp; buf<span class="punct">)</span> <span class="punct">{</span>
+    <span class="fn">erase</span><span class="punct">();</span>
+    <span class="kw">int</span> rows = LINES - <span class="num">1</span><span class="punct">;</span>  <span class="cmt">// Reserve last line for status</span>
+    <span class="kw">for</span> <span class="punct">(</span><span class="kw">int</span> i = <span class="num">0</span><span class="punct">;</span> i &lt; rows<span class="punct">;</span> ++i<span class="punct">)</span> <span class="punct">{</span>
+        <span class="kw">if</span> <span class="punct">(</span>i &lt; buf.lines.size<span class="punct">())</span> <span class="punct">{</span>
+            <span class="fn">mvprintw</span><span class="punct">(</span>i<span class="punct">,</span> <span class="num">0</span><span class="punct">,</span> <span class="str">"%s"</span><span class="punct">,</span> buf.lines[i].c_str<span class="punct">());</span>
+        <span class="punct">}</span>
+    <span class="punct">}</span>
+    <span class="cmt">// Status bar</span>
+    <span class="fn">mvprintw</span><span class="punct">(</span>rows<span class="punct">,</span> <span class="num">0</span><span class="punct">,</span> <span class="str">"Lines: %d | Cursor: %d,%d"</span><span class="punct">,</span>
+        <span class="punct">(</span><span class="kw">int</span><span class="punct">)</span>buf.lines.size<span class="punct">(),</span> buf.cursor_y<span class="punct">,</span> buf.cursor_x<span class="punct">);</span>
+    <span class="fn">refresh</span><span class="punct">();</span>
+<span class="punct">}</span>
+
+<span class="cmt">// Handle a single key press</span>
+<span class="kw">void</span> <span class="fn">handle_key</span><span class="punct">(</span>Buffer&amp; buf<span class="punct">,</span> <span class="kw">int</span> key<span class="punct">)</span> <span class="punct">{</span>
+    <span class="kw">switch</span> <span class="punct">(</span>key<span class="punct">)</span> <span class="punct">{</span>
+        <span class="kw">case</span> KEY_UP:
+            <span class="kw">if</span> <span class="punct">(</span>buf.cursor_y &gt; <span class="num">0</span><span class="punct">)</span> --buf.cursor_y<span class="punct">;</span>
+            <span class="kw">break</span><span class="punct">;</span>
+        <span class="kw">case</span> KEY_DOWN:
+            <span class="kw">if</span> <span class="punct">(</span>buf.cursor_y &lt; buf.lines.size<span class="punct">()</span> - <span class="num">1</span><span class="punct">)</span> ++buf.cursor_y<span class="punct">;</span>
+            <span class="kw">break</span><span class="punct">;</span>
+        <span class="kw">case</span> KEY_LEFT:
+            <span class="kw">if</span> <span class="punct">(
+<h1 class="anchor" id="top">ncurses Tutorial (Part 5)</h1>
+<span class="subtitle">Building Your Editor — Complete Skeleton</span>
+
+<section id="editor-apply">
+<h2>13. Building Your Editor — Complete Skeleton</h2>
+<p>Here's a complete minimal editor using ncurses. This is a starting point you can extend:</p>
+<pre><code><span class="kw">#include</span> <span class="str">&lt;ncurses.h&gt;</span>
+<span class="kw">#include</span> <span class="str">&lt;vector&gt;</span>
+<span class="kw">#include</span> <span class="str">&lt;string&gt;</span>
+
+<span class="kw">struct</span> Buffer <span class="punct">{</span>
+    std::vector&lt;std::string&gt; lines<span class="punct">;</span>
+    <span class="kw">int</span> cy = <span class="num">0</span><span class="punct">,</span> cx = <span class="num">0</span><span class="punct">;</span>
+
+    <span class="kw">void</span> <span class="fn">insert_char</span><span class="punct">(</span><span class="kw">char</span> c<span class="punct">)</span> <span class="punct">{</span>
+        <span class="kw">if</span> <span class="punct">(</span>cy &lt; lines.size<span class="punct">())</span> <span class="punct">{</span>
+            lines[cy].insert<span class="punct">(</span>cx<span class="punct">,</span> <span class="num">1</span><span class="punct">,</span> c<span class="punct">);</span>
+        <span class="punct">}</span> <span class="kw">else</span> <span class="punct">{</span>
+            lines.push_back<span class="punct">(</span><span class="str">"</span><span class="num">1</span><span class="str">"</span><span class="punct">,</span> c<span class="punct">);</span>
+        <span class="punct">}</span>
+        ++cx<span class="punct">;</span>
+    <span class="punct">}</span>
+
+    <span class="kw">void</span> <span class="fn">backspace</span><span class="punct">()</span> <span class="punct">{</span>
+        <span class="kw">if</span> <span class="punct">(</span>cx &gt; <span class="num">0</span><span class="punct">)</span> <span class="punct">{</span>
+            lines[cy].erase(cx - <span class="num">1</span><span class="punct">,</span> <span class="num">1</span><span class="punct">);</span>
+            --cx<span class="punct">;</span>
+        <span class="punct">}</span>
+    <span class="punct">}</span>
+
+    <span class="kw">void</span> <span class="fn">move_up</span><span class="punct">()</span> <span class="punct">{</span> <span class="kw">if</span> <span class="punct">(</span>cy &gt; <span class="num">0</span><span class="punct">)</span> --cy<span class="punct">;</span> <span class="punct">}</span>
+    <span class="kw">void</span> <span class="fn">move_down</span><span class="punct">()</span> <span class="punct">{</span>
+        <span class="kw">if</span> <span class="punct">(</span>cy &lt; (</span><span class="kw">int</span><span class="punct">)</span>lines.size<span class="punct">()</span> - <span class="num">1</span><span class="punct">)</span> ++cy<span class="punct">;</span>
+    <span class="punct">}</span>
+<span class="punct">};</span>
+
+<span class="kw">void</span> <span class="fn">render</span><span class="punct">(</span><span class="kw">const</span> Buffer&amp; b<span class="punct">)</span> <span class="punct">{</span>
+    <span class="fn">erase</span><span class="punct">();</span>
+    <span class="kw">for</span> <span class="punct">(</span><span class="kw">int</span> i = <span class="num">0</span><span class="punct">;</span> i &lt; LINES - <span class="num">1</span><span class="punct">;</span> ++i<span class="punct">)</span> <span class="punct">{</span>
+        <span class="kw">if</span> <span class="punct">(</span>i &lt; (</span><span class="kw">int</span><span class="punct">)</span>b.lines.size<span class="punct">())</span>
+            <span class="fn">mvprintw</span><span class="punct">(</span>i<span class="punct">,</span> <span class="num">0</span><span class="punct">,</span> <span class="str">"%s"</span><span class="punct">,</span> b.lines[i].c_str<span class="punct">());</span>
+    <span class="punct">}</span>
+    <span class="fn">mvprintw</span><span class="punct">(</span>LINES - <span class="num">1</span><span class="punct">,</span> <span class="num">0</span><span class="punct">,</span> <span class="str">"L:%d C:%d,%d"</span><span class="punct">,</span>
+        <span class="punct">(</span><span class="kw">int</span><span class="punct">)</span>b.lines.size<span class="punct">(),</span> b.cy<span class="punct">,</span> b.cx<span class="punct">);</span>
+    <span class="fn">refresh</span><span class="punct">();</span>
+<span class="punct">}</span>
+
+<span class="kw">int</span> <span class="fn">main</span><span class="punct">()</span> <span class="punct">{</span>
+    initscr<span class="punct">();</span>
+    cbreak<span class="punct">();</span>
+    noecho<span class="punct">();</span>
+    keypad<span class="punct">(</span>stdscr<span class="punct">,</span> TRUE<span class="punct">);</span>
+    curs_set<span class="punct">(</span><span class="num">1</span><span class="punct">);</span>
+    timeout<span class="punct">(</span>-<span class="num">1</span><span class="punct">);</span>
+
+    Buffer buf<span class="punct">;</span>
+    buf.lines.push_back<span class="punct">(</span><span class="str">"Welcome to your editor!"</span><span class="punct">);</span>
+    buf.lines.push_back<span class="punct">(</span><span class="str">"Press q to quit."</span><span class="punct">);</span>
+
+    <span class="kw">while</span> <span class="punct">(</span><span class="num">true</span><span class="punct">)</span> <span class="punct">{</span>
+        render<span class="punct">(</span>buf<span class="punct">);</span>
+        <span class="kw">int</span> key = <span class="fn">getch</span><span class="punct">();</span>
+
+        <span class="kw">switch</span> <span class="punct">(</span>key<span class="punct">)</span> <span class="punct">{</span>
+            <span class="kw">case</span> KEY_UP:    buf.move_up<span class="punct">();</span>    <span class="kw">break</span><span class="punct">;</span>
+            <span class="kw">case</span> KEY_DOWN:  buf.move_down<span class="punct">();</span>  <span class="kw">break</span><span class="punct">;</span>
+            <span class="kw">case</span> KEY_LEFT:  <span class="kw">if</span> <span class="punct">(</span>buf.cx &gt; <span class="num">0</span><span class="punct">)</span> --buf.cx<span class="punct">;</span> <span class="kw">break</span><span class="punct">;</span>
+            <span class="kw">case</span> KEY_RIGHT: ++buf.cx<span class="punct">;</span>          <span class="kw">break</span><span class="punct">;</span>
+            <span class="kw">case</span> KEY_BACKSPACE: buf.backspace<span class="punct">();</span> <span class="kw">break</span><span class="punct">;</span>
+            <span class="kw">case</span> KEY_DC:    <span class="kw">if</span> <span class="punct">(</span>buf.cx &lt; buf.lines[buf.cy].size<span class="punct">())</span>
+                             buf.lines[buf.cy].erase<span class="punct">(</span>buf.cx<span class="punct">,</span> <span class="num">1</span><span class="punct">);</span>
+                            <span class="kw">break</span><span class="punct">;</span>
+            <span class="kw">case</span> KEY_ENTER:
+            <span class="kw">case</span> <span class="str">'\n'</span><span class="punct">:</span>
+                <span class="punct">{</span>
+                    std::string before = buf.lines[buf.cy].substr<span class="punct">(</span><span class="num">0</span><span class="punct">,</span> buf.cx<span class="punct">);</span>
+                    std::string after  = buf.lines[buf.cy].substr<span class="punct">(</span>buf.cx<span class="punct">);</span>
+                    buf.lines[buf.cy] = before<span class="punct">;</span>
+                    buf.lines.insert<span class="punct">(</span>buf.lines.begin<span class="punct">()</span> + buf.cy + <span class="num">1</span><span class="punct">,</span> after<span class="punct">);</span>
+                    ++buf.cy<span class="punct">;</span>
+                    buf.cx = <span class="num">0</span><span class="punct">;</span>
+                <span class="punct">}</span>
+                <span class="kw">break</span><span class="punct">;</span>
+            <span class="kw">case</span> KEY_RESIZE:<span class="punct">;</span>   <span class="cmt">// ignore</span> <span class="kw">break</span><span class="punct">;</span>
+            <span class="kw">case</span> <span class="str">'q'</span><span class="punct">:</span> <span class="kw">return</span> <span class="num">0</span><span class="punct">;</span>
+            <span class="kw">default</span><span class="punct">:</span>
+                <span class="kw">if</span> <span class="punct">(</span>key &gt;= <span class="num">32</span> <span class="kw">and</span> key &lt; <span class="num">127</span><span class="punct">)</span>
+                    buf.insert_char<span class="punct">(</span><span class="kw">char</span><span class="punct">(</span>key<span class="punct">));</span>
+                <span class="kw">break</span><span class="punct">;</span>
+        <span class="punct">}</span>
+    <span class="punct">}</span>
+<span class="punct">}</span></code></pre>
+
+<h3>Next Steps for Your Editor</h3>
+<ol>
+  <li><strong>Add a command layer:</strong> Create a command dispatch system where each key maps to a command object.</li>
+  <li><strong>Add a status bar:</strong> Show file name, cursor position, mode (normal/command).</li>
+  <li><strong>Add a command line:</strong> When the user types <code>:</code>, show an input line at the bottom.</li>
+  <li><strong>Add file I/O:</strong> Read/write files from disk.</li>
+  <li><strong>Add undo/redo:</strong> Maintain a history of editing operations.</li>
+  <li><strong>Add syntax highlighting:</strong> Parse text and apply colors based on language rules.</li>
+</ol>
+
+<div class="box box-tip">
+
+<h1 class="anchor" id="top">ncurses Tutorial — Appendix</h1>
+<span class="subtitle">Quick Reference &amp; Tips</span>
+
+<h2>Quick Reference: Essential Functions</h2>
+<table>
+<tr><th>Function</th><th>What it does</th></tr>
+<tr><td><code>initscr()</code></td><td>Initialize ncurses. Call first.</td></tr>
+<tr><td><code>endwin()</code></td><td>Restore terminal. Call last.</td></tr>
+<tr><td><code>cbreak()</code></td><td>Each key press arrives immediately.</td></tr>
+<tr><td><code>noecho()</code></td><td>Don't echo typed characters.</td></tr>
+<tr><td><code>keypad(stdscr, TRUE)</code></td><td>Enable special key codes.</td></tr>
+<tr><td><code>getch()</code></td><td>Get a key press (blocking).</td></tr>
+<tr><td><code>nodelay(win, TRUE)</code></td><td>Non-blocking getch (returns ERR).</td></tr>
+<tr><td><code>timeout(ms)</code></td><td>Blocking getch with timeout.</td></tr>
+<tr><td><code>printw("fmt", ...)</code></td><td>Print formatted text at cursor.</td></tr>
+<tr><td><code>mvprintw(y, x, "fmt", ...)</code></td><td>Print at specific position.</td></tr>
+<tr><td><code>wprintw(win, "fmt", ...)</code></td><td>Print to a window.</td></tr>
+<tr><td><code>refresh()</code></td><td>Draw everything to terminal.</td></tr>
+<tr><td><code>wrefresh(win)</code></td><td>Draw a specific window.</td></tr>
+<tr><td><code>erase()</code></td><td>Clear the screen.</td></tr>
+<tr><td><code>move(y, x)</code></td><td>Move cursor.</td></tr>
+<tr><td><code>curs_set(1)</code></td><td>Show cursor (0=hidden).</td></tr>
+<tr><td><code>flushinp()</code></td><td>Clear input buffer.</td></tr>
+<tr><td><code>start_color()</code></td><td>Enable color support.</td></tr>
+<tr><td><code>init_pair(id, fg, bg)</code></td><td>Define a color pair.</td></tr>
+<tr><td><code>attron(COLOR_PAIR(id))</code></td><td>Apply a color pair.</td></tr>
+<tr><td><code>KEY_RESIZE</code></td><td>Terminal was resized.</td></tr>
+</table>
+
+<h2>Common Mistakes</h2>
+<ul>
+  <li><strong>Forgetting <code>refresh()</code>:</strong> ncurses buffers output. Without refresh, nothing appears on screen.</li>
+  <li><strong>Forgetting <code>keypad(stdscr, TRUE)</code>:</strong> Arrow keys and F-keys won't work.</li>
+  <li><strong>Coordinates are (y, x):</strong> Row first, then column. Not (x, y).</li>
+  <li><strong>Not calling <code>endwin()</code> on crash:</strong> Terminal is left broken. Use a destructor or atexit handler.</li>
+  <li><strong>Using <code>printw</code> after a keypress:</strong> <code>printw</code> changes the cursor position. If you're drawing in a specific spot, you may need to reposition.</li>
+</ul>
+
+<h2>Further Reading</h2>
+<ul>
+  <li><strong>Man pages:</strong> <code>man ncurses</code>, <code>man curs_addwstr</code>, etc.</li>
+  <li><strong>ncurses FAQ:</strong> <code>ncurses-faq</code> (comes with the library)</li>
+  <li><strong>Examples:</strong> <code>/usr/share/doc/ncurses/examples/</code> (Linux)</li>
+  <li><strong>Online:</strong> <code>https://invisible-island.net/ncurses/ncurses.html</code></li>
+</ul>
+
+<div class="box box-tip">
+  <div class="box-title">Next Steps</div>
+  1. Open the tutorial in your browser and read through each section.<br>
+  2. Compile and run the "First Program" example.<br>
+  3. Try modifying it: add colors, sub-windows, mouse support.<br>
+  4. When you're ready to build your editor, come back and we'll design the architecture together.
+</div>
+
+
+</body>
+</html>

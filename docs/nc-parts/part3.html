@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>ncurses Tutorial — Sections 7-13</title>
+<style>
+:root{--bg:#1a1b26;--surface:#24283b;--surface2:#2f3347;--text:#c0caf5;--text-dim:#565f89;--accent:#7aa2f7;--accent2:#bb9af7;--green:#9ece6a;--orange:#ff9e64;--red:#f7768e;--cyan:#7dcfff;--yellow:#e0af68;--border:#3b4261;--code-bg:#16161e}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'JetBrains Mono','Fira Code','SF Mono',Consolas,monospace;background:var(--bg);color:var(--text);line-height:1.7;font-size:15px;padding:40px 48px;max-width:880px;margin:0 auto}
+h1{font-size:32px;color:var(--accent);margin-bottom:8px}
+h1 .subtitle{font-size:16px;color:var(--text-dim);display:block;margin-top:8px;font-weight:normal}
+h2{font-size:24px;color:var(--accent2);margin-top:48px;margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+h3{font-size:18px;color:var(--cyan);margin-top:32px;margin-bottom:12px}
+h4{font-size:15px;color:var(--yellow);margin-top:24px;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px}
+p{margin-bottom:16px}
+ul,ol{margin:12px 0 16px 24px}
+li{margin-bottom:6px}
+pre{background:var(--code-bg);border:1px solid var(--border);border-radius:8px;padding:16px 20px;overflow-x:auto;margin:16px 0 24px;font-size:13.5px;line-height:1.6}
+code{font-family:inherit}
+pre code{color:var(--text)}
+.kw{color:var(--accent2)}.fn{color:var(--accent)}.type{color:var(--cyan)}.str{color:var(--green)}.cmt{color:var(--text-dim);font-style:italic}.num{color:var(--orange)}.inc{color:var(--yellow)}.macro{color:var(--orange)}.punct{color:var(--text-dim)}
+.box{border-left:4px solid;padding:16px 20px;margin:20px 0;border-radius:0 8px 8px 0}
+.box-info{border-color:var(--accent);background:rgba(122,162,247,.08)}.box-tip{border-color:var(--green);background:rgba(158,206,106,.08)}.box-warn{border-color:var(--orange);background:rgba(255,158,100,.08)}.box-danger{border-color:var(--red);background:rgba(247,118,142,.08)}
+.box-title{font-weight:bold;font-size:13px;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.box-info .box-title{color:var(--accent)}.box-tip .box-title{color:var(--green)}.box-warn .box-title{color:var(--orange)}.box-danger .box-title{color:var(--red)}
+table{width:100%;border-collapse:collapse;margin:16px 0 24px;font-size:14px}
+th{text-align:left;color:var(--accent);font-weight:600;padding:10px 16px;border-bottom:2px solid var(--accent);font-size:13px;text-transform:uppercase;letter-spacing:1px}
+td{padding:10px 16px;border-bottom:1px solid var(--border)}
+td code{background:var(--surface2);padding:2px 6px;border-radius:4px;font-size:13px;color:var(--cyan)}
+.diagram{background:var(--code-bg);border:1px solid var(--border);border-radius:8px;padding:20px;margin:20px 0;text-align:center;font-size:13px;line-height:1.8}
+.diagram .label{color:var(--accent);font-weight:bold}
+.diagram .arrow{color:var(--text-dim)}
+hr{border:none;border-top:1px solid var(--border);margin:48px 0}
+</style>
+</head>
+<body>
+<h1 class="anchor" id="top">ncurses Tutorial (Part 3)</h1>
+<span class="subtitle">Colors, Keypad, Echo, Event Loop, Resize, Portability, Building Editor</span>
+
+<section id="colors">
+<h2>7. Colors</h2>
+<p>Colors in ncurses require initialization. Here's the pattern:</p>
+<pre><code><span class="cmt">// 1. Start color mode</span>
+<span class="fn">start_color</span><span class="punct">();</span>
+
+<span class="cmt">// 2. Define color pairs (foreground, background)</span>
+<span class="cmt">// Pair 1: white text on blue background</span>
+<span class="fn">init_pair</span><span class="punct">(</span><span class="num">1</span><span class="punct">,</span> COLOR_WHITE<span class="punct">,</span> COLOR_BLUE<span class="punct">);</span>
+<span class="cmt">// Pair 2: yellow on black (status bar)</span>
+<span class="fn">init_pair</span><span class="punct">(</span><span class="num">2</span><span class="punct">,</span> COLOR_YELLOW<span class="punct">,</span> COLOR_BLACK<span class="punct">);</span>
+<span class="cmt">// Pair 3: green on black (success)</span>
+<span class="fn">init_pair</span><span class="punct">(</span><span class="num">3</span><span class="punct">,</span> COLOR_GREEN<span class="punct">,</span> COLOR_BLACK<span class="punct">);</span>
+
+<span class="cmt">// 3. Use a color pair</span>
+<span class="fn">attron</span><span class="punct">(</span>COLOR_PAIR<span class="punct">(</span><span class="num">1</span><span class="punct">));</span>
+<span class="fn">printw</span><span class="punct">(</span><span class="str">"White on blue"</span><span class="punct">);</span>
+<span class="fn">attroff</span><span class="punct">(</span>COLOR_PAIR<span class="punct">(</span><span class="num">1</span><span class="punct">));</span>
+
+<span class="cmt">// Or combine with attributes</span>
+<span class="fn">attron</span><span class="punct">(</span>A_BOLD | COLOR_PAIR<span class="punct">(</span><span class="num">2</span><span class="punct">));</span>
+<span class="fn">printw</span><span class="punct">(</span><span class="str">"Bold yellow on black"</span><span class="punct">);</span>
+<span class="fn">attroff</span><span class="punct">(</span>A_BOLD | COLOR_PAIR<span class="punct">(</span><span class="num">2</span><span class="punct">));</span></code></pre>
+<h3>Built-in Colors</h3>
+<table>
+<tr><th>Constant</th><th>Value</th><th>Typical Color</th></tr>
+<tr><td><code>COLOR_BLACK</code></td><td>0</td><td>Black</td></tr>
+<tr><td><code>COLOR_RED</code></td><td>1</td><td>Red</td></tr>
+<tr><td><code>COLOR_GREEN</code></td><td>2</td><td>Green</td></tr>
+<tr><td><code>COLOR_YELLOW</code></td><td>3</td><td>Yellow</td></tr>
+<tr><td><code>COLOR_BLUE</code></td><td>4</td><td>Blue</td></tr>
+<tr><td><code>COLOR_MAGENTA</code></td><td>5</td><td>Magenta</td></tr>
+<tr><td><code>COLOR_CYAN</code></td><td>6</td><td>Cyan</td></tr>
+<tr><td><code>COLOR_WHITE</code></td><td>7</td><td>White</td></tr>
+</table>
+<div class="box box-warn">
+  <div class="box-title">Limitation</div>
+  Standard ncurses supports only <strong>256 color pairs</strong>. Each pair is a foreground/background combination. For more colors, you need the <code>ncursesw</code> variant with <code>use_default_colors()</code>.
+</div>
+</section>
+
+<hr>
+
+<section id="keypad">
+<h2>8. Keypad &amp; Special Keys</h2>
+<p>The <code>keypad()</code> function you call during initialization tells ncurses to translate escape sequences from special keys (arrows, F-keys) into symbolic constants.</p>
+<pre><code><span class="cmt">// MUST be called on stdscr during initialization</span>
+<span class="fn">keypad</span><span class="punct">(</span>stdscr<span class="punct">,</span> TRUE<span class="punct">);</span></code></pre>
+<p>Without <code>keypad(stdscr, TRUE)</code>, pressing the Up arrow gives you raw escape sequences (<code>ESC [ A</code>) instead of <code>KEY_UP</code>.</p>
+<div class="box box-danger">
+  <div class="box-title">Critical</div>
+  Always call <code>keypad(stdscr, TRUE)</code> or your editor won't respond to arrow keys, function keys, or any special key. This is the most common beginner error.
+</div>
+<h3>Mouse Input (Optional)</h3>
+<pre><code><span class="fn">mousemask</span><span class="punct">(</span>ALL_MOUSE_EVENTS | REPORT_MOUSE_POSITION<span class="punct">,</span> NULL<span class="punct">);</span>
+<span class="fn">ungetch</span><span class="punct">(</span>KEY_MOUSE<span class="punct">);</span>
+
+<span class="cmt">// In your event loop:</span>
+<span class="kw">int</span> key = <span class="fn">getch</span><span class="punct">();</span>
+<span class="kw">if</span> <span class="punct">(</span>key == KEY_MOUSE<span class="punct">)</span> <span class="punct">{</span>
+    MEVENT event<span class="punct">;</span>
+    <span class="kw">if</span> <span class="punct">(</span><span class="fn">getmouse</span><span class="punct">(</span>&amp;event<span class="punct">)</span> == OK<span class="punct">)</span> <span class="punct">{</span>
+        <span class="cmt">// event.x, event.y, event.bstate</span>
+    <span class="punct">}</span>
+<span class="punct">}</span></code></pre>
+</section>
+
+<hr>
+
+<section id="echo">
+<h2>9. Echo, Cursor &amp; Visibility</h2>
+<h3>Echo Control</h3>
+<pre><code><span class="fn">noecho</span><span class="punct">();</span>     <span class="cmt">// Don't show typed characters (default after noecho)</span>
+<span class="fn">echo</span><span class="punct">();</span>       <span class="cmt">// Show typed characters as you type</span></code></pre>
+<p>For an editor, you almost always want <code>noecho()</code>. For a command-line input (like a search bar), you temporarily enable echo.</p>
+<h3>Cursor Control</h3>
+<pre><code><span class="fn"> curs_set</span><span class="punct">(</span><span class="num">1</span><span class="punct">);</span>     <span class="cmt">// Visible cursor (0=hidden, 1=block, 2=underline)</span>
+<span class="fn">move</span><span class="punct">(</span>y<span class="punct">,</span> x<span class="punct">);</span>       <span class="cmt">// Move cursor to (y, x)</span></code></pre>
+<h3>Nodelay &amp; Timeout</h3>
+<pre><code><span class="cmt">// nodelay: getch returns ERR immediately if no key</span>
+<span class="fn">nodelay</span><span class="punct">(</span>stdscr<span class="punct">,</span> TRUE<span class="punct">);</span>
+
+<span class="cmt">// timeout: getch blocks for ms milliseconds, then returns ERR</span>
+<span class="fn">timeout</span><span class="punct">(</span><span class="num">50</span><span class="punct">);</span>      <span class="cmt">// 50ms timeout</span>
+
+<span class="cmt">// Blocking (default)</span>
+<span class="fn">nodelay</span><span class="punct">(</span>stdscr<span class="punct">,</span> FALSE<span class="punct">);</span>
+<span class="fn">timeout</span><span class="punct">(</span>-<span class="num">1</span><span class="punct">);</span>       <span class="cmt">// Negative = infinite wait</span></code></pre>
+</section>
+
+<hr>
+
+<section id="events">
+<h2>10. Event Loop Pattern</h2>
+<p>Here's the standard pattern for a TUI editor's main loop:</p>
+<pre><code><span class="cmt">// After initscr() and configuration...</span>
+
+<span class="kw">bool</span> running = <span class="num">true</span><span class="punct">;</span>
+<span class="kw">while</span> <span class="punct">(</span>running<span class="punct">)</span> <span class="punct">{</span>
+    <span class="cmt">// 1. Render the current state</span>
+    <span class="fn">draw_screen</span><span class="punct">();</span>
+
+    <span class="cmt">// 2. Get input (non-blocking for polling, or blocking for waiting)</span>
+    <span class="fn">timeout</span><span class="punct">(</span><span class="num">-1</span><span class="punct">);</span>     <span class="cmt">// Block until key press</span>
+    <span class="kw">int</span> key = <span class="fn">getch</span><span class="punct">();</span>
+
+    <span class="cmt">// 3. Handle the key</span>
+    <span class="kw">switch</span> <span class="punct">(</span>key<span class="punct">)</span> <span class="punct">{</span>
+        <span class="kw">case</span> KEY_UP:
+            <span class="fn">move_cursor_up</span><span class="punct">();</span>
+            <span class="kw">break</span><span class="punct">;</span>
+        <span class="kw">case</span> KEY_DOWN:
+            <span class="fn">move_cursor_down</span><span class="punct">();</span>
+            <span class="kw">break</span><span class="punct">;</span>
+        <span class="kw">case</span> <span class="str">'q'</span><span class="punct">:</span>
+            running = <span class="num">false</span><span class="punct">;</span>
+            <span class="kw">break</span><span class="punct">;</span>
+        <span class="kw">case</span> KEY_RESIZE:
+            <span class="fn">handle_resize</span><span class="punct">();</span>
+            <span class="kw">break</span><span class="punct">;</span>
+        <span class="cmt">// ... more key handlers ...</span>
+    <span class="punct">}</span>
+<span class="punct">}</span>
+
+<span class="fn">endwin</span><span class="punct">();
