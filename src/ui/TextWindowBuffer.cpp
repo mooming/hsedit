@@ -54,6 +54,8 @@ static void AppendSplitLines(typename TextWindowBuffer::TLines& dest, const type
 // LINE OPERATIONS
 // ========================================================================
 
+/// @brief Append an empty line to the end of the buffer and return reference for modification
+/// @return Reference to the newly added line
 TextWindowBuffer::TLine& TextWindowBuffer::AddLine()
 {
 	auto& line = lines.emplace_back();
@@ -125,6 +127,14 @@ TextWindowBuffer::TLine TextWindowBuffer::ExtractLine(TLineIndex lineNumber)
 void TextWindowBuffer::RemoveLine(TLineIndex lineNumber)
 {
 	lines.erase(lines.begin() + lineNumber);
+}
+
+/// @brief Remove a range of lines from the buffer
+/// @param start Start line index (inclusive)
+/// @param end End line index (exclusive)
+void TextWindowBuffer::RemoveLines(TLineIndex start, TLineIndex end)
+{
+	lines.erase(lines.begin() + start, lines.begin() + end);
 }
 
 // ========================================================================
