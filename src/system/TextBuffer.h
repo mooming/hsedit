@@ -18,19 +18,18 @@ public:
 	using TLineIndex = size_t;
 
 private:
-	TLineIndex startLine;
-	TLineIndex hintLineWidth;
 	TLines lines;
 
 public:
 	TextBuffer();
-	TextBuffer(TLineIndex startLine, TLineIndex hintNumLines, TLineIndex hintNumLineWidth);
 	~TextBuffer() = default;
 
 	[[nodiscard]] auto& GetBuffer() { return lines; }
 	[[nodiscard]] auto& GetBuffer() const { return lines; }
 
 	[[nodiscard]] auto NumLines() const { return lines.size(); }
+
+	[[nodiscard]] const TLine& GetLine(TLineIndex index) const { return lines[index]; }
 
 	TLine& AddLine();
 

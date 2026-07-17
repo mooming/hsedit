@@ -10,22 +10,9 @@ namespace hs
 // CONSTRUCTORS
 // ========================================================================
 
-/// @brief Default constructor: creates empty buffer starting at line 0
+/// @brief Default constructor: creates empty buffer
 TextBuffer::TextBuffer()
-	: startLine(0)
-	, hintLineWidth(0)
 {
-}
-
-/// @brief Parameterized constructor with pre-allocation hints
-/// @param startLine Starting line index
-/// @param hintNumLines Hint for initial line count
-/// @param hintNumLineWidth Hint for initial line width
-TextBuffer::TextBuffer(size_t startLine, size_t hintNumLines, size_t hintNumLineWidth)
-	: startLine(startLine)
-	, hintLineWidth(hintNumLineWidth)
-{
-	lines.reserve(hintNumLines);
 }
 
 // ========================================================================
@@ -58,10 +45,7 @@ static void AppendSplitLines(typename TextBuffer::TLines& dest, const typename T
 /// @return Reference to the newly added line
 TextBuffer::TLine& TextBuffer::AddLine()
 {
-	auto& line = lines.emplace_back();
-	line.reserve(hintLineWidth);
-
-	return line;
+	return lines.emplace_back();
 }
 
 /// @brief Append a line to the end of the buffer, splitting by newlines if present
@@ -146,7 +130,7 @@ void TextBuffer::RemoveLines(TLineIndex start, TLineIndex end)
 /// @return New buffer containing lines from splitLine onwards
 TextBuffer TextBuffer::Split(TLineIndex splitLine)
 {
-	TextBuffer newBuffer(startLine + splitLine, 0, hintLineWidth);
+	TextBuffer newBuffer;
 	newBuffer.lines.reserve(lines.size() - splitLine);
 
 	// Move lines to new buffer
@@ -160,4 +144,4 @@ TextBuffer TextBuffer::Split(TLineIndex splitLine)
 	return newBuffer;
 }
 
-} // namespace hs::ui
+} // namespace hs
