@@ -12,14 +12,19 @@ namespace hs::ui
 
 class TextWindowBuffer final
 {
+public:
+	using TLine = std::u8string;
+	using TLines = std::vector<TLine>;
+	using TLineIndex = size_t;
+
 private:
-	size_t startLine;
-	size_t hintLineWidth;
-	std::vector<std::u8string> lines;
+	TLineIndex startLine;
+	TLineIndex hintLineWidth;
+	TLines lines;
 
 public:
 	TextWindowBuffer();
-	TextWindowBuffer(size_t startLine, size_t hintNumLines, size_t hintNumLineWidth);
+	TextWindowBuffer(TLineIndex startLine, TLineIndex hintNumLines, TLineIndex hintNumLineWidth);
 	~TextWindowBuffer() = default;
 
 	[[nodiscard]] auto& GetBuffer() { return lines; }
@@ -27,7 +32,18 @@ public:
 
 	[[nodiscard]] auto NumLines() const { return lines.size(); }
 
-	TextWindowBuffer Split(size_t splitLine);
+	void AddLine(const TLine& line);
+	void EmplaceLine(TLine&& line);
+	void InsertLine(TLineIndex lineNumber, const TLine& line);
+	void InsertLine(TLineIndex lineNumber, TLine&& line);
+	void ReplaceLine(TLineIndex lineNumber, const TLine& line);
+	void ReplaceLine(TLineIndex lineNumber, TLine&& line);
+	TLine ExtractLine(TLineIndex lineNumber);
+
+	void RemoveLine(TLineIndex lineNumber);
+	void RemoveLines(TLineIndex start, TLineIndex end);
+
+	TextWindowBuffer Split(TLineIndex splitLine);
 };
 
 } // namespace hs
