@@ -1,0 +1,70 @@
+# Generated from CLion C/C++ Code Style settings
+---
+Language: Cpp
+BasedOnStyle: LLVM
+AccessModifierOffset: -4
+AlignConsecutiveAssignments: false
+AlignConsecutiveDeclarations: false
+PointerAlignment: Left
+AlignOperands: true
+AlignTrailingComments: false
+AlwaysBreakTemplateDeclarations: Yes
+MaxEmptyLinesToKeep: 2
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterCaseLabel: true
+  AfterClass: true
+  AfterControlStatement: true
+  AfterEnum: true
+  AfterFunction: true
+  AfterNamespace: true
+  AfterStruct: true
+  AfterUnion: true
+  AfterExternBlock: true
+  BeforeCatch: true
+  BeforeElse: true
+  BeforeLambdaBody: true
+  BeforeWhile: false
+  SplitEmptyFunction: false
+  SplitEmptyRecord: false
+  SplitEmptyNamespace: false
+
+BreakConstructorInitializers: BeforeComma
+ColumnLimit: 120
+ConstructorInitializerAllOnOneLineOrOnePerLine: false
+ContinuationIndentWidth: 8
+IndentPPDirectives: None
+IncludeIsMainRegex: '(.h)?$'
+IncludeCategories:
+  - Regex: '^<.*'
+    Priority: 2
+  - Regex: '^".*'
+    Priority: 3
+IndentCaseBlocks: true
+IndentCaseLabels: true
+IndentWidth: 4
+InsertNewlineAtEOF: true
+MacroBlockBegin: ''
+MacroBlockEnd: ''
+NamespaceIndentation: None
+SpaceAfterCStyleCast: true
+SpaceAfterTemplateKeyword: true
+SpaceBeforeRangeBasedForLoopColon: true
+SpaceInEmptyParentheses: false
+SpacesInAngles: false
+SpacesInConditionalStatement: false
+
+SpacesInParentheses: false
+TabWidth: 4
+UseTab: Always
+ReferenceAlignment: Left
+LambdaBodyIndentation: OuterScope
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+AllowShortCaseLabelsOnASingleLine: false
+AllowShortBlocksOnASingleLine: false
+SeparateDefinitionBlocks: Always
+EmptyLineBeforeAccessModifier: LogicalBlock
+
+...

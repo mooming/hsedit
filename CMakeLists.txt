@@ -38,7 +38,9 @@ add_subdirectory (src)
 # Global CMake setup - ncurses
 find_library(NCURSES_LIBRARY ncurses)
 if(NCURSES_LIBRARY)
-    add_library(ncurses UNKNOWN IMPORTED)
+    add_library(ncurses UNKNOWN IMPORTED
+            src/ui/TextApplication.cpp
+            src/ui/TextApplication.h)
     set_target_properties(ncurses PROPERTIES
         IMPORTED_LOCATION "${NCURSES_LIBRARY}"
     )
