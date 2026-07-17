@@ -48,8 +48,8 @@ endif (APPLE)
 install (TARGETS hsedit_tests DESTINATION ${CMAKE_SOURCE_DIR}/bin)
 
 
-target_link_libraries (hsedit_tests libhsedit ncurses)
+target_link_libraries (hsedit_tests libhsedit_module ncurses)
 
-add_dependencies (hsedit_tests libhsedit)
+add_dependencies (hsedit_tests libhsedit_module)
 
 

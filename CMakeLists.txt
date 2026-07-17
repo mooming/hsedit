@@ -28,9 +28,8 @@ endif (MSVC)
 include_directories ( ${CMAKE_SOURCE_DIR}
  ${CMAKE_SOURCE_DIR}/include
  )
-add_subdirectory (app)
-add_subdirectory (tests)
 add_subdirectory (src)
+add_subdirectory (tests)
 add_subdirectory (modules)
 
 

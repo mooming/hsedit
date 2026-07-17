@@ -1,5 +1,5 @@
 #include <iostream>
-#include "../src/module_registry.h"
+#include "../src/module/module_registry.h"
 
 void test_module_registry() {
     std::cout << "  [test_module_registry] Module registry tests..." << std::endl;

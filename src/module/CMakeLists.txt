@@ -1,5 +1,5 @@
 cmake_minimum_required (VERSION 3.12)
-project (hsedit)
+project (libhsedit_module)
 
 set (CMAKE_CONFIGURATION_TYPES "Debug;Dev;Release" CACHE STRING "" FORCE)
 if (NOT CMAKE_BUILD_TYPE)
@@ -28,12 +28,13 @@ endif (MSVC)
 include_directories ( ${CMAKE_SOURCE_DIR}
  ${CMAKE_SOURCE_DIR}/include
  )
-link_directories (${CMAKE_SOURCE_DIR}/lib
-)
 
-
-add_executable (hsedit
- main.cpp
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
+add_library (libhsedit_module STATIC 
+ event_bus.cpp
+ module_registry.cpp
+ event_bus.h
+ module_registry.h
 ${PLATFORM_SOURCES}
 )
 
@@ -43,11 +44,7 @@ if (APPLE)
 	set(MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/Info.plist)
 endif (APPLE)
 
-install (TARGETS hsedit DESTINATION ${CMAKE_SOURCE_DIR}/bin)
+install (TARGETS libhsedit_module DESTINATION ${CMAKE_SOURCE_DIR}/lib)
 
-
-target_link_libraries (hsedit libhsedit)
-
-add_dependencies (hsedit libhsedit)
 
 
