@@ -28,22 +28,26 @@ endif (MSVC)
 include_directories ( ${CMAKE_SOURCE_DIR}
  ${CMAKE_SOURCE_DIR}/include
  )
-add_subdirectory (tests)
-add_subdirectory (modules)
-add_subdirectory (src)
+link_directories (${CMAKE_SOURCE_DIR}/lib
+)
 
 
+add_executable (hsedit
+ main.cpp
+${PLATFORM_SOURCES}
+)
+
+if (APPLE)
+	include_directories ( /System/Library/Frameworks )
+	set(MACOSX_BUNDLE_TRUE TRUE)
+	set(MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/Info.plist)
+endif (APPLE)
+
+install (TARGETS hsedit DESTINATION ${CMAKE_SOURCE_DIR}/bin)
 
 
-# Global CMake setup - ncurses
-find_library(NCURSES_LIBRARY ncurses)
-if(NCURSES_LIBRARY)
-    add_library(ncurses UNKNOWN IMPORTED)
-    set_target_properties(ncurses PROPERTIES
-        IMPORTED_LOCATION "${NCURSES_LIBRARY}"
-    )
-    message(STATUS "ncurses found: ${NCURSES_LIBRARY}")
-else()
-    message(WARNING "ncurses not found - linking will fail for modules that need it")
-endif()
+target_link_libraries (hsedit libhsedit_module)
+
+add_dependencies (hsedit libhsedit_module)
+
 
