@@ -117,84 +117,95 @@ Editor -> Module: SAVE /path/to/file.cpp\n
 Module -> Editor: OK\n
 ```
 
-## Text Representation: Page-Based Model
+## Text Representation: Paged Text Buffer Model
 
-### Page Structure
+### TextWindowBuffer
 
-Text is stored in **pages**, which are dynamic buffers containing a vector of lines.
-
-```cpp
-struct Page {
-    std::vector<std::string> lines;
-    size_t page_id;
-    size_t start_line;  // First line number in this page
-    size_t end_line;    // Last line number in this page (exclusive)
-    bool modified;
-    
-    // Split when page grows too large
-    Page split() const;
-};
-```
-
-### Page Table
-
-A sorted mapping of line ranges to pages:
+Text is stored in **TextWindowBuffer**, a dynamic buffer containing a vector of UTF-8 lines. This serves as the foundation for both small and large file handling.
 
 ```cpp
-struct PageRange {
-    size_t start_line;
-    size_t end_line;
-    size_t page_id;
-    bool loaded;  // Whether page is in memory
-};
-
-class PageTable {
-    std::vector<PageRange> ranges;  // Sorted by start_line
+class TextWindowBuffer {
+    using TLine = std::u8string;           // UTF-8 encoded line
+    using TLines = std::vector<TLine>;     // Vector of lines
+    using TLineIndex = size_t;
     
-    // Find which page contains line N
-    PageRange* find_page(size_t line);
+    TLineIndex startLine;                  // First line number in this buffer
+    TLineIndex hintLineWidth;              // Hint for line width optimization
+    TLines lines;                          // The actual line data
     
-    // Split page at line boundary
-    void split_page(size_t page_id, size_t split_at);
+public:
+    // Line operations (all automatically split by newlines)
+    TLine& AddLine();                      // Add empty line, return reference
+    void AddLine(const TLine& line);       // Add line with content
+    void EmplaceLine(TLine&& line);        // Add line with move semantics
+    void InsertLine(TLineIndex, const TLine&);
+    void InsertLine(TLineIndex, TLine&&);
+    void ReplaceLine(TLineIndex, const TLine&);
+    void ReplaceLine(TLineIndex, TLine&&);
+    TLine ExtractLine(TLineIndex);         // Remove and return line
+    void RemoveLine(TLineIndex);
+    void RemoveLines(TLineIndex start, TLineIndex end);
     
-    // Merge adjacent pages if both are small enough
-    void try_merge();
+    // Split buffer at line boundary
+    TextWindowBuffer Split(TLineIndex splitLine);
 };
 ```
 
-### Page Splitting Strategy
+### Unicode Support
 
-When a page grows beyond a threshold (e.g., 2x initial size), it splits into two:
+HS Edit uses **UTF-8 encoding** throughout the text buffer for proper Unicode support:
+
+- **`std::u8string`**: All lines are stored as UTF-8 encoded strings
+- **Native Unicode**: Supports all Unicode characters including CJK, emoji, RTL scripts
+- **Efficient Processing**: Line operations work on byte sequences, but split correctly on `\n` (U+000A)
+- **Encoding Preservation**: File I/O preserves UTF-8 encoding without conversion
+
+**Benefits:**
+- No encoding conversion overhead for UTF-8 files
+- Proper handling of multi-byte characters in line operations
+- Consistent behavior across different locales and languages
+
+### Line Splitting Behavior
+
+All line insertion operations automatically split input by newline characters:
+
+```cpp
+// Input with embedded newlines is split into multiple lines
+buffer.AddLine(u8"line1\nline2\nline3");
+// Results in: ["line1", "line2", "line3"]
+
+// Works with all insertion methods
+buffer.InsertLine(0, u8"\n");  // Inserts empty line at position 0
+buffer.ReplaceLine(5, u8"old\nnew");  // Replaces line 5 with two lines
+```
+
+### Paged Text Handling (Future Extension)
+
+For large files, TextWindowBuffer can be extended with page-based management:
 
 ```
-Before:  Page 2: [100-300] (200 lines)
-After:   Page 2:  [100-175] (75 lines)
-         Page 2a: [176-300] (125 lines)
+Before:  TextWindowBuffer: [0-2000] (2000 lines)
+After:   TextWindowBuffer: [0-1000] (1000 lines)
+         TextWindowBuffer: [1000-2000] (1000 lines)
 
 Page Table updates:
-  [100, 300] → Page 2
+  [0, 2000] → Buffer A
   becomes:
-  [100, 175] → Page 2
-  [176, 300] → Page 2a
+  [0, 1000] → Buffer A
+  [1000, 2000] → Buffer B
 ```
 
-**Split threshold:** 2x initial page size (1000 lines → split at 2000 lines)
+**Split threshold:** Configurable (default: 1000 lines)
+**Persistence:** Pages can be cached to disk for very large files
 
-### Persistence
+### Performance Characteristics
 
-Pages are cached to disk as individual files:
-
-```
-pages/
-├── page_0.dat      # Lines 0-999
-├── page_1.dat      # Lines 1000-1999
-├── page_2.dat      # Lines 2000-2999
-└── ...
-```
-
-**Load:** Read page file into memory when needed
-**Save:** Write modified pages back to disk
-**Rebuild:** On save, iterate all pages and write to single file
+- **O(1)**: AddLine, EmplaceLine (amortized)
+- **O(n)**: InsertLine, ReplaceLine (where n is lines after position)
+- **O(n)**: ExtractLine, RemoveLine (due to vector shift)
+- **O(1)**: NumLines, GetBuffer
+- **Move semantics**: Efficient transfer of ownership in Split, ExtractLine
+- **Unicode efficient**: UTF-8 operations on byte sequences are fast
 
 ## Window/Buffer Model
 

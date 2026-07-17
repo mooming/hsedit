@@ -7,7 +7,8 @@ A modular TUI text editor built with C++ and ncurses. HS Edit follows a microser
 - **Modular Architecture** — Features are implemented as standalone executables (modules)
 - **Microservices Design** — Each module runs as an independent process (fault isolation)
 - **On-Demand Execution** — Modules spawn only when needed (efficient resource usage)
-- **Page-Based Text Storage** — Handles large files efficiently with paged memory
+- **UTF-8 Unicode Support** — Full Unicode support with `std::u8string` for proper CJK, emoji, RTL handling
+- **Paged Text Buffer** — Handles large files efficiently with split-capable text buffers
 - **Multi-Window Support** — Multiple viewports, each showing any buffer
 - **Configurable** — Key-value config system with module extension points
 - **Cross-Platform** — Works on Linux, macOS, and Windows (MSYS2)
@@ -220,6 +221,26 @@ hsedit/
 ├── TECHNICAL_DESIGN.md
 └── README.md
 ```
+
+### Text Buffer Implementation
+
+HS Edit uses a **TextWindowBuffer** for text storage with the following characteristics:
+
+- **UTF-8 Native**: Uses `std::u8string` for all text storage, providing full Unicode support
+- **Efficient Operations**: Line operations use move semantics and `emplace_back` to minimize allocations
+- **Automatic Newline Splitting**: All insertion operations automatically split input by `\n` characters
+- **Split Capability**: Buffers can be split at any line boundary for paged text handling
+- **Unicode Ready**: Properly handles CJK, emoji, RTL scripts, and all Unicode characters
+
+**Example Usage:**
+```cpp
+TextWindowBuffer buffer;
+buffer.AddLine(u8"Hello 世界 🌍");  // UTF-8 string with CJK and emoji
+buffer.EmplaceLine(std::move(largeText));  // Move semantics for efficiency
+auto splitBuffer = buffer.Split(100);  // Split at line 100
+```
+
+See `TECHNICAL_DESIGN.md` for the complete text buffer architecture.
 
 ## Configuration
 
