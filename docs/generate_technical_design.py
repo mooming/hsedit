@@ -148,26 +148,106 @@ hr{border:none;border-top:1px solid var(--border);margin:48px 0}
     # Text Representation
     html.append("""
 <section id="text-representation">
-<h2>Text Representation: Page-Based Model</h2>
-<p>Text is stored in <strong>pages</strong>, which are dynamic buffers containing a vector of lines. Pages split when they grow too large.</p>
-<h3>Page Structure</h3>
-<pre><code><span class="kw">struct</span> <span class="type">Page</span> <span class="punct">{</span>
-    std::vector&lt;std::string&gt; lines<span class="punct">;</span>
-    size_t page_id<span class="punct">;</span>
-    size_t start_line<span class="punct">;</span>
-    size_t end_line<span class="punct">;</span>
-    bool modified<span class="punct">;</span>
+<h2>Text Representation: Paged Text Buffer Model</h2>
+<p>Text is stored in <strong>TextWindowBuffer</strong>, a dynamic buffer containing a vector of UTF-8 lines. This serves as the foundation for both small and large file handling.</p>
+
+<h3>TextWindowBuffer</h3>
+<pre><code><span class="kw">class</span> <span class="type">TextWindowBuffer</span> <span class="punct">{</span>
+    <span class="kw">using</span> TLine <span class="op">=</span> std::u8string<span class="punct">;</span>           <span class="cmt">// UTF-8 encoded line</span>
+    <span class="kw">using</span> TLines <span class="op">=</span> std::vector&lt;TLine&gt;<span class="punct">;</span>
+    <span class="kw">using</span> TLineIndex <span class="op">=</span> size_t<span class="punct">;</span>
+    
+    TLineIndex startLine<span class="punct">;</span>
+    TLineIndex hintLineWidth<span class="punct">;</span>
+    TLines lines<span class="punct">;</span>
+    
+<span class="kw">public</span><span class="punct">:</span>
+    TLine&amp; AddLine<span class="punct">();</span>                      <span class="cmt">// Add empty line</span>
+    <span class="kw">void</span> AddLine<span class="punct">(</span><span class="kw">const</span> TLine&amp; line<span class="punct">);</span>
+    <span class="kw">void</span> EmplaceLine<span class="punct">(</span>TLine&amp;&amp; line<span class="punct">);</span>
+    TLine ExtractLine<span class="punct">(</span>TLineIndex<span class="punct">);</span>
+    <span class="kw">void</span> RemoveLine<span class="punct">(</span>TLineIndex<span class="punct">);</span>
+    TextWindowBuffer Split<span class="punct">(</span>TLineIndex<span class="punct">);</span>
 <span class="punct">};</span></code></pre>
-<h3>Page Splitting</h3>
-<div class="diagram">
-<svg width="500" height="200" viewBox="0 0 500 200">
-  <text x="250" y="18" text-anchor="middle" class="label">Page Splitting</text>
-  <rect x="30" y="40" width="200" height="60" rx="6" class="page-shape"/>
-  <text x="130" y="62" text-anchor="middle" class="line-text">Page 2</text>
-  <text x="130" y="78" text-anchor="middle" class="coord-text">Lines 100-300 (200 lines)</text>
-  <text x="130" y="90" text-anchor="middle" class="coord-text" fill="var(--orange)">Too large!</text>
-  <line x1="230" y1="70" x2="270" y2="70" class="split-line"/>
-  <text x="250" y="60" text-anchor="middle" class="coord-text">split</text>
-  <rect x="300" y="30" width="160" height="45" rx="6" class="page-split"/>
-  <text x="380" y="52" text-anchor="middle" class="line-text">Page 2a</text>
-  <text x="380" y="68" text-anchor="middle" class="coord-text">Lines 100-17
+
+<h3>Unicode Support</h3>
+<div class="box box-info">
+<div class="box-title">UTF-8 Native</div>
+<p>HS Edit uses <strong>UTF-8 encoding</strong> throughout the text buffer for proper Unicode support:</p>
+<ul>
+  <li><strong>std::u8string</strong>: All lines stored as UTF-8 encoded strings</li>
+  <li><strong>Native Unicode</strong>: Supports CJK, emoji, RTL scripts</li>
+  <li><strong>Efficient Processing</strong>: Line operations work on byte sequences</li>
+  <li><strong>Encoding Preservation</strong>: File I/O preserves UTF-8 without conversion</li>
+</ul>
+</div>
+
+<h3>Line Splitting Behavior</h3>
+<p>All line insertion operations automatically split input by newline characters:</p>
+<pre><code><span class="cmt">// Input with embedded newlines is split into multiple lines</span>
+buffer<span class="punct">.</span>AddLine<span class="punct">(</span>u8<span class="str">"line1\nline2\nline3"</span><span class="punct">);</span>
+<span class="cmt">// Results in: ["line1", "line2", "line3"]</span>
+
+buffer<span class="punct">.</span>InsertLine<span class="punct">(</span><span class="num">0</span><span class="punct">,</span> u8<span class="str">"\n"</span><span class="punct">);</span>  <span class="cmt">// Inserts empty line at position 0</span>
+buffer<span class="punct">.</span>ReplaceLine<span class="punct">(</span><span class="num">5</span><span class="punct">,</span> u8<span class="str">"old\nnew"</span><span class="punct">);</span>  <span class="cmt">// Replaces line 5 with two lines</span></code></pre>
+
+<h3>Performance Characteristics</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Operation</th>
+      <th>Complexity</th>
+      <th>Notes</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>AddLine</code>, <code>EmplaceLine</code></td>
+      <td>O(1)</td>
+      <td>Amortized constant time</td>
+    </tr>
+    <tr>
+      <td><code>InsertLine</code>, <code>ReplaceLine</code></td>
+      <td>O(n)</td>
+      <td>Where n is lines after position</td>
+    </tr>
+    <tr>
+      <td><code>ExtractLine</code>, <code>RemoveLine</code></td>
+      <td>O(n)</td>
+      <td>Due to vector shift</td>
+    </tr>
+    <tr>
+      <td><code>NumLines</code>, <code>GetBuffer</code></td>
+      <td>O(1)</td>
+      <td>Direct access</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="box box-tip">
+<div class="box-title">Move Semantics</div>
+<p>Split, ExtractLine use move semantics for efficient transfer of ownership without copying data.</p>
+</div>
+
+<h3>Paged Text Handling (Future Extension)</h3>
+<p>For large files, TextWindowBuffer can be extended with page-based management:</p>
+<pre><code>TextWindowBuffer<span class="punct">:</span> <span class="punct">[</span><span class="num">0</span><span class="punct">-</span><span class="num">2000</span><span class="punct">]</span> <span class="punct">(</span><span class="num">2000</span> lines<span class="punct">)</span>
+<span class="cmt">// Split at line 1000</span>
+TextWindowBuffer<span class="punct">:</span> <span class="punct">[</span><span class="num">0</span><span class="punct">-</span><span class="num">1000</span><span class="punct">]</span> <span class="punct">(</span><span class="num">1000</span> lines<span class="punct">)</span>
+TextWindowBuffer<span class="punct">:</span> <span class="punct">[</span><span class="num">1000</span><span class="punct">-</span><span class="num">2000</span><span class="punct">]</span> <span class="punct">(</span><span class="num">1000</span> lines<span class="punct">)</span></code></pre>
+
+<div class="box box-warn">
+<div class="box-title">Split Threshold</div>
+<p>Configurable (default: 1000 lines). Pages can be cached to disk for very large files.</p>
+</div>
+</section>
+<hr>""")
+    
+    # Write to file
+    with open('TECHNICAL_DESIGN.html', 'w', encoding='utf-8') as f:
+        f.write('\n'.join(html))
+    
+    print("Generated TECHNICAL_DESIGN.html")
+
+if __name__ == '__main__':
+    main()
