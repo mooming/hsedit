@@ -36,37 +36,21 @@ TextWindowBuffer::TextWindowBuffer(size_t startLine, size_t hintNumLines, size_t
 /// @brief Split a u8string_view line by newline characters and append to buffer
 /// @param dest Destination buffer to append to
 /// @param line Input line view (may contain newline characters)
-/// @param moveSource Whether to move from the source string (requires owning string)
-static void AppendSplitLines(typename TextWindowBuffer::TLines& dest, std::u8string_view line, bool moveSource)
+static void AppendSplitLines(typename TextWindowBuffer::TLines& dest, std::u8string_view line)
 {
 	size_t start = 0;
 	size_t pos = line.find(u8'\n');
 
 	while (pos != std::u8string_view::npos)
 	{
-		if (moveSource)
-		{
-			// Construct directly from source data (no copy)
-			dest.emplace_back(line.data() + start, pos - start);
-		}
-		else
-		{
-			// Copy the substring
-			dest.emplace_back(line.substr(start, pos - start));
-		}
+		// Construct directly from pointer and length (no temporary)
+		dest.emplace_back(line.data() + start, pos - start);
 		start = pos + 1;
 		pos = line.find(u8'\n', start);
 	}
 
 	// Append the remainder (or entire string if no newlines)
-	if (moveSource)
-	{
-		dest.emplace_back(line.data() + start, line.size() - start);
-	}
-	else
-	{
-		dest.emplace_back(line.substr(start));
-	}
+	dest.emplace_back(line.data() + start, line.size() - start);
 }
 
 // ========================================================================
@@ -77,7 +61,7 @@ static void AppendSplitLines(typename TextWindowBuffer::TLines& dest, std::u8str
 /// @param line Line content (may contain newline characters)
 void TextWindowBuffer::AddLine(const TLine& line)
 {
-	AppendSplitLines(lines, line, false);
+	AppendSplitLines(lines, line);
 }
 
 /// @brief Append a line using move semantics, splitting by newlines if present
@@ -85,7 +69,7 @@ void TextWindowBuffer::AddLine(const TLine& line)
 void TextWindowBuffer::EmplaceLine(TLine&& line)
 {
 	std::u8string_view view = line;
-	AppendSplitLines(lines, view, true);
+	AppendSplitLines(lines, view);
 }
 
 /// @brief Insert a line at a specific position, splitting by newlines if present
@@ -93,7 +77,7 @@ void TextWindowBuffer::EmplaceLine(TLine&& line)
 /// @param line Line content (may contain newline characters)
 void TextWindowBuffer::InsertLine(TLineIndex lineNumber, const TLine& line)
 {
-	AppendSplitLines(lines, line, false);
+	AppendSplitLines(lines, line);
 }
 
 /// @brief Insert a line at a specific position using move semantics, splitting by newlines if present
@@ -102,7 +86,7 @@ void TextWindowBuffer::InsertLine(TLineIndex lineNumber, const TLine& line)
 void TextWindowBuffer::InsertLine(TLineIndex lineNumber, TLine&& line)
 {
 	std::u8string_view view = line;
-	AppendSplitLines(lines, view, true);
+	AppendSplitLines(lines, view);
 }
 
 /// @brief Replace a line at a specific position with const reference, splitting by newlines if present
@@ -111,7 +95,7 @@ void TextWindowBuffer::InsertLine(TLineIndex lineNumber, TLine&& line)
 void TextWindowBuffer::ReplaceLine(TLineIndex lineNumber, const TLine& line)
 {
 	lines.erase(lines.begin() + lineNumber);
-	AppendSplitLines(lines, line, false);
+	AppendSplitLines(lines, line);
 }
 
 /// @brief Replace a line at a specific position using move semantics, splitting by newlines if present
@@ -121,7 +105,7 @@ void TextWindowBuffer::ReplaceLine(TLineIndex lineNumber, TLine&& line)
 {
 	lines.erase(lines.begin() + lineNumber);
 	std::u8string_view view = line;
-	AppendSplitLines(lines, view, true);
+	AppendSplitLines(lines, view);
 }
 
 /// @brief Extract and remove a line from the buffer
