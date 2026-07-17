@@ -174,18 +174,21 @@ WINDOW* win = <span class="fn">newwin</span><span class="punct">(</span><span cl
 <div class="diagram">
 <svg width="280" height="240" viewBox="0 0 280 240">
   <text x="140" y="18" text-anchor="middle" class="axis-label">Terminal Coordinate System</text>
-  <line x1="40" y1="220" x2="260" y2="220" class="arrow-line" marker-end="url(#ah2)"/>
-  <text x="268" y="225" class="axis-label">x (column)</text>
-  <line x1="40" y1="40" x2="40" y2="220" class="arrow-line" marker-end="url(#ah2)"/>
-  <text x="12" y="35" class="axis-label">y (row)</text>
-  <circle cx="40" cy="220" r="3" class="arrow-head"/>
-  <text x="48" y="236" class="origin-text">(0, 0)</text>
-  <circle cx="120" cy="220" r="2" fill="var(--text-dim)"/>
-  <text x="126" y="236" class="coord-text">(1, 0)</text>
-  <circle cx="40" cy="140" r="2" fill="var(--text-dim)"/>
-  <text x="16" y="145" class="coord-text">(0, 1)</text>
-  <circle cx="120" cy="140" r="2" fill="var(--text-dim)"/>
-  <text x="126" y="145" class="coord-text">(1, 1)</text>
+  <text x="140" y="34" text-anchor="middle" class="coord-text">(y increases ↓, x increases →)</text>
+  <line x1="40" y1="50" x2="40" y2="200" class="arrow-line" marker-end="url(#ah2)"/>
+  <text x="12" y="130" class="axis-label">y (row)</text>
+  <line x1="40" y1="200" x2="260" y2="200" class="arrow-line" marker-end="url(#ah2)"/>
+  <text x="268" y="205" class="axis-label">x (column)</text>
+  <circle cx="40" cy="50" r="3" class="arrow-head"/>
+  <text x="48" y="42" class="origin-text">(0, 0)</text>
+  <text x="48" y="56" class="origin-text" fill="var(--text-dim)">top-left</text>
+  <circle cx="140" cy="200" r="2" fill="var(--text-dim)"/>
+  <text x="146" y="216" class="coord-text">(0, 10)</text>
+  <circle cx="40" cy="150" r="2" fill="var(--text-dim)"/>
+  <text x="10" y="155" class="coord-text">(5, 0)</text>
+  <line x1="40" y1="150" x2="140" y2="200" stroke="var(--text-dim)" stroke-width="0.5" stroke-dasharray="4,2"/>
+  <circle cx="140" cy="150" r="2" fill="var(--accent)"/>
+  <text x="146" y="148" class="coord-text">(5, 10)</text>
   <defs><marker id="ah2" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" class="arrow-head"/></marker></defs>
 </svg>
 </div>
@@ -196,11 +199,6 @@ WINDOW* win = <span class="fn">newwin</span><span class="punct">(</span><span cl
 <span class="kw">int</span> cur_y  = <span class="fn">getcury</span><span class="punct">(</span>stdscr<span class="punct">);</span>
 <span class="kw">int</span> cur_x  = <span class="fn">getcurx</span><span class="punct">(</span>stdscr<span class="punct">);</span></code></pre>
 </section>
-
-</div><!-- .main -->
-
-<h1 class="anchor" id="top">ncurses Tutorial (Part 2)</h1>
-<span class="subtitle">Input, Output, Colors, Keypad, Event Loop</span>
 
 <section id="input">
 <h2>5. Input Handling</h2>
@@ -301,9 +299,10 @@ WINDOW* win = <span class="fn">newwin</span><span class="punct">(</span><span cl
 
 <span class="cmt">// Draw a horizontal/vertical line</span>
 <span class="fn">hline</span><span class="punct">(</span><span class="str">'='</span><span class="punct">,</span> <span class="num">20</span><span class="punct">);</span>      <span class="cmt">// 20 '=' chars at current position</span>
-<span class="fn">mvhline</span><span class="punct">(</span><span class="num">5</span><span class="punct">,</span>
-<h1 class="anchor" id="top">ncurses Tutorial (Part 3)</h1>
-<span class="subtitle">Colors, Keypad, Echo, Event Loop, Resize, Portability, Building Editor</span>
+<span class="fn">mvhline</span><span class="punct">(</span><span class="num">5</span><span class="punct">,</span> <span class="num">10</span><span class="punct">,</span> <span class="str">'='</span><span class="punct">,</span> <span class="num">20</span><span class="punct">);</span>  <span class="cmt">// 20 '=' chars at (5,10)</span>
+
+</code></pre>
+</section>
 
 <section id="colors">
 <h2>7. Colors</h2>
@@ -430,8 +429,9 @@ WINDOW* win = <span class="fn">newwin</span><span class="punct">(</span><span cl
 <span class="punct">}</span>
 
 <span class="fn">endwin</span><span class="punct">();
-<h1 class="anchor" id="top">ncurses Tutorial (Part 4)</h1>
-<span class="subtitle">Resize, Cross-Platform, Building Your Editor</span>
+
+</code></pre>
+</section>
 
 <section id="resize">
 <h2>11. Terminal Resize</h2>
@@ -573,9 +573,10 @@ WINDOW* win = <span class="fn">newwin</span><span class="punct">(</span><span cl
             <span class="kw">if</span> <span class="punct">(</span>buf.cursor_y &lt; buf.lines.size<span class="punct">()</span> - <span class="num">1</span><span class="punct">)</span> ++buf.cursor_y<span class="punct">;</span>
             <span class="kw">break</span><span class="punct">;</span>
         <span class="kw">case</span> KEY_LEFT:
-            <span class="kw">if</span> <span class="punct">(
-<h1 class="anchor" id="top">ncurses Tutorial (Part 5)</h1>
-<span class="subtitle">Building Your Editor — Complete Skeleton</span>
+            <span class="kw">if</span> <span class="punct">(buf.cx &gt; <span class="num">0</span><span class="punct">)</span> --buf.cx<span class="punct">;</span> <span class="kw">break</span><span class="punct">;</span>
+
+</code></pre>
+</section>
 
 <section id="editor-apply">
 <h2>13. Building Your Editor — Complete Skeleton</h2>

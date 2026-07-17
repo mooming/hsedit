@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C++ Development with Vim - Setup Guide</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #e74c3c;
+            --bg: #f8f9fa;
+            --text: #2c3e50;
+            --code-bg: #f4f4f4;
+            --border: #ddd;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            background: var(--bg);
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 40px 30px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        nav {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 20px;
+            z-index: 100;
+        }
+        
+        nav ul {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        nav a {
+            color: var(--secondary);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+        
+        nav a:hover {
+            background: var(--secondary);
+            color: white;
+        }
+        
+        section {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        h2 {
+            color: var(--primary);
+            border-bottom: 3px solid var(--secondary);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+        
+        h3 {
+            color: var(--secondary);
+            margin: 25px 0 15px 0;
+            font-size: 1.3em;
+        }
+        
+        p {
+            margin-bottom: 15px;
+        }
+        
+        code {
+            background: var(--code-bg);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, monospace;
+            font-size: 0.9em;
+        }
+        
+        pre {
+            background: var(--code-bg);
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 15px 0;
+            border-left: 4px solid var(--secondary);
+        }
+        
+        pre code {
+            background: none;
+            padding: 0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        th {
+            background: var(--primary);
+            color: white;
+            font-weight: 600;
+        }
+        
+        tr:hover {
+            background: var(--code-bg);
+        }
+        
+        .key {
+            background: var(--primary);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.9em;
+            display: inline-block;
+            margin: 2px;
+        }
+        
+        .note {
+            background: #e8f4f8;
+            border-left: 4px solid var(--secondary);
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .warning {
+            background: #fef9e7;
+            border-left: 4px solid #f1c40f;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .danger {
+            background: #fde8e8;
+            border-left: 4px solid var(--accent);
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-left: 8px;
+        }
+        
+        .badge-installed {
+            background: #27ae60;
+            color: white;
+        }
+        
+        .badge-required {
+            background: var(--accent);
+            color: white;
+        }
+        
+        .badge-optional {
+            background: #95a5a6;
+            color: white;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .card {
+            background: var(--code-bg);
+            padding: 20px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+        }
+        
+        .card h4 {
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: #666;
+            border-top: 1px solid var(--border);
+            margin-top: 30px;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            header {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 1.8em;
+            }
+            
+            nav ul {
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🚀 C++ Development with Vim</h1>
+        <p class="subtitle">Complete setup guide for modern C++ development using Vim editor</p>
+    </header>
+    
+    <nav>
+        <ul>
+            <li><a href="#overview">Overview</a></li>
+            <li><a href="#installation">Installation</a></li>
+            <li><a href="#configuration">Configuration</a></li>
+            <li><a href="#keybindings">Keybindings</a></li>
+            <li><a href="#usage">Usage Examples</a></li>
+            <li><a href="#troubleshooting">Troubleshooting</a></li>
+        </ul>
+    </nav>
+
+    <section id="overview">
+        <h2>Overview</h2>
+        <p>This guide provides a complete setup for C++ development using Vim editor with modern tooling including Language Server Protocol (LSP), debugging, and build integration.</p>
+        
+        <div class="grid">
+            <div class="card">
+                <h4>📦 Core Tools</h4>
+                <ul>
+                    <li>Vim 9.2 - Text editor</li>
+                    <li>ctags 5.8 - Tag navigation</li>
+                    <li>LLVM 22.1 - Compiler & tools</li>
+                </ul>
+            </div>
+            <div class="card">
+                <h4>🔧 Vim Plugins</h4>
+                <ul>
+                    <li>coc.nvim - LSP support</li>
+                    <li>syntastic - Linting</li>
+                    <li>vim-fugitive - Git integration</li>
+                </ul>
+            </div>
+            <div class="card">
+                <h4>🎯 Key Features</h4>
+                <ul>
+                    <li>IntelliSense via clangd</li>
+                    <li>Build & run shortcuts</li>
+                    <li>Debug with lldb/gdb</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section id="installation">
+        <h2>Installation</h2>
+        
+        <h3>Step 1: Install Core Tools <span class="badge badge-installed">Installed</span></h3>
+        <pre><code>$ brew install ctags
+$ brew install llvm
+$ brew install vim</code></pre>
+        
+        <h3>Step 2: Install Vim Plugins <span class="badge badge-installed">Installed</span></h3>
+        <pre><code>$ mkdir -p ~/.vim/bundle
+$ cd ~/.vim/bundle
+
+$ git clone https://github.com/neoclide/coc.nvim.git --depth 1
+$ git clone https://github.com/tpope/vim-fugitive.git --depth 1
+$ git clone https://github.com/vim-syntastic/syntastic.git --depth 1
+$ git clone https://github.com/tpope/vim-surround.git --depth 1
+$ git clone https://github.com/tpope/vim-commentary.git --depth 1</code></pre>
+        
+        <h3>Step 3: Install clangd Extension <span class="badge badge-required">Required</span></h3>
+        <pre><code>vim +CocInstall coc-clangd +qa</code></pre>
+        
+        <div class="note">
+            <strong>ℹ️ Note:</strong> clangd is included with LLVM installation. The extension connects Vim to clangd for intelligent code analysis.
+        </div>
+    </section>
+
+    <section id="configuration">
+        <h2>Configuration</h2>
+        
+        <h3>Files Created</h3>
+        <div class="grid">
+            <div class="card">
+                <h4>~/.vimrc</h4>
+                <p>Main Vim configuration with C++ settings, keybindings, and plugin configuration.</p>
+                <p class="note">⚠️ Must be in home directory (~), not project directory!</p>
+            </div>
+            <div class="card">
+                <h4>~/.vim/coc-settings.json</h4>
+                <p>clangd language server configuration with file type mappings and root patterns.</p>
+            </div>
+        </div>
+        
+        <h3>Configuration Details</h3>
+        <pre><code>// .vimrc - Key sections
+filetype plugin indent on
+syntax enable
+
+" Leader key
+let mapleader = ","
+
+" LSP configuration
+let g:coc_config_home = $HOME . '/.vim/coc-settings.json'
+let g:coc_global_extensions = ['coc-clangd']
+
+" Build shortcuts
+nnoremap <leader>bb :w !clang++ -std=c++17 -Wall -Wextra -g % <CR>
+nnoremap <leader>rr :!./tmp/%< <CR></code></pre>
+        
+        <h3>LLVM Configuration</h3>
+        <pre><code>{
+  "languageserver": {
+    "clangd": {
+      "command": "/opt/homebrew/Cellar/llvm/22.1.8/bin/clangd",
+      "filetypes": ["c", "cpp"],
+      "rootPatterns": [
+        "compile_commands.json", 
+        ".git/", 
+        "CMakeLists.txt",
+        "Makefile"
+      ],
+      "initializationOptions": {
+        "clangdFileStatus": true
+      }
+    }
+  }
+}</code></pre>
+    </section>
+
+    <section id="keybindings">
+        <h2>Keybindings Reference</h2>
+        
+        <h3>Navigation <span class="badge badge-installed">Active</span></h3>
+        <table>
+            <tr><th>Key</th><th>Action</th></tr>
+            <tr><td><span class="key">,gd</span></td><td>Go to definition</td></tr>
+            <tr><td><span class="key">,gy</span></td><td>Go to type definition</td></tr>
+            <tr><td><span class="key">,gi</span></td><td>Go to implementation</td></tr>
+            <tr><td><span class="key">,gr</span></td><td>Show references</td></tr>
+            <tr><td><span class="key">,K</span></td><td>Show documentation</td></tr>
+        </table>
+        
+        <h3>Build & Run <span class="badge badge-installed">Active</span></h3>
+        <table>
+            <tr><th>Key</th><th>Action</th></tr>
+            <tr><td><span class="key">,bb</span></td><td>Build with project flags (<code>.build_flags</code>)</td></tr>
+            <tr><td><span class="key">,bd</span></td><td>Build without extra flags</td></tr>
+            <tr><td><span class="key">,rr</span></td><td>Recompile and run (with project flags)</td></tr>
+            <tr><td><span class="key">,rx</span></td><td>Run without recompiling</td></tr>
+            <tr><td><span class="key">,bm</span></td><td>Build all (make)</td></tr>
+        </table>
+        
+        <div class="note">
+            <strong>ℹ️ Project Build Flags:</strong> Create a <code>.build_flags</code> file in your project directory to specify compiler flags (e.g., <code>-lncurses</code>, <code>-lpthread</code>, etc.). The <code>,bb</code> and <code>,rr</code> commands automatically read this file.
+        </div>
+        
+        <h3>Debug <span class="badge badge-installed">Active</span></h3>
+        <table>
+            <tr><th>Key</th><th>Action</th></tr>
+            <tr><td><span class="key">,db</span></td><td>Start GDB debugger</td></tr>
+            <tr><td><span class="key">,dr</span></td><td>Continue execution</td></tr>
+            <tr><td><span class="key">,ds</span></td><td>Step over</td></tr>
+            <tr><td><span class="key">,do</span></td><td>Step into</td></tr>
+            <tr><td><span class="key">,dt</span></td><td>Finish function</td></tr>
+            <tr><td><span class="key">,dc</span></td><td>Stop debugging</td></tr>
+        </table>
+        
+        <h3>Editor <span class="badge badge-installed">Active</span></h3>
+        <table>
+            <tr><th>Key</th><th>Action</th></tr>
+            <tr><td><span class="key">,cc</span></td><td>Add comment (//)</td></tr>
+            <tr><td><span class="key">,cu</span></td><td>Remove comment</td></tr>
+            <tr><td><span class="key">,ff</span></td><td>Find project files</td></tr>
+            <tr><td><span class="key">,tt</span></td><td>Open terminal</td></tr>
+            <tr><td><span class="key">,gs</span></td><td>Git status</td></tr>
+            <tr><td><span class="key">,gc</span></td><td>Git commit</td></tr>
+            <tr><td><span class="key">,fmt</span></td><td>Format code</td></tr>
+        </table>
+        
+        <h3>coc.nvim Commands <span class="badge badge-optional">Optional</span></h3>
+        <table>
