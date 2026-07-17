@@ -20,12 +20,12 @@
             <div class="api-entry">
                 <h4>start_color()</h4>
                 <p>색상 지원을 초기화합니다. 색상 사용 전에 반드시 호출해야 합니다.</p>
-                <div class="code-block"><span class="function">start_color</span>();
+                <div class="code-block"><pre><code><span class="function">start_color</span>();
 <span class="function">init_pair</span>(1, COLOR_RED, COLOR_BLACK);
 <span class="function">attron</span>(COLOR_PAIR(1));
 <span class="function">printw</span>(<span class="string">"검정 배경에 빨간 텍스트"</span>);
 <span class="function">attroff</span>(COLOR_PAIR(1));
-<span class="function">refresh</span>();</div>
+<span class="function">refresh</span>();</code></pre></div>
             </div>
             <div class="api-entry">
                 <h4>has_colors()</h4>
@@ -58,9 +58,9 @@
             <div class="api-entry">
                 <h4>attron(chtype attr)</h4>
                 <p>stdscr 에 속성을 켭니다.</p>
-                <div class="code-block"><span class="function">attron</span>(A_BOLD);
+                <div class="code-block"><pre><code><span class="function">attron</span>(A_BOLD);
 <span class="function">printw</span>(<span class="string">"굵게"</span>);
-<span class="function">attroff</span>(A_BOLD);</div>
+<span class="function">attroff</span>(A_BOLD);</code></pre></div>
             </div>
             <div class="api-entry">
                 <h4>attroff(chtype attr)</h4>

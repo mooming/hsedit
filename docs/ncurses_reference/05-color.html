@@ -14,18 +14,18 @@
     </header>
     <div class="container">
         <div class="breadcrumb">
-            <a href="index.html">Home</a><span>→</span> Color
+            <a href="index.html">Home</a><span>&#8250;</span> Color
         </div>
         <section>
             <div class="api-entry">
                 <h4>start_color()</h4>
                 <p>Initializes color support. Must be called before using colors.</p>
-                <div class="code-block"><span class="function">start_color</span>();
+                <div class="code-block"><pre><code><span class="function">start_color</span>();
 <span class="function">init_pair</span>(1, COLOR_RED, COLOR_BLACK);
 <span class="function">attron</span>(COLOR_PAIR(1));
 <span class="function">printw</span>(<span class="string">"Red text on black"</span>);
 <span class="function">attroff</span>(COLOR_PAIR(1));
-<span class="function">refresh</span>();</div>
+<span class="function">refresh</span>();</code></pre></div>
             </div>
             <div class="api-entry">
                 <h4>has_colors()</h4>
@@ -44,7 +44,7 @@
                 <p>Initializes a color pair without colors.</p>
             </div>
             <div class="api-entry">
-                <h4>color_content(short color, short *r, short *g, short *b)</h4>
+                <h4>color_content(short color, short* r, short* g, short* b)</h4>
                 <p>Returns the RGB content of a color.</p>
             </div>
             <div class="api-entry">
@@ -52,15 +52,15 @@
                 <p>Returns the attribute for a color pair.</p>
             </div>
             <div class="api-entry">
-                <h4>pair_content(short pair, short *f, short *b)</h4>
+                <h4>pair_content(short pair, short* f, short* b)</h4>
                 <p>Returns the foreground/background colors of a pair.</p>
             </div>
             <div class="api-entry">
                 <h4>attron(chtype attr)</h4>
                 <p>TURNS on an attribute on stdscr.</p>
-                <div class="code-block"><span class="function">attron</span>(A_BOLD);
+                <div class="code-block"><pre><code><span class="function">attron</span>(A_BOLD);
 <span class="function">printw</span>(<span class="string">"Bold"</span>);
-<span class="function">attroff</span>(A_BOLD);</div>
+<span class="function">attroff</span>(A_BOLD);</code></pre></div>
             </div>
             <div class="api-entry">
                 <h4>attroff(chtype attr)</h4>
@@ -71,23 +71,23 @@
                 <p>Sets the attribute on stdscr.</p>
             </div>
             <div class="api-entry">
-                <h4>attr_get(chtype *attr, short *pair, void *opts)</h4>
+                <h4>attr_get(chtype* attr, short* pair, void* opts)</h4>
                 <p>Returns the current attribute.</p>
             </div>
             <div class="api-entry">
-                <h4>attr_off(chtype attr, void *opts)</h4>
+                <h4>attr_off(chtype attr, void* opts)</h4>
                 <p>TURNS off attributes on stdscr.</p>
             </div>
             <div class="api-entry">
-                <h4>attr_on(chtype attr, void *opts)</h4>
+                <h4>attr_on(chtype attr, void* opts)</h4>
                 <p>TURNS on attributes on stdscr.</p>
             </div>
             <div class="api-entry">
-                <h4>color_set(short pair, void *opts)</h4>
+                <h4>color_set(short pair, void* opts)</h4>
                 <p>Sets the color for the next text output.</p>
             </div>
         </section>
-        <footer><p><a href="index.html">← Back to Index</a></p></footer>
+        <footer><p><a href="index.html">&#8592; Back to Index</a></p></footer>
     </div>
 </body>
 </html>

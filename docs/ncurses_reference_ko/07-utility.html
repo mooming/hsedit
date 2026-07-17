@@ -20,10 +20,10 @@
             <div class="api-entry">
                 <h4>getyx(WINDOW* win, int* y, int* x)</h4>
                 <p>윈도우의 현재 커서 위치를 반환합니다.</p>
-                <div class="code-block">WINDOW* win = <span class="function">initscr</span>();
+                <div class="code-block"><pre><code>WINDOW* win = <span class="function">initscr</span>();
 <span class="keyword">int</span> y, x;
 <span class="function">getyx</span>(win, y, x);
-<span class="function">printw</span>(<span class="string">"커서 위치 (%d, %d)"</span>, y, x);</div>
+<span class="function">printw</span>(<span class="string">"커서 위치 (%d, %d)"</span>, y, x);</code></pre></div>
             </div>
             <div class="api-entry">
                 <h4>getbegyx(WINDOW* win, int* y, int* x)</h4>
@@ -52,7 +52,7 @@
             <div class="api-entry">
                 <h4>setscrreg(int top, int bottom)</h4>
                 <p>stdscr 의 스크롤 영역을 설정합니다.</p>
-                <div class="code-block"><span class="function">setscrreg</span>(5, 20);  <span class="comment">// 줄 5-20 이 스크롤 가능</span></div>
+                <div class="code-block"><pre><code><span class="function">setscrreg</span>(5, 20);  <span class="comment">// 줄 5-20 이 스크롤 가능</span></code></pre></div>
             </div>
             <div class="api-entry">
                 <h4>wsetscrreg(WINDOW* win, int top, int bottom)</h4>

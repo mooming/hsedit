@@ -3,53 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Character & Text I/O - ncurses API Reference</title>
+    <title>Character &amp; Text I/O - ncurses API Reference</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header>
         <div class="container">
-            <h1>Character & Text I/O</h1>
+            <h1>Character &amp; Text I/O</h1>
         </div>
     </header>
     <div class="container">
         <div class="breadcrumb">
-            <a href="index.html">Home</a><span>→</span> Text I/O
+            <a href="index.html">Home</a><span>&#8250;</span> Text I/O
         </div>
         <section>
             <div class="api-entry">
-                <h4>printw(const char *fmt, ...)</h4>
+                <h4>printw(const char* fmt, ...)</h4>
                 <p>Formatted print to stdscr (like <code>printf</code>).</p>
-                <div class="code-block">int x = 42;
+                <div class="code-block"><pre><code>int x = 42;
 <span class="function">printw</span>(<span class="string">"The answer is %d"</span>, x);
-<span class="function">refresh</span>();</div>
+<span class="function">refresh</span>();</code></pre></div>
             </div>
             <div class="api-entry">
-                <h4>wprintw(WINDOW *win, const char *fmt, ...)</h4>
+                <h4>wprintw(WINDOW* win, const char* fmt, ...)</h4>
                 <p>Formatted print to a window.</p>
-                <div class="code-block">WINDOW *win = <span class="function">newwin</span>(5, 20, 0, 0);
+                <div class="code-block"><pre><code>WINDOW* win = <span class="function">newwin</span>(5, 20, 0, 0);
 <span class="function">wprintw</span>(win, <span class="string">"Value: %d"</span>, 42);
-<span class="function">wrefresh</span>(win);</div>
+<span class="function">wrefresh</span>(win);</code></pre></div>
             </div>
             <div class="api-entry">
-                <h4>mvprintw(int y, int x, const char *fmt, ...)</h4>
+                <h4>mvprintw(int y, int x, const char* fmt, ...)</h4>
                 <p>Move to position and print to stdscr.</p>
-                <div class="code-block"><span class="function">mvprintw</span>(10, 20, <span class="string">"Hello at 10,20"</span>);
-<span class="function">refresh</span>();</div>
+                <div class="code-block"><pre><code><span class="function">mvprintw</span>(10, 20, <span class="string">"Hello at 10,20"</span>);
+<span class="function">refresh</span>();</code></pre></div>
             </div>
             <div class="api-entry">
-                <h4>mvwprintw(WINDOW *win, int y, int x, const char *fmt, ...)</h4>
+                <h4>mvwprintw(WINDOW* win, int y, int x, const char* fmt, ...)</h4>
                 <p>Move to position in window and print.</p>
             </div>
             <div class="api-entry">
                 <h4>addch(chtype ch)</h4>
                 <p>Add a character to stdscr.</p>
-                <div class="code-block"><span class="function">addch</span>(<span class="string">'A'</span>);
+                <div class="code-block"><pre><code><span class="function">addch</span>(<span class="string">'A'</span>);
 <span class="function">addch</span>(<span class="string">'B'</span> | A_BOLD);  <span class="comment">// Bold B</span>
-<span class="function">refresh</span>();</div>
+<span class="function">refresh</span>();</code></pre></div>
             </div>
             <div class="api-entry">
-                <h4>waddch(WINDOW *win, chtype ch)</h4>
+                <h4>waddch(WINDOW* win, chtype ch)</h4>
                 <p>Add a character to a window.</p>
             </div>
             <div class="api-entry">
@@ -57,37 +57,37 @@
                 <p>Move and add a character to stdscr.</p>
             </div>
             <div class="api-entry">
-                <h4>mvwaddch(WINDOW *win, int y, int x, chtype ch)</h4>
+                <h4>mvwaddch(WINDOW* win, int y, int x, chtype ch)</h4>
                 <p>Move and add a character to a window.</p>
             </div>
             <div class="api-entry">
-                <h4>addstr(const char *str)</h4>
+                <h4>addstr(const char* str)</h4>
                 <p>Add a string to stdscr.</p>
-                <div class="code-block"><span class="function">addstr</span>(<span class="string">"Hello, World!"</span>);
-<span class="function">refresh</span>();</div>
+                <div class="code-block"><pre><code><span class="function">addstr</span>(<span class="string">"Hello, World!"</span>);
+<span class="function">refresh</span>();</code></pre></div>
             </div>
             <div class="api-entry">
-                <h4>waddstr(WINDOW *win, const char *str)</h4>
+                <h4>waddstr(WINDOW* win, const char* str)</h4>
                 <p>Add a string to a window.</p>
             </div>
             <div class="api-entry">
-                <h4>mvaddstr(int y, int x, const char *str)</h4>
+                <h4>mvaddstr(int y, int x, const char* str)</h4>
                 <p>Move and add a string to stdscr.</p>
             </div>
             <div class="api-entry">
-                <h4>mvwaddstr(WINDOW *win, int y, int x, const char *str)</h4>
+                <h4>mvwaddstr(WINDOW* win, int y, int x, const char* str)</h4>
                 <p>Move and add a string to a window.</p>
             </div>
             <div class="api-entry">
                 <h4>slk_init(int format)</h4>
                 <p>Initialize soft keys (3270 terminals).</p>
-                <div class="code-block"><span class="function">slk_init</span>(SLK_STDMODE);
+                <div class="code-block"><pre><code><span class="function">slk_init</span>(SLK_STDMODE);
 <span class="function">slk_set</span>(1, 1, <span class="string">"Help"</span>, 1);
 <span class="function">slk_set</span>(2, 1, <span class="string">"Exit"</span>, 1);
-<span class="function">slk_refresh</span>();</div>
+<span class="function">slk_refresh</span>();</code></pre></div>
             </div>
             <div class="api-entry">
-                <h4>slk_set(int labnum, int align, const char *label, int refresh)</h4>
+                <h4>slk_set(int labnum, int align, const char* label, int refresh)</h4>
                 <p>Set a soft key label.</p>
             </div>
             <div class="api-entry">
@@ -103,7 +103,7 @@
                 <p>Restore soft keys.</p>
             </div>
         </section>
-        <footer><p><a href="index.html">← Back to Index</a></p></footer>
+        <footer><p><a href="index.html">&#8592; Back to Index</a></p></footer>
     </div>
 </body>
 </html>

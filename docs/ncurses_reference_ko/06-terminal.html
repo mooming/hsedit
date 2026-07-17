@@ -18,14 +18,14 @@
         </div>
         <section>
             <div class="api-entry">
-                <h4>cols</h4>
+                <h4>COLS</h4>
                 <p>전역 변수: 터미널의 열 수.</p>
-                <div class="code-block"><span class="function">printw</span>(<span class="string">"터미널은 %d 열 너비입니다"</span>, COLS);</div>
+                <div class="code-block"><pre><code><span class="function">printw</span>(<span class="string">"터미널은 %d 열 너비입니다"</span>, COLS);</code></pre></div>
             </div>
             <div class="api-entry">
-                <h4>lines</h4>
+                <h4>LINES</h4>
                 <p>전역 변수: 터미널의 줄 수.</p>
-                <div class="code-block"><span class="function">printw</span>(<span class="string">"터미널은 %d 줄 높이입니다"</span>, LINES);</div>
+                <div class="code-block"><pre><code><span class="function">printw</span>(<span class="string">"터미널은 %d 줄 높이입니다"</span>, LINES);</code></pre></div>
             </div>
             <div class="api-entry">
                 <h4>CR</h4>
@@ -90,8 +90,8 @@
             <div class="api-entry">
                 <h4>newpad(int nlines, int ncols)</h4>
                 <p>패드 (스크롤 윈도우) 를 생성합니다.</p>
-                <div class="code-block">WINDOW* pad = <span class="function">newpad</span>(100, 80);
-<span class="function">prefresh</span>(pad, 0, 0, 0, 0, 20, 79);</div>
+                <div class="code-block"><pre><code>WINDOW* pad = <span class="function">newpad</span>(100, 80);
+<span class="function">prefresh</span>(pad, 0, 0, 0, 0, 20, 79);</code></pre></div>
             </div>
             <div class="api-entry">
                 <h4>prefresh(WINDOW* pad, int pminrow, int pmincol, int sminrow, int smincol, int smaxrow, int smaxcol)</h4>

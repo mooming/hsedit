@@ -14,31 +14,31 @@
     </header>
     <div class="container">
         <div class="breadcrumb">
-            <a href="index.html">Home</a><span>→</span> Utility
+            <a href="index.html">Home</a><span>&#8250;</span> Utility
         </div>
         <section>
             <div class="api-entry">
-                <h4>getyx(WINDOW *win, int *y, int *x)</h4>
+                <h4>getyx(WINDOW* win, int* y, int* x)</h4>
                 <p>Returns the current cursor position in a window.</p>
-                <div class="code-block">WINDOW *win = <span class="function">initscr</span>();
+                <div class="code-block"><pre><code>WINDOW* win = <span class="function">initscr</span>();
 <span class="keyword">int</span> y, x;
 <span class="function">getyx</span>(win, y, x);
-<span class="function">printw</span>(<span class="string">"Cursor at (%d, %d)"</span>, y, x);</div>
+<span class="function">printw</span>(<span class="string">"Cursor at (%d, %d)"</span>, y, x);</code></pre></div>
             </div>
             <div class="api-entry">
-                <h4>getbegyx(WINDOW *win, int *y, int *x)</h4>
+                <h4>getbegyx(WINDOW* win, int* y, int* x)</h4>
                 <p>Returns the top-left corner position of a window.</p>
             </div>
             <div class="api-entry">
-                <h4>getmaxyx(WINDOW *win, int *y, int *x)</h4>
+                <h4>getmaxyx(WINDOW* win, int* y, int* x)</h4>
                 <p>Returns the maximum dimensions of a window.</p>
             </div>
             <div class="api-entry">
-                <h4>getparyx(WINDOW *win, int *y, int *x)</h4>
+                <h4>getparyx(WINDOW* win, int* y, int* x)</h4>
                 <p>Returns the position of a window relative to its parent.</p>
             </div>
             <div class="api-entry">
-                <h4>mouse_trafo(int *y, int *x, int to_screen)</h4>
+                <h4>mouse_trafo(int* y, int* x, int to_screen)</h4>
                 <p>Converts between screen and window coordinates.</p>
             </div>
             <div class="api-entry">
@@ -52,18 +52,18 @@
             <div class="api-entry">
                 <h4>setscrreg(int top, int bottom)</h4>
                 <p>Sets the scroll region for stdscr.</p>
-                <div class="code-block"><span class="function">setscrreg</span>(5, 20);  <span class="comment">// Lines 5-20 are scrollable</span></div>
+                <div class="code-block"><pre><code><span class="function">setscrreg</span>(5, 20);  <span class="comment">// Lines 5-20 are scrollable</span></code></pre></div>
             </div>
             <div class="api-entry">
-                <h4>wsetscrreg(WINDOW *win, int top, int bottom)</h4>
+                <h4>wsetscrreg(WINDOW* win, int top, int bottom)</h4>
                 <p>Sets the scroll region for a window.</p>
             </div>
             <div class="api-entry">
-                <h4>scrollok(WINDOW *win, bool bf)</h4>
+                <h4>scrollok(WINDOW* win, bool bf)</h4>
                 <p>Enables/disables scrolling in a window.</p>
             </div>
             <div class="api-entry">
-                <h4>wborder_set(WINDOW *win, ...)</h4>
+                <h4>wborder_set(WINDOW* win, ...)</h4>
                 <p>Draws a border using Unicode characters.</p>
             </div>
             <div class="api-entry">
@@ -75,7 +75,7 @@
                 <p>Sets the file descriptor for type-ahead checking.</p>
             </div>
             <div class="api-entry">
-                <h4>meta(WINDOW *win, bool bf)</h4>
+                <h4>meta(WINDOW* win, bool bf)</h4>
                 <p>Enables/disables 8-bit input mode.</p>
             </div>
             <div class="api-entry">
@@ -99,7 +99,7 @@
                 <p>Clears from cursor to end of line.</p>
             </div>
         </section>
-        <footer><p><a href="index.html">← Back to Index</a></p></footer>
+        <footer><p><a href="index.html">&#8592; Back to Index</a></p></footer>
     </div>
 </body>
 </html>

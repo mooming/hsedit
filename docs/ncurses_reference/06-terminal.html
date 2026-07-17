@@ -3,29 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Terminal & Screen Management - ncurses API Reference</title>
+    <title>Terminal &amp; Screen Management - ncurses API Reference</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header>
         <div class="container">
-            <h1>Terminal & Screen Management</h1>
+            <h1>Terminal &amp; Screen Management</h1>
         </div>
     </header>
     <div class="container">
         <div class="breadcrumb">
-            <a href="index.html">Home</a><span>→</span> Terminal
+            <a href="index.html">Home</a><span>&#8250;</span> Terminal
         </div>
         <section>
             <div class="api-entry">
-                <h4>cols</h4>
+                <h4>COLS</h4>
                 <p>Global variable: number of columns in the terminal.</p>
-                <div class="code-block"><span class="function">printw</span>(<span class="string">"Terminal is %d columns wide"</span>, COLS);</div>
+                <div class="code-block"><pre><code><span class="function">printw</span>(<span class="string">"Terminal is %d columns wide"</span>, COLS);</code></pre></div>
             </div>
             <div class="api-entry">
-                <h4>lines</h4>
+                <h4>LINES</h4>
                 <p>Global variable: number of lines in the terminal.</p>
-                <div class="code-block"><span class="function">printw</span>(<span class="string">"Terminal is %d lines tall"</span>, LINES);</div>
+                <div class="code-block"><pre><code><span class="function">printw</span>(<span class="string">"Terminal is %d lines tall"</span>, LINES);</code></pre></div>
             </div>
             <div class="api-entry">
                 <h4>CR</h4>
@@ -64,15 +64,15 @@
                 <p>Returns TRUE if the terminal was resized.</p>
             </div>
             <div class="api-entry">
-                <h4>set_term(TERMINAL *term)</h4>
+                <h4>set_term(TERMINAL* term)</h4>
                 <p>Sets the current terminal.</p>
             </div>
             <div class="api-entry">
-                <h4>newterm(const char *type, FILE *outfd, FILE *infd)</h4>
+                <h4>newterm(const char* type, FILE* outfd, FILE* infd)</h4>
                 <p>Creates a new terminal.</p>
             </div>
             <div class="api-entry">
-                <h4>delterm(TERMINAL *term)</h4>
+                <h4>delterm(TERMINAL* term)</h4>
                 <p>Deletes a terminal.</p>
             </div>
             <div class="api-entry">
@@ -90,19 +90,19 @@
             <div class="api-entry">
                 <h4>newpad(int nlines, int ncols)</h4>
                 <p>Creates a pad (scrolling window).</p>
-                <div class="code-block">WINDOW *pad = <span class="function">newpad</span>(100, 80);
-<span class="function">prefresh</span>(pad, 0, 0, 0, 0, 20, 79);</div>
+                <div class="code-block"><pre><code>WINDOW* pad = <span class="function">newpad</span>(100, 80);
+<span class="function">prefresh</span>(pad, 0, 0, 0, 0, 20, 79);</code></pre></div>
             </div>
             <div class="api-entry">
-                <h4>prefresh(WINDOW *pad, int pminrow, int pmincol, int sminrow, int smincol, int smaxrow, int smaxcol)</h4>
+                <h4>prefresh(WINDOW* pad, int pminrow, int pmincol, int sminrow, int smincol, int smaxrow, int smaxcol)</h4>
                 <p>Refreshes a portion of a pad to the screen.</p>
             </div>
             <div class="api-entry">
-                <h4>pnoutrefresh(WINDOW *pad, int pminrow, int pmincol, int sminrow, int smincol, int smaxrow, int smaxcol)</h4>
-                <p>Like <code>prefresh()</code> but doesn't call <code>doupdate()</code>.</p>
+                <h4>pnoutrefresh(WINDOW* pad, int pminrow, int pmincol, int sminrow, int smincol, int smaxrow, int smaxcol)</h4>
+                <p>Like <code>prefresh()</code> but does not call <code>doupdate()</code>.</p>
             </div>
         </section>
-        <footer><p><a href="index.html">← Back to Index</a></p></footer>
+        <footer><p><a href="index.html">&#8592; Back to Index</a></p></footer>
     </div>
 </body>
 </html>

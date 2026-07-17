@@ -20,45 +20,45 @@
             <div class="api-entry">
                 <h4>newwin(int nlines, int ncols, int begin_y, int begin_x)</h4>
                 <p>Creates a new window.</p>
-                <div class="code-block">WINDOW* subwin = <span class="function">newwin</span>(5, 40, 5, 10);
+                <div class="code-block"><pre><code>WINDOW* subwin = <span class="function">newwin</span>(5, 40, 5, 10);
 <span class="keyword">if</span> (subwin)
 {
     <span class="function">wprintw</span>(subwin, <span class="string">"Sub-window content"</span>);
     <span class="function">wrefresh</span>(subwin);
-}</div>
+}</code></pre></div>
             </div>
             <div class="api-entry">
                 <h4>delwin(WINDOW* win)</h4>
                 <p>Deletes a window and frees its memory.</p>
-                <div class="code-block">WINDOW* win = <span class="function">newwin</span>(10, 20, 0, 0);
+                <div class="code-block"><pre><code>WINDOW* win = <span class="function">newwin</span>(10, 20, 0, 0);
 <span class="comment">// ... use window ...</span>
-<span class="function">delwin</span>(win);</div>
+<span class="function">delwin</span>(win);</code></pre></div>
             </div>
             <div class="api-entry">
                 <h4>mvwin(WINDOW* win, int y, int x)</h4>
                 <p>Moves a window to a new position.</p>
-                <div class="code-block">WINDOW* win = <span class="function">newwin</span>(5, 20, 0, 0);
+                <div class="code-block"><pre><code>WINDOW* win = <span class="function">newwin</span>(5, 20, 0, 0);
 <span class="function">mvprintw</span>(0, 0, <span class="string">"Before move"</span>);
 <span class="function">mvwin</span>(win, 10, 10);
 <span class="function">mvprintw</span>(0, 0, <span class="string">"After move"</span>);
-<span class="function">refresh</span>();</div>
+<span class="function">refresh</span>();</code></pre></div>
             </div>
             <div class="api-entry">
                 <h4>wresize(WINDOW* win, int nlines, int ncols)</h4>
                 <p>Changes the size of an existing window.</p>
-                <div class="code-block">WINDOW* win = <span class="function">newwin</span>(5, 20, 0, 0);
+                <div class="code-block"><pre><code>WINDOW* win = <span class="function">newwin</span>(5, 20, 0, 0);
 <span class="function">wresize</span>(win, 10, 40);
 <span class="function">mvprintw</span>(0, 0, <span class="string">"Resized window"</span>);
-<span class="function">wrefresh</span>(win);</div>
+<span class="function">wrefresh</span>(win);</code></pre></div>
             </div>
             <div class="api-entry">
                 <h4>subwin(WINDOW* orig, int nlines, int ncols, int begin_y, int begin_x)</h4>
                 <p>Creates a sub-window that shares memory with the original window.</p>
-                <div class="code-block">WINDOW* main_win = <span class="function">initscr</span>();
+                <div class="code-block"><pre><code>WINDOW* main_win = <span class="function">initscr</span>();
 WINDOW* sub = <span class="function">subwin</span>(main_win, 5, 20, 5, 5);
 <span class="function">wattron</span>(sub, A_REVERSE);
 <span class="function">wprintw</span>(sub, <span class="string">"Sub-window"</span>);
-<span class="function">wrefresh</span>(sub);</div>
+<span class="function">wrefresh</span>(sub);</code></pre></div>
             </div>
             <div class="api-entry">
                 <h4>derwin(WINDOW* orig, int nlines, int ncols, int begin_y, int begin_x)</h4>
@@ -79,9 +79,9 @@ WINDOW* sub = <span class="function">subwin</span>(main_win, 5, 20, 5, 5);
             <div class="api-entry">
                 <h4>touchwin(WINDOW* win)</h4>
                 <p>Marks all lines in a window as needing refresh.</p>
-                <div class="code-block">WINDOW* win = <span class="function">newwin</span>(10, 40, 0, 0);
+                <div class="code-block"><pre><code>WINDOW* win = <span class="function">newwin</span>(10, 40, 0, 0);
 <span class="function">touchwin</span>(win);
-<span class="function">wrefresh</span>(win);</div>
+<span class="function">wrefresh</span>(win);</code></pre></div>
             </div>
             <div class="api-entry">
                 <h4>touchline(WINDOW* win, int start, int count)</h4>
@@ -110,52 +110,52 @@ WINDOW* sub = <span class="function">subwin</span>(main_win, 5, 20, 5, 5);
             <div class="api-entry">
                 <h4>waddch(WINDOW* win, chtype ch)</h4>
                 <p>Adds a character to a window.</p>
-                <div class="code-block">WINDOW* win = <span class="function">newwin</span>(5, 20, 0, 0);
+                <div class="code-block"><pre><code>WINDOW* win = <span class="function">newwin</span>(5, 20, 0, 0);
 <span class="function">waddch</span>(win, <span class="string">'A'</span>);
 <span class="function">waddch</span>(win, <span class="string">'B'</span>);
-<span class="function">wrefresh</span>(win);</div>
+<span class="function">wrefresh</span>(win);</code></pre></div>
             </div>
             <div class="api-entry">
                 <h4>wmove(WINDOW* win, int y, int x)</h4>
                 <p>Moves the cursor within a window.</p>
-                <div class="code-block">WINDOW* win = <span class="function">newwin</span>(10, 40, 0, 0);
+                <div class="code-block"><pre><code>WINDOW* win = <span class="function">newwin</span>(10, 40, 0, 0);
 <span class="function">wmove</span>(win, 5, 10);
 <span class="function">wprintw</span>(win, <span class="string">"Cursor at 5,10"</span>);
-<span class="function">wrefresh</span>(win);</div>
+<span class="function">wrefresh</span>(win);</code></pre></div>
             </div>
             <div class="api-entry">
                 <h4>wrefresh(WINDOW* win)</h4>
                 <p>Updates the physical screen to match a window.</p>
-                <div class="code-block">WINDOW* win = <span class="function">newwin</span>(10, 40, 0, 0);
+                <div class="code-block"><pre><code>WINDOW* win = <span class="function">newwin</span>(10, 40, 0, 0);
 <span class="function">wprintw</span>(win, <span class="string">"Content"</span>);
-<span class="function">wrefresh</span>(win);</div>
+<span class="function">wrefresh</span>(win);</code></pre></div>
             </div>
             <div class="api-entry">
                 <h4>wnoutrefresh(WINDOW* win)</h4>
                 <p>Like <code>wrefresh()</code> but does not call <code>doupdate()</code>.</p>
-                <div class="code-block">WINDOW* win1 = <span class="function">newwin</span>(5, 20, 0, 0);
+                <div class="code-block"><pre><code>WINDOW* win1 = <span class="function">newwin</span>(5, 20, 0, 0);
 WINDOW* win2 = <span class="function">newwin</span>(5, 20, 0, 25);
 <span class="function">wprintw</span>(win1, <span class="string">"Window 1"</span>);
 <span class="function">wprintw</span>(win2, <span class="string">"Window 2"</span>);
 <span class="function">wnoutrefresh</span>(win1);
 <span class="function">wnoutrefresh</span>(win2);
-<span class="function">doupdate</span>();</div>
+<span class="function">doupdate</span>();</code></pre></div>
             </div>
             <div class="api-entry">
                 <h4>wborder(WINDOW* win, ...)</h4>
                 <p>Draws a border around a window.</p>
-                <div class="code-block">WINDOW* win = <span class="function">newwin</span>(10, 40, 5, 5);
+                <div class="code-block"><pre><code>WINDOW* win = <span class="function">newwin</span>(10, 40, 5, 5);
 <span class="function">wborder</span>(win, '|', '|', '-', '-', '+', '+', '+', '+');
-<span class="function">wrefresh</span>(win);</div>
+<span class="function">wrefresh</span>(win);</code></pre></div>
             </div>
             <div class="api-entry">
                 <h4>wattron(WINDOW* win, attr_t attr)</h4>
                 <p>TURNS on attributes (bold, reverse, etc.).</p>
-                <div class="code-block">WINDOW* win = <span class="function">newwin</span>(5, 20, 0, 0);
+                <div class="code-block"><pre><code>WINDOW* win = <span class="function">newwin</span>(5, 20, 0, 0);
 <span class="function">wattron</span>(win, A_BOLD);
 <span class="function">wprintw</span>(win, <span class="string">"Bold text"</span>);
 <span class="function">wattroff</span>(win, A_BOLD);
-<span class="function">wrefresh</span>(win);</div>
+<span class="function">wrefresh</span>(win);</code></pre></div>
             </div>
             <div class="api-entry">
                 <h4>wattroff(WINDOW* win, attr_t attr)</h4>

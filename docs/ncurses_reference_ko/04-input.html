@@ -20,17 +20,17 @@
             <div class="api-entry">
                 <h4>getch()</h4>
                 <p>stdscr 에서 단일 문자를 읽습니다 (블로킹).</p>
-                <div class="code-block">int ch = <span class="function">getch</span>();
+                <div class="code-block"><pre><code>int ch = <span class="function">getch</span>();
 <span class="keyword">if</span> (ch == KEY_UP)
 {
     <span class="comment">// 방향 키 위 처리</span>
-}</div>
+}</code></pre></div>
             </div>
             <div class="api-entry">
                 <h4>wgetch(WINDOW* win)</h4>
                 <p>윈도우에서 문자를 읽습니다.</p>
-                <div class="code-block">WINDOW* win = <span class="function">newwin</span>(10, 40, 0, 0);
-int ch = <span class="function">wgetch</span>(win);</div>
+                <div class="code-block"><pre><code>WINDOW* win = <span class="function">newwin</span>(10, 40, 0, 0);
+int ch = <span class="function">wgetch</span>(win);</code></pre></div>
             </div>
             <div class="api-entry">
                 <h4>mvgetch(int y, int x)</h4>
@@ -43,12 +43,12 @@ int ch = <span class="function">wgetch</span>(win);</div>
             <div class="api-entry">
                 <h4>nodelay(WINDOW* win, bool delay)</h4>
                 <p>입력에 대한 비블로킹 모드를 설정합니다.</p>
-                <div class="code-block"><span class="function">nodelay</span>(stdscr, TRUE);
+                <div class="code-block"><pre><code><span class="function">nodelay</span>(stdscr, TRUE);
 <span class="keyword">int</span> ch = <span class="function">getch</span>();
 <span class="keyword">if</span> (ch == ERR)
 {
     <span class="comment">// 입력 불가</span>
-}</div>
+}</code></pre></div>
             </div>
             <div class="api-entry">
                 <h4>halfdelay(int tenths)</h4>
@@ -77,14 +77,14 @@ int ch = <span class="function">wgetch</span>(win);</div>
             <div class="api-entry">
                 <h4>ungetch(int ch)</h4>
                 <p>문자를 입력 버퍼에 다시 밀어넣습니다.</p>
-                <div class="code-block"><span class="function">ungetch</span>(<span class="string">'q'</span>);  <span class="comment">// 다음 getch() 가 'q' 반환</span></div>
+                <div class="code-block"><pre><code><span class="function">ungetch</span>(<span class="string">'q'</span>);  <span class="comment">// 다음 getch() 가 'q' 반환</span></code></pre></div>
             </div>
             <div class="api-entry">
                 <h4>keypad(WINDOW* win, bool bf)</h4>
                 <p>특수 키에 대한 키패드 모드를 활성화/비활성화합니다.</p>
-                <div class="code-block"><span class="function">keypad</span>(stdscr, TRUE);
+                <div class="code-block"><pre><code><span class="function">keypad</span>(stdscr, TRUE);
 <span class="keyword">int</span> ch = <span class="function">getch</span>();
-<span class="keyword">if</span> (ch == KEY_UP) { ... }</div>
+<span class="keyword">if</span> (ch == KEY_UP) { ... }</code></pre></div>
             </div>
             <div class="api-entry">
                 <h4>set_escdelay(int ms)</h4>
@@ -105,8 +105,8 @@ int ch = <span class="function">wgetch</span>(win);</div>
             <div class="api-entry">
                 <h4>mousemask(mmask_t newmask, mmask_t* oldmask)</h4>
                 <p>마우스 이벤트를 활성화/비활성화합니다.</p>
-                <div class="code-block"><span class="function">mousemask</span>(BUTTON1_CLICKED | BUTTON1_DOUBLE_CLICKED, <span class="keyword">nullptr</span>);
-<span class="function">getch</span>();  <span class="comment">// 이제 마우스 이벤트 수신</span></div>
+                <div class="code-block"><pre><code><span class="function">mousemask</span>(BUTTON1_CLICKED | BUTTON1_DOUBLE_CLICKED, <span class="keyword">nullptr</span>);
+<span class="function">getch</span>();  <span class="comment">// 이제 마우스 이벤트 수신</span></code></pre></div>
             </div>
             <div class="api-entry">
                 <h4>wgetmouse(WINDOW* win, int* y, int* x)</h4>
