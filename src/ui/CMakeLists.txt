@@ -10,7 +10,7 @@ set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -O0")
 set (CMAKE_CXX_FLAGS_DEV "${CMAKE_CXX_FLAGS_DEBUG} -O1")
 set (CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
 
-set (CMAKE_CXX_STANDARD 17)
+set (CMAKE_CXX_STANDARD 23)
 
 if (APPLE)
     set(PLATFORM_SOURCES
@@ -33,9 +33,11 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
 add_library (libhsedit_ui STATIC 
  TextApplication.cpp
  TextWindow.cpp
+ TextWindowBuffer.cpp
  Vec2i.cpp
  TextApplication.h
  TextWindow.h
+ TextWindowBuffer.h
  Vec2i.h
 ${PLATFORM_SOURCES}
 )
