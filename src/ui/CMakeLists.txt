@@ -31,12 +31,12 @@ include_directories ( ${CMAKE_SOURCE_DIR}
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
 add_library (libhsedit_ui STATIC 
- Cursor.cpp
  TextApplication.cpp
  TextWindow.cpp
- Cursor.h
+ Vec2i.cpp
  TextApplication.h
  TextWindow.h
+ Vec2i.h
 ${PLATFORM_SOURCES}
 )
 

@@ -6,4 +6,16 @@
 
 namespace hs::ui
 {
+
+TextWindow::TextWindow()
+	: window(nullptr)
+{
+
+	window = newwin(5, 40, 5, 10);
+}
+
+TextWindow::~TextWindow()
+{
+
+}
 } // hs::ui
