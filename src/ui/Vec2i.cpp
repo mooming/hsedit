@@ -13,17 +13,19 @@ namespace hs::ui
 
 /// @brief Default constructor: initializes to origin (0, 0)
 Vec2i::Vec2i()
-	: row(0)
-	, column(0)
-{}
+{
+	row = 0;
+	column = 0;
+}
 
 /// @brief Parameterized constructor
 /// @param row Initial row/y coordinate
 /// @param column Initial column/x coordinate
 Vec2i::Vec2i(int row, int column)
-	: row(row)
-	, column(column)
-{}
+{
+	this->row = row;
+	this->column = column;
+}
 
 // ========================================================================
 // DESTRUCTOR
@@ -31,7 +33,8 @@ Vec2i::Vec2i(int row, int column)
 
 /// @brief Default destructor (no resources to clean up)
 Vec2i::~Vec2i()
-{}
+{
+}
 
 // ========================================================================
 // ARITHMETIC OPERATORS (return new Vec2i)
