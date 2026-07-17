@@ -1,14 +1,16 @@
 #include <ncurses.h>
 
+static WINDOW* footerWin = nullptr;
+
 void createFooter()
 {
-    int rows   = LINES;
-    int cols   = COLS;
-    int cur_y  = getcury(stdscr);
-    int cur_x  = getcurx(stdscr);
+    int rows = LINES;
+    int cols = COLS;
+    int cur_y, cur_x;
+    getyx(stdscr, cur_y, cur_x);
 
-    WINDOW* footerWin = newwin(0, rows - 1, cols, rows);
-    wprintw(footerWin, "LINES: %d, COLS: %d", cur_y, cur_x);
+    footerWin = newwin(5, 40, 10, 5);
+    wprintw(footerWin, "LINES: %d, COLS: %d, cursor: (%d, %d)", rows, cols, cur_y, cur_x);
     wrefresh(footerWin);
 }
 
@@ -20,11 +22,12 @@ int main()
     keypad(stdscr, TRUE);
 
     mvprintw(0, 0, "Hello, ncurses!");
-    createFooter();
-
     refresh();
+
+    createFooter();
     getch();
 
+    delwin(footerWin);
     endwin();
 
     return 0;
