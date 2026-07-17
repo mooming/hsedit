@@ -1,5 +1,5 @@
 cmake_minimum_required (VERSION 3.12)
-project (hsedit)
+project (tutorial)
 
 set (CMAKE_CONFIGURATION_TYPES "Debug;Dev;Release" CACHE STRING "" FORCE)
 if (NOT CMAKE_BUILD_TYPE)
@@ -28,23 +28,7 @@ endif (MSVC)
 include_directories ( ${CMAKE_SOURCE_DIR}
  ${CMAKE_SOURCE_DIR}/include
  )
-add_subdirectory (app)
-add_subdirectory (tests)
-add_subdirectory (src)
-add_subdirectory (modules)
 
 
 
-
-# Global CMake setup - ncurses
-find_library(NCURSES_LIBRARY ncurses)
-if(NCURSES_LIBRARY)
-    add_library(ncurses UNKNOWN IMPORTED)
-    set_target_properties(ncurses PROPERTIES
-        IMPORTED_LOCATION "${NCURSES_LIBRARY}"
-    )
-    message(STATUS "ncurses found: ${NCURSES_LIBRARY}")
-else()
-    message(WARNING "ncurses not found - linking will fail for modules that need it")
-endif()
 

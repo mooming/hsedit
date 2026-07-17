@@ -1,0 +1,11 @@
+# Global CMake setup - ncurses
+find_library(NCURSES_LIBRARY ncurses)
+if(NCURSES_LIBRARY)
+    add_library(ncurses UNKNOWN IMPORTED)
+    set_target_properties(ncurses PROPERTIES
+        IMPORTED_LOCATION "${NCURSES_LIBRARY}"
+    )
+    message(STATUS "ncurses found: ${NCURSES_LIBRARY}")
+else()
+    message(WARNING "ncurses not found - linking will fail for modules that need it")
+endif()

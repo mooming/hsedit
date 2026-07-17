@@ -1,0 +1,3 @@
+[submodule "external/makebuilder"]
+	path = external/makebuilder
+	url = git@github.com:mooming/makebuilder.git

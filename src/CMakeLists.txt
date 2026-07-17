@@ -1,5 +1,5 @@
 cmake_minimum_required (VERSION 3.12)
-project (hsedit)
+project (libhsedit)
 
 set (CMAKE_CONFIGURATION_TYPES "Debug;Dev;Release" CACHE STRING "" FORCE)
 if (NOT CMAKE_BUILD_TYPE)
@@ -28,23 +28,23 @@ endif (MSVC)
 include_directories ( ${CMAKE_SOURCE_DIR}
  ${CMAKE_SOURCE_DIR}/include
  )
-add_subdirectory (app)
-add_subdirectory (tests)
-add_subdirectory (src)
-add_subdirectory (modules)
+
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
+add_library (libhsedit STATIC 
+ event_bus.cpp
+ module_registry.cpp
+ event_bus.h
+ module_registry.h
+${PLATFORM_SOURCES}
+)
+
+if (APPLE)
+	include_directories ( /System/Library/Frameworks )
+	set(MACOSX_BUNDLE_TRUE TRUE)
+	set(MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/Info.plist)
+endif (APPLE)
+
+install (TARGETS libhsedit DESTINATION ${CMAKE_SOURCE_DIR}/lib)
 
 
-
-
-# Global CMake setup - ncurses
-find_library(NCURSES_LIBRARY ncurses)
-if(NCURSES_LIBRARY)
-    add_library(ncurses UNKNOWN IMPORTED)
-    set_target_properties(ncurses PROPERTIES
-        IMPORTED_LOCATION "${NCURSES_LIBRARY}"
-    )
-    message(STATUS "ncurses found: ${NCURSES_LIBRARY}")
-else()
-    message(WARNING "ncurses not found - linking will fail for modules that need it")
-endif()
 

@@ -28,6 +28,9 @@ CMakeFiles/
 cmake_install.cmake
 Makefile
 
+# Library output
+lib/
+
 # Page cache (created at runtime)
 pages/
 
