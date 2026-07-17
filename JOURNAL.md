@@ -25,3 +25,11 @@ hsedit is a TUI text editor project with CMake build system. The user wants to r
 ### 2025-07-17: makebuilder added as git submodule
 - `external/makebuilder` is now a git submodule (cloned from git@github.com:mooming/makebuilder.git)
 - Submodule keeps the tool versioned alongside the project
+
+### 2025-07-17: Build system fully integrated and verified
+- All three targets build in Release, Dev, and Debug configs
+- `hsedit` executable, `terminal_module` executable, `hsedit_tests` executable all compile and run
+- ncurses found via `find_library` in root `customCMake.txt`, linked via imported target
+- `lib/` added to `.gitignore` (build output)
+- README.md updated with full build workflow
+- Commit: `6f004ba`
