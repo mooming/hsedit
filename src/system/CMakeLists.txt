@@ -1,5 +1,5 @@
 cmake_minimum_required (VERSION 3.12)
-project (libhsedit_ui)
+project (libhsedit_system)
 
 set (CMAKE_CONFIGURATION_TYPES "Debug;Dev;Release" CACHE STRING "" FORCE)
 if (NOT CMAKE_BUILD_TYPE)
@@ -30,13 +30,11 @@ include_directories ( ${CMAKE_SOURCE_DIR}
  )
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
-add_library (libhsedit_ui STATIC 
- TextApplication.cpp
- TextWindow.cpp
- Vec2i.cpp
- TextApplication.h
- TextWindow.h
- Vec2i.h
+add_library (libhsedit_system STATIC 
+ TextBuffer.cpp
+ VirtualTextBuffer.cpp
+ TextBuffer.h
+ VirtualTextBuffer.h
 ${PLATFORM_SOURCES}
 )
 
@@ -46,7 +44,7 @@ if (APPLE)
 	set(MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/Info.plist)
 endif (APPLE)
 
-install (TARGETS libhsedit_ui DESTINATION ${CMAKE_SOURCE_DIR}/lib)
+install (TARGETS libhsedit_system DESTINATION ${CMAKE_SOURCE_DIR}/lib)
 
 
 

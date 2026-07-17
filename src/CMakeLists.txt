@@ -30,6 +30,7 @@ include_directories ( ${CMAKE_SOURCE_DIR}
  )
 add_subdirectory (app)
 add_subdirectory (module)
+add_subdirectory (system)
 add_subdirectory (ui)
 
 

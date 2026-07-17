@@ -2,16 +2,16 @@
 // Created by Hansol Park on 2026. 7. 17..
 //
 
-#include "TextWindowBuffer.h"
+#include "TextBuffer.h"
 
-namespace hs::ui
+namespace hs
 {
 // ========================================================================
 // CONSTRUCTORS
 // ========================================================================
 
 /// @brief Default constructor: creates empty buffer starting at line 0
-TextWindowBuffer::TextWindowBuffer()
+TextBuffer::TextBuffer()
 	: startLine(0)
 	, hintLineWidth(0)
 {
@@ -21,7 +21,7 @@ TextWindowBuffer::TextWindowBuffer()
 /// @param startLine Starting line index
 /// @param hintNumLines Hint for initial line count
 /// @param hintNumLineWidth Hint for initial line width
-TextWindowBuffer::TextWindowBuffer(size_t startLine, size_t hintNumLines, size_t hintNumLineWidth)
+TextBuffer::TextBuffer(size_t startLine, size_t hintNumLines, size_t hintNumLineWidth)
 	: startLine(startLine)
 	, hintLineWidth(hintNumLineWidth)
 {
@@ -35,7 +35,7 @@ TextWindowBuffer::TextWindowBuffer(size_t startLine, size_t hintNumLines, size_t
 /// @brief Split a line by newline characters and append to buffer
 /// @param dest Destination buffer to append to
 /// @param line Input line (may contain newline characters)
-static void AppendSplitLines(typename TextWindowBuffer::TLines& dest, const typename TextWindowBuffer::TLine& line)
+static void AppendSplitLines(typename TextBuffer::TLines& dest, const typename TextBuffer::TLine& line)
 {
 	size_t start = 0;
 	size_t pos = line.find(u8'\n');
@@ -56,7 +56,7 @@ static void AppendSplitLines(typename TextWindowBuffer::TLines& dest, const type
 
 /// @brief Append an empty line to the end of the buffer and return reference for modification
 /// @return Reference to the newly added line
-TextWindowBuffer::TLine& TextWindowBuffer::AddLine()
+TextBuffer::TLine& TextBuffer::AddLine()
 {
 	auto& line = lines.emplace_back();
 	line.reserve(hintLineWidth);
@@ -66,14 +66,14 @@ TextWindowBuffer::TLine& TextWindowBuffer::AddLine()
 
 /// @brief Append a line to the end of the buffer, splitting by newlines if present
 /// @param line Line content (may contain newline characters)
-void TextWindowBuffer::AddLine(const TLine& line)
+void TextBuffer::AddLine(const TLine& line)
 {
 	AppendSplitLines(lines, line);
 }
 
 /// @brief Append a line using move semantics, splitting by newlines if present
 /// @param line Line content (moved, may contain newline characters)
-void TextWindowBuffer::EmplaceLine(TLine&& line)
+void TextBuffer::EmplaceLine(TLine&& line)
 {
 	AppendSplitLines(lines, line);
 }
@@ -81,7 +81,7 @@ void TextWindowBuffer::EmplaceLine(TLine&& line)
 /// @brief Insert a line at a specific position, splitting by newlines if present
 /// @param lineNumber Line index to insert at
 /// @param line Line content (may contain newline characters)
-void TextWindowBuffer::InsertLine(TLineIndex lineNumber, const TLine& line)
+void TextBuffer::InsertLine(TLineIndex lineNumber, const TLine& line)
 {
 	AppendSplitLines(lines, line);
 }
@@ -89,7 +89,7 @@ void TextWindowBuffer::InsertLine(TLineIndex lineNumber, const TLine& line)
 /// @brief Insert a line at a specific position using move semantics, splitting by newlines if present
 /// @param lineNumber Line index to insert at
 /// @param line Line content (moved, may contain newline characters)
-void TextWindowBuffer::InsertLine(TLineIndex lineNumber, TLine&& line)
+void TextBuffer::InsertLine(TLineIndex lineNumber, TLine&& line)
 {
 	AppendSplitLines(lines, line);
 }
@@ -97,7 +97,7 @@ void TextWindowBuffer::InsertLine(TLineIndex lineNumber, TLine&& line)
 /// @brief Replace a line at a specific position with const reference, splitting by newlines if present
 /// @param lineNumber Line index to replace
 /// @param line New line content (may contain newline characters)
-void TextWindowBuffer::ReplaceLine(TLineIndex lineNumber, const TLine& line)
+void TextBuffer::ReplaceLine(TLineIndex lineNumber, const TLine& line)
 {
 	lines.erase(lines.begin() + lineNumber);
 	AppendSplitLines(lines, line);
@@ -106,7 +106,7 @@ void TextWindowBuffer::ReplaceLine(TLineIndex lineNumber, const TLine& line)
 /// @brief Replace a line at a specific position using move semantics, splitting by newlines if present
 /// @param lineNumber Line index to replace
 /// @param line New line content (moved, may contain newline characters)
-void TextWindowBuffer::ReplaceLine(TLineIndex lineNumber, TLine&& line)
+void TextBuffer::ReplaceLine(TLineIndex lineNumber, TLine&& line)
 {
 	lines.erase(lines.begin() + lineNumber);
 	AppendSplitLines(lines, line);
@@ -115,7 +115,7 @@ void TextWindowBuffer::ReplaceLine(TLineIndex lineNumber, TLine&& line)
 /// @brief Extract and remove a line from the buffer
 /// @param lineNumber Line index to extract
 /// @return Extracted line content
-TextWindowBuffer::TLine TextWindowBuffer::ExtractLine(TLineIndex lineNumber)
+TextBuffer::TLine TextBuffer::ExtractLine(TLineIndex lineNumber)
 {
 	TLine extracted = std::move(lines[lineNumber]);
 	lines.erase(lines.begin() + lineNumber);
@@ -124,7 +124,7 @@ TextWindowBuffer::TLine TextWindowBuffer::ExtractLine(TLineIndex lineNumber)
 
 /// @brief Remove a line from the buffer
 /// @param lineNumber Line index to remove
-void TextWindowBuffer::RemoveLine(TLineIndex lineNumber)
+void TextBuffer::RemoveLine(TLineIndex lineNumber)
 {
 	lines.erase(lines.begin() + lineNumber);
 }
@@ -132,7 +132,7 @@ void TextWindowBuffer::RemoveLine(TLineIndex lineNumber)
 /// @brief Remove a range of lines from the buffer
 /// @param start Start line index (inclusive)
 /// @param end End line index (exclusive)
-void TextWindowBuffer::RemoveLines(TLineIndex start, TLineIndex end)
+void TextBuffer::RemoveLines(TLineIndex start, TLineIndex end)
 {
 	lines.erase(lines.begin() + start, lines.begin() + end);
 }
@@ -144,9 +144,9 @@ void TextWindowBuffer::RemoveLines(TLineIndex start, TLineIndex end)
 /// @brief Split the buffer at a specific line
 /// @param splitLine Line index to split at
 /// @return New buffer containing lines from splitLine onwards
-TextWindowBuffer TextWindowBuffer::Split(TLineIndex splitLine)
+TextBuffer TextBuffer::Split(TLineIndex splitLine)
 {
-	TextWindowBuffer newBuffer(startLine + splitLine, 0, hintLineWidth);
+	TextBuffer newBuffer(startLine + splitLine, 0, hintLineWidth);
 	newBuffer.lines.reserve(lines.size() - splitLine);
 
 	// Move lines to new buffer

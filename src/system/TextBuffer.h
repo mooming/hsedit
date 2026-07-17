@@ -7,10 +7,10 @@
 #include <string>
 #include <vector>
 
-namespace hs::ui
+namespace hs
 {
 
-class TextWindowBuffer final
+class TextBuffer final
 {
 public:
 	using TLine = std::u8string;
@@ -23,9 +23,9 @@ private:
 	TLines lines;
 
 public:
-	TextWindowBuffer();
-	TextWindowBuffer(TLineIndex startLine, TLineIndex hintNumLines, TLineIndex hintNumLineWidth);
-	~TextWindowBuffer() = default;
+	TextBuffer();
+	TextBuffer(TLineIndex startLine, TLineIndex hintNumLines, TLineIndex hintNumLineWidth);
+	~TextBuffer() = default;
 
 	[[nodiscard]] auto& GetBuffer() { return lines; }
 	[[nodiscard]] auto& GetBuffer() const { return lines; }
@@ -45,7 +45,7 @@ public:
 	void RemoveLine(TLineIndex lineNumber);
 	void RemoveLines(TLineIndex start, TLineIndex end);
 
-	TextWindowBuffer Split(TLineIndex splitLine);
+	TextBuffer Split(TLineIndex splitLine);
 };
 
 } // namespace hs

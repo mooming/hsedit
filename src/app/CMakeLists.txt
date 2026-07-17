@@ -46,8 +46,8 @@ endif (APPLE)
 install (TARGETS hsedit DESTINATION ${CMAKE_SOURCE_DIR}/bin)
 
 
-target_link_libraries (hsedit libhsedit_ui)
+target_link_libraries (hsedit libhsedit_system)
 
-add_dependencies (hsedit libhsedit_ui)
+add_dependencies (hsedit libhsedit_system)
 
 
