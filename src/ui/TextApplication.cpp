@@ -4,5 +4,25 @@
 
 #include "TextApplication.h"
 
-namespace hs {
-} // hs
+#include <ncurses.h>
+
+
+namespace hs::ui
+{
+
+TextApplication::TextApplication()
+{
+	initscr();
+}
+
+TextApplication::~TextApplication()
+{
+	endwin();
+}
+
+void TextApplication::EndFrame()
+{
+	doupdate();
+}
+
+} // hs::ui

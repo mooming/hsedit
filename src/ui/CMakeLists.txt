@@ -1,5 +1,5 @@
 cmake_minimum_required (VERSION 3.12)
-project (src)
+project (libhsedit_ui)
 
 set (CMAKE_CONFIGURATION_TYPES "Debug;Dev;Release" CACHE STRING "" FORCE)
 if (NOT CMAKE_BUILD_TYPE)
@@ -28,10 +28,25 @@ endif (MSVC)
 include_directories ( ${CMAKE_SOURCE_DIR}
  ${CMAKE_SOURCE_DIR}/include
  )
-add_subdirectory (app)
-add_subdirectory (module)
-add_subdirectory (ui)
 
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
+add_library (libhsedit_ui STATIC 
+ Cursor.cpp
+ TextApplication.cpp
+ TextWindow.cpp
+ Cursor.h
+ TextApplication.h
+ TextWindow.h
+${PLATFORM_SOURCES}
+)
+
+if (APPLE)
+	include_directories ( /System/Library/Frameworks )
+	set(MACOSX_BUNDLE_TRUE TRUE)
+	set(MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/Info.plist)
+endif (APPLE)
+
+install (TARGETS libhsedit_ui DESTINATION ${CMAKE_SOURCE_DIR}/lib)
 
 
 

@@ -4,12 +4,17 @@
 
 #pragma once
 
-namespace hs
+namespace hs::ui
 {
 
-class TextApplication
+class TextApplication final
 {
+public:
+	TextApplication();
+	~TextApplication();
 
+	// Copy window buffer to stdscr
+	void EndFrame();
 };
 
 } // namespace hs
