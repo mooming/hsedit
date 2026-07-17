@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>윈도우 관리 - ncurses API 레퍼런스</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>윈도우 관리</h1>
+        </div>
+    </header>
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="index.html">홈</a><span>&#8250;</span> 윈도우
+        </div>
+        <section>
+            <div class="api-entry">
+                <h4>newwin(int nlines, int ncols, int begin_y, int begin_x)</h4>
+                <p>새로운 윈도우를 생성합니다.</p>
+                <div class="code-block">WINDOW* subwin = <span class="function">newwin</span>(5, 40, 5, 10);
+<span class="keyword">if</span> (subwin)
+{
+    <span class="function">wprintw</span>(subwin, <span class="string">"서브윈도우 내용"</span>);
+    <span class="function">wrefresh</span>(subwin);
+}</div>
+            </div>
+            <div class="api-entry">
+                <h4>delwin(WINDOW* win)</h4>
+                <p>윈도우를 삭제하고 메모리를 해제합니다.</p>
+                <div class="code-block">WINDOW* win = <span class="function">newwin</span>(10, 20, 0, 0);
+<span class="comment">// ... 윈도우 사용 ...</span>
+<span class="function">delwin</span>(win);</div>
+            </div>
+            <div class="api-entry">
+                <h4>mvwin(WINDOW* win, int y, int x)</h4>
+                <p>윈도우를 새 위치로 이동합니다.</p>
+                <div class="code-block">WINDOW* win = <span class="function">newwin</span>(5, 20, 0, 0);
+<span class="function">mvprintw</span>(0, 0, <span class="string">"이동 전"</span>);
+<span class="function">mvwin</span>(win, 10, 10);
+<span class="function">mvprintw</span>(0, 0, <span class="string">"이동 후"</span>);
+<span class="function">refresh</span>();</div>
+            </div>
+            <div class="api-entry">
+                <h4>wresize(WINDOW* win, int nlines, int ncols)</h4>
+                <p>기존 윈도우의 크기를 변경합니다.</p>
+                <div class="code-block">WINDOW* win = <span class="function">newwin</span>(5, 20, 0, 0);
+<span class="function">wresize</span>(win, 10, 40);
+<span class="function">mvprintw</span>(0, 0, <span class="string">"크기 변경된 윈도우"</span>);
+<span class="function">wrefresh</span>(win);</div>
+            </div>
+            <div class="api-entry">
+                <h4>subwin(WINDOW* orig, int nlines, int ncols, int begin_y, int begin_x)</h4>
+                <p>원본 윈도우와 메모리를 공유하는 서브윈도우를 생성합니다.</p>
+                <div class="code-block">WINDOW* main_win = <span class="function">initscr</span>();
+WINDOW* sub = <span class="function">subwin</span>(main_win, 5, 20, 5, 5);
+<span class="function">wattron</span>(sub, A_REVERSE);
+<span class="function">wprintw</span>(sub, <span class="string">"서브윈도우"</span>);
+<span class="function">wrefresh</span>(sub);</div>
+            </div>
+            <div class="api-entry">
+                <h4>derwin(WINDOW* orig, int nlines, int ncols, int begin_y, int begin_x)</h4>
+                <p><code>subwin()</code> 과 유사하지만 메모리를 공유하지 않습니다.</p>
+            </div>
+            <div class="api-entry">
+                <h4>mvderwin(WINDOW* win, int pary, int parx)</h4>
+                <p>다른 윈도우에서 파생된 윈도우를 이동합니다.</p>
+            </div>
+            <div class="api-entry">
+                <h4>dupwin(WINDOW* win)</h4>
+                <p>윈도우의 정확한 복제본을 생성합니다.</p>
+            </div>
+            <div class="api-entry">
+                <h4>window_ok(WINDOW* win)</h4>
+                <p><code>win</code> 이 유효한 윈도우 포인터이면 true 를 반환합니다.</p>
+            </div>
+            <div class="api-entry">
+                <h4>touchwin(WINDOW* win)</h4>
+                <p>윈도우의 모든 줄을 새로고침이 필요하도록 표시합니다.</p>
+                <div class="code-block">WINDOW* win = <span class="function">newwin</span>(10, 40, 0, 0);
+<span class="function">touchwin</span>(win);
+<span class="function">wrefresh</span>(win);</div>
+            </div>
+            <div class="api-entry">
+                <h4>touchline(WINDOW* win, int start, int count)</h4>
+                <p>윈도우의 줄 범위를 새로고침이 필요하도록 표시합니다.</p>
+            </div>
+            <div class="api-entry">
+                <h4>untouchwin(WINDOW* win)</h4>
+                <p>윈도우의 모든 줄을 새로고침이 필요하지 않도록 표시합니다.</p>
+            </div>
+            <div class="api-entry">
+                <h4>redrawwin(WINDOW* win)</h4>
+                <p>윈도우 전체의 새로고침을 강제합니다.</p>
+            </div>
+            <div class="api-entry">
+                <h4>redrawline(WINDOW* win, int start, int count)</h4>
+                <p>줄 범위의 새로고침을 강제합니다.</p>
+            </div>
+            <div class="api-entry">
+                <h4>wclear(WINDOW* win)</h4>
+                <p>윈도우를 지웁니다 (공백으로 채움).</p>
+            </div>
+            <div class="api-entry">
+                <h4>werase(WINDOW* win)</h4>
+                <p><code>wclear()</code> 와 유사하지만 윈도우를 새로고침 필요로 표시합니다.</p>
+            </div>
+            <div class="api-entry">
+                <h4>waddch(WINDOW* win, chtype ch)</h4>
+                <p>윈도우에 문자를 추가합니다.</p>
+                <div class="code-block">WINDOW* win = <span class="function">newwin</span>(5, 20, 0, 0);
+<span class="function">waddch</span>(win, <span class="string">'A'</span>);
+<span class="function">waddch</span>(win, <span class="string">'B'</span>);
+<span class="function">wrefresh</span>(win);</div>
+            </div>
+            <div class="api-entry">
+                <h4>wmove(WINDOW* win, int y, int x)</h4>
+                <p>윈도우 내에서 커서를 이동합니다.</p>
+                <div class="code-block">WINDOW* win = <span class="function">newwin</span>(10, 40, 0, 0);
+<span class="function">wmove</span>(win, 5, 10);
+<span class="function">wprintw</span>(win, <span class="string">"커서 위치 5,10"</span>);
+<span class="function">wrefresh</span>(win);</div>
+            </div>
+            <div class="api-entry">
+                <h4>wrefresh(WINDOW* win)</h4>
+                <p>물리적 화면을 윈도우와 일치시키도록 업데이트합니다.</p>
+                <div class="code-block">WINDOW* win = <span class="function">newwin</span>(10, 40, 0, 0);
+<span class="function">wprintw</span>(win, <span class="string">"내용"</span>);
+<span class="function">wrefresh</span>(win);</div>
+            </div>
+            <div class="api-entry">
+                <h4>wnoutrefresh(WINDOW* win)</h4>
+                <p><code>wrefresh()</code> 와 유사하지만 <code>doupdate()</code> 를 호출하지 않습니다.</p>
+                <div class="code-block">WINDOW* win1 = <span class="function">newwin</span>(5, 20, 0, 0);
+WINDOW* win2 = <span class="function">newwin</span>(5, 20, 0, 25);
+<span class="function">wprintw</span>(win1, <span class="string">"윈도우 1"</span>);
+<span class="function">wprintw</span>(win2, <span class="string">"윈도우 2"</span>);
+<span class="function">wnoutrefresh</span>(win1);
+<span class="function">wnoutrefresh</span>(win2);
+<span class="function">doupdate</span>();</div>
+            </div>
+            <div class="api-entry">
+                <h4>wborder(WINDOW* win, ...)</h4>
+                <p>윈도우 주변에 테두리를 그립니다.</p>
+                <div class="code-block">WINDOW* win = <span class="function">newwin</span>(10, 40, 5, 5);
+<span class="function">wborder</span>(win, '|', '|', '-', '-', '+', '+', '+', '+');
+<span class="function">wrefresh</span>(win);</div>
+            </div>
+            <div class="api-entry">
+                <h4>wattron(WINDOW* win, attr_t attr)</h4>
+                <p>속성 (굵게, 역전 등) 을 켭니다.</p>
+                <div class="code-block">WINDOW* win = <span class="function">newwin</span>(5, 20, 0, 0);
+<span class="function">wattron</span>(win, A_BOLD);
+<span class="function">wprintw</span>(win, <span class="string">"굵은 텍스트"</span>);
+<span class="function">wattroff</span>(win, A_BOLD);
+<span class="function">wrefresh</span>(win);</div>
+            </div>
+            <div class="api-entry">
+                <h4>wattroff(WINDOW* win, attr_t attr)</h4>
+                <p>속성을 끕니다.</p>
+            </div>
+        </section>
+        <footer><p><a href="index.html">&#8592; 색인으로 돌아가기</a></p></footer>
+    </div>
+</body>
+</html>

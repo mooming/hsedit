@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>키 정의 - ncurses API 레퍼런스</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>키 정의</h1>
+        </div>
+    </header>
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="index.html">홈</a><span>&#8250;</span> 키
+        </div>
+        <section>
+            <h3>방향 키</h3>
+            <div class="api-entry">
+                <h4>KEY_UP</h4>
+                <p>위쪽 화살표 키.</p>
+                <div class="code-block"><span class="keyword">if</span> (ch == KEY_UP) { ... }</div>
+            </div>
+            <div class="api-entry">
+                <h4>KEY_DOWN</h4>
+                <p>아래쪽 화살표 키.</p>
+            </div>
+            <div class="api-entry">
+                <h4>KEY_LEFT</h4>
+                <p>왼쪽 화살표 키.</p>
+            </div>
+            <div class="api-entry">
+                <h4>KEY_RIGHT</h4>
+                <p>오른쪽 화살표 키.</p>
+            </div>
+
+            <h3>함수 키</h3>
+            <div class="api-entry">
+                <h4>KEY_F(0) ~ KEY_F(15)</h4>
+                <p>함수 키 F1 ~ F16.</p>
+                <div class="code-block"><span class="keyword">if</span> (ch == KEY_F(1)) { <span class="comment">// F1 누름</span> }</div>
+            </div>
+            <div class="api-entry">
+                <h4>KEY_BTAB</h4>
+                <p>BackTab 키 (Shift+Tab).</p>
+            </div>
+            <div class="api-entry">
+                <h4>KEY_B1</h4>
+                <p>마우스 버튼 1.</p>
+            </div>
+
+            <h3>네비게이션 키</h3>
+            <div class="api-entry">
+                <h4>KEY_HOME</h4>
+                <p>Home 키.</p>
+            </div>
+            <div class="api-entry">
+                <h4>KEY_END</h4>
+                <p>End 키.</p>
+            </div>
+            <div class="api-entry">
+                <h4>KEY_PPAGE</h4>
+                <p>Page Up 키.</p>
+            </div>
+            <div class="api-entry">
+                <h4>KEY_NPAGE</h4>
+                <p>Page Down 키.</p>
+            </div>
+
+            <h3>편집 키</h3>
+            <div class="api-entry">
+                <h4>KEY_ENTER</h4>
+                <p>Enter 키.</p>
+            </div>
+            <div class="api-entry">
+                <h4>KEY_BACKSPACE</h4>
+                <p>Backspace 키.</p>
+            </div>
+            <div class="api-entry">
+                <h4>KEY_IC</h4>
+                <p>Insert 키.</p>
+            </div>
+            <div class="api-entry">
+                <h4>KEY_DC</h4>
+                <p>Delete 키.</p>
+            </div>
+
+            <h3>마우스 상수</h3>
+            <div class="api-entry">
+                <h4>BUTTON1_PRESSED</h4>
+                <p>왼쪽 마우스 버튼 눌림.</p>
+            </div>
+            <div class="api-entry">
+                <h4>BUTTON1_RELEASED</h4>
+                <p>왼쪽 마우스 버튼 놓임.</p>
+            </div>
+            <div class="api-entry">
+                <h4>BUTTON1_CLICKED</h4>
+                <p>왼쪽 마우스 버튼 클릭.</p>
+            </div>
+            <div class="api-entry">
+                <h4>BUTTON1_DOUBLE_CLICKED</h4>
+                <p>왼쪽 마우스 버튼 더블클릭.</p>
+            </div>
+            <div class="api-entry">
+                <h4>BUTTON1_TRIPLE_CLICKED</h4>
+                <p>왼쪽 마우스 버튼 트리플클릭.</p>
+            </div>
+
+            <h3>특수 상수</h3>
+            <div class="api-entry">
+                <h4>ERR</h4>
+                <p>오류 표시자 (-1).</p>
+                <div class="code-block"><span class="keyword">if</span> (ch == ERR) { <span class="comment">// 오류 발생</span> }</div>
+            </div>
+            <div class="api-entry">
+                <h4>KEY_RESIZE</h4>
+                <p>터미널이 크기 조정됨.</p>
+            </div>
+            <div class="api-entry">
+                <h4>KEY_MOUSE</h4>
+                <p>마우스 이벤트 발생.</p>
+            </div>
+        </section>
+        <footer><p><a href="index.html">&#8592; 색인으로 돌아가기</a></p></footer>
+    </div>
+</body>
+</html>

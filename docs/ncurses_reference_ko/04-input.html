@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>입력 처리 - ncurses API 레퍼런스</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>입력 처리</h1>
+        </div>
+    </header>
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="index.html">홈</a><span>&#8250;</span> 입력
+        </div>
+        <section>
+            <div class="api-entry">
+                <h4>getch()</h4>
+                <p>stdscr 에서 단일 문자를 읽습니다 (블로킹).</p>
+                <div class="code-block">int ch = <span class="function">getch</span>();
+<span class="keyword">if</span> (ch == KEY_UP)
+{
+    <span class="comment">// 방향 키 위 처리</span>
+}</div>
+            </div>
+            <div class="api-entry">
+                <h4>wgetch(WINDOW* win)</h4>
+                <p>윈도우에서 문자를 읽습니다.</p>
+                <div class="code-block">WINDOW* win = <span class="function">newwin</span>(10, 40, 0, 0);
+int ch = <span class="function">wgetch</span>(win);</div>
+            </div>
+            <div class="api-entry">
+                <h4>mvgetch(int y, int x)</h4>
+                <p>커서를 이동하고 stdscr 에서 문자를 읽습니다.</p>
+            </div>
+            <div class="api-entry">
+                <h4>mvwgetch(WINDOW* win, int y, int x)</h4>
+                <p>윈도우에서 커서를 이동하고 문자를 읽습니다.</p>
+            </div>
+            <div class="api-entry">
+                <h4>nodelay(WINDOW* win, bool delay)</h4>
+                <p>입력에 대한 비블로킹 모드를 설정합니다.</p>
+                <div class="code-block"><span class="function">nodelay</span>(stdscr, TRUE);
+<span class="keyword">int</span> ch = <span class="function">getch</span>();
+<span class="keyword">if</span> (ch == ERR)
+{
+    <span class="comment">// 입력 불가</span>
+}</div>
+            </div>
+            <div class="api-entry">
+                <h4>halfdelay(int tenths)</h4>
+                <p>하프딜레이 모드를 설정합니다 (1/10 초 단위).</p>
+            </div>
+            <div class="api-entry">
+                <h4>cbreak()</h4>
+                <p>줄 버퍼링을 비활성화합니다 (문자가 즉시 사용 가능).</p>
+            </div>
+            <div class="api-entry">
+                <h4>nocbreak()</h4>
+                <p>줄 버퍼링을 다시 활성화합니다.</p>
+            </div>
+            <div class="api-entry">
+                <h4>echo()</h4>
+                <p>에코를 활성화합니다 (입력한 문자가 표시됩니다).</p>
+            </div>
+            <div class="api-entry">
+                <h4>noecho()</h4>
+                <p>에코를 비활성화합니다.</p>
+            </div>
+            <div class="api-entry">
+                <h4>raw()</h4>
+                <p>모든 입력 처리를 비활성화합니다 (cbreak 보다 더 원시적).</p>
+            </div>
+            <div class="api-entry">
+                <h4>ungetch(int ch)</h4>
+                <p>문자를 입력 버퍼에 다시 밀어넣습니다.</p>
+                <div class="code-block"><span class="function">ungetch</span>(<span class="string">'q'</span>);  <span class="comment">// 다음 getch() 가 'q' 반환</span></div>
+            </div>
+            <div class="api-entry">
+                <h4>keypad(WINDOW* win, bool bf)</h4>
+                <p>특수 키에 대한 키패드 모드를 활성화/비활성화합니다.</p>
+                <div class="code-block"><span class="function">keypad</span>(stdscr, TRUE);
+<span class="keyword">int</span> ch = <span class="function">getch</span>();
+<span class="keyword">if</span> (ch == KEY_UP) { ... }</div>
+            </div>
+            <div class="api-entry">
+                <h4>set_escdelay(int ms)</h4>
+                <p>이스케이프 시퀀스의 타임아웃을 설정합니다.</p>
+            </div>
+            <div class="api-entry">
+                <h4>ESCDELAY</h4>
+                <p>이스케이프 시퀀스 타임아웃에 대한 전역 변수.</p>
+            </div>
+            <div class="api-entry">
+                <h4>getmouse(MOUSEEVENT* event)</h4>
+                <p>마우스 이벤트를 가져옵니다 (먼저 <code>mousemask()</code> 필요).</p>
+            </div>
+            <div class="api-entry">
+                <h4>ungetmouse(MOUSEEVENT* event)</h4>
+                <p>마우스 이벤트를 버퍼에 다시 밀어넣습니다.</p>
+            </div>
+            <div class="api-entry">
+                <h4>mousemask(mmask_t newmask, mmask_t* oldmask)</h4>
+                <p>마우스 이벤트를 활성화/비활성화합니다.</p>
+                <div class="code-block"><span class="function">mousemask</span>(BUTTON1_CLICKED | BUTTON1_DOUBLE_CLICKED, <span class="keyword">nullptr</span>);
+<span class="function">getch</span>();  <span class="comment">// 이제 마우스 이벤트 수신</span></div>
+            </div>
+            <div class="api-entry">
+                <h4>wgetmouse(WINDOW* win, int* y, int* x)</h4>
+                <p>마우스의 마지막 위치를 가져옵니다.</p>
+            </div>
+            <div class="api-entry">
+                <h4>is_pad(WINDOW* win)</h4>
+                <p>win 이 패드이면 true 를 반환합니다.</p>
+            </div>
+            <div class="api-entry">
+                <h4>is_termresized(WINDOW* win, int y, int x)</h4>
+                <p>터미널이 크기 조정되었으면 true 를 반환합니다.</p>
+            </div>
+        </section>
+        <footer><p><a href="index.html">&#8592; 색인으로 돌아가기</a></p></footer>
+    </div>
+</body>
+</html>

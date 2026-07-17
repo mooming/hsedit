@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>터미널 및 화면 관리 - ncurses API 레퍼런스</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>터미널 및 화면 관리</h1>
+        </div>
+    </header>
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="index.html">홈</a><span>&#8250;</span> 터미널
+        </div>
+        <section>
+            <div class="api-entry">
+                <h4>cols</h4>
+                <p>전역 변수: 터미널의 열 수.</p>
+                <div class="code-block"><span class="function">printw</span>(<span class="string">"터미널은 %d 열 너비입니다"</span>, COLS);</div>
+            </div>
+            <div class="api-entry">
+                <h4>lines</h4>
+                <p>전역 변수: 터미널의 줄 수.</p>
+                <div class="code-block"><span class="function">printw</span>(<span class="string">"터미널은 %d 줄 높이입니다"</span>, LINES);</div>
+            </div>
+            <div class="api-entry">
+                <h4>CR</h4>
+                <p>캐리지 리턴 문자 상수.</p>
+            </div>
+            <div class="api-entry">
+                <h4>LF</h4>
+                <p>라인 피드 문자 상수.</p>
+            </div>
+            <div class="api-entry">
+                <h4>TAB</h4>
+                <p>탭 문자 상수.</p>
+            </div>
+            <div class="api-entry">
+                <h4>BEL</h4>
+                <p>벨 문자 상수.</p>
+            </div>
+            <div class="api-entry">
+                <h4>BACKSPACE</h4>
+                <p>백스페이스 문자 상수.</p>
+            </div>
+            <div class="api-entry">
+                <h4>ESC</h4>
+                <p>이스케이프 문자 상수.</p>
+            </div>
+            <div class="api-entry">
+                <h4>SIGWINCH</h4>
+                <p>터미널이 크기 조정될 때 보내지는 시그널.</p>
+            </div>
+            <div class="api-entry">
+                <h4>resize_term(int nlines, int ncols)</h4>
+                <p>터미널을 새 크기로 크기 조정합니다.</p>
+            </div>
+            <div class="api-entry">
+                <h4>is_term_resized(int nlines, int ncols)</h4>
+                <p>터미널이 크기 조정되었으면 true 를 반환합니다.</p>
+            </div>
+            <div class="api-entry">
+                <h4>set_term(TERMINAL* term)</h4>
+                <p>현재 터미널을 설정합니다.</p>
+            </div>
+            <div class="api-entry">
+                <h4>newterm(const char* type, FILE* outfd, FILE* infd)</h4>
+                <p>새 터미널을 생성합니다.</p>
+            </div>
+            <div class="api-entry">
+                <h4>delterm(TERMINAL* term)</h4>
+                <p>터미널을 삭제합니다.</p>
+            </div>
+            <div class="api-entry">
+                <h4>termaddr(int addr)</h4>
+                <p>터미널의 주소를 반환합니다.</p>
+            </div>
+            <div class="api-entry">
+                <h4>termattrs()</h4>
+                <p>터미널에서 지원하는 속성을 반환합니다.</p>
+            </div>
+            <div class="api-entry">
+                <h4>termname()</h4>
+                <p>터미널 이름을 반환합니다.</p>
+            </div>
+            <div class="api-entry">
+                <h4>newpad(int nlines, int ncols)</h4>
+                <p>패드 (스크롤 윈도우) 를 생성합니다.</p>
+                <div class="code-block">WINDOW* pad = <span class="function">newpad</span>(100, 80);
+<span class="function">prefresh</span>(pad, 0, 0, 0, 0, 20, 79);</div>
+            </div>
+            <div class="api-entry">
+                <h4>prefresh(WINDOW* pad, int pminrow, int pmincol, int sminrow, int smincol, int smaxrow, int smaxcol)</h4>
+                <p>패드의 일부를 화면에 새로고침합니다.</p>
+            </div>
+            <div class="api-entry">
+                <h4>pnoutrefresh(WINDOW* pad, int pminrow, int pmincol, int sminrow, int smincol, int smaxrow, int smaxcol)</h4>
+                <p><code>prefresh()</code> 와 유사하지만 <code>doupdate()</code> 를 호출하지 않습니다.</p>
+            </div>
+        </section>
+        <footer><p><a href="index.html">&#8592; 색인으로 돌아가기</a></p></footer>
+    </div>
+</body>
+</html>

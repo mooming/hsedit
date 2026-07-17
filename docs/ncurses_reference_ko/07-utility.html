@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>유틸리티 함수 - ncurses API 레퍼런스</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>유틸리티 함수</h1>
+        </div>
+    </header>
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="index.html">홈</a><span>&#8250;</span> 유틸리티
+        </div>
+        <section>
+            <div class="api-entry">
+                <h4>getyx(WINDOW* win, int* y, int* x)</h4>
+                <p>윈도우의 현재 커서 위치를 반환합니다.</p>
+                <div class="code-block">WINDOW* win = <span class="function">initscr</span>();
+<span class="keyword">int</span> y, x;
+<span class="function">getyx</span>(win, y, x);
+<span class="function">printw</span>(<span class="string">"커서 위치 (%d, %d)"</span>, y, x);</div>
+            </div>
+            <div class="api-entry">
+                <h4>getbegyx(WINDOW* win, int* y, int* x)</h4>
+                <p>윈도우의 위쪽 왼쪽 모서리 위치를 반환합니다.</p>
+            </div>
+            <div class="api-entry">
+                <h4>getmaxyx(WINDOW* win, int* y, int* x)</h4>
+                <p>윈도우의 최대 크기를 반환합니다.</p>
+            </div>
+            <div class="api-entry">
+                <h4>getparyx(WINDOW* win, int* y, int* x)</h4>
+                <p>부모에 대한 상대적 윈도우 위치를 반환합니다.</p>
+            </div>
+            <div class="api-entry">
+                <h4>mouse_trafo(int* y, int* x, int to_screen)</h4>
+                <p>화면과 윈도우 좌표 간 변환을 수행합니다.</p>
+            </div>
+            <div class="api-entry">
+                <h4>use_env(bool flag)</h4>
+                <p>$TERM 및 $COLUMNS/$LINES 사용 여부를 활성화/비활성화합니다.</p>
+            </div>
+            <div class="api-entry">
+                <h4>use_default_colors()</h4>
+                <p>기본 색상을 -1 (투명) 로 설정합니다.</p>
+            </div>
+            <div class="api-entry">
+                <h4>setscrreg(int top, int bottom)</h4>
+                <p>stdscr 의 스크롤 영역을 설정합니다.</p>
+                <div class="code-block"><span class="function">setscrreg</span>(5, 20);  <span class="comment">// 줄 5-20 이 스크롤 가능</span></div>
+            </div>
+            <div class="api-entry">
+                <h4>wsetscrreg(WINDOW* win, int top, int bottom)</h4>
+                <p>윈도우의 스크롤 영역을 설정합니다.</p>
+            </div>
+            <div class="api-entry">
+                <h4>scrollok(WINDOW* win, bool bf)</h4>
+                <p>윈도우에서 스크롤링을 활성화/비활성화합니다.</p>
+            </div>
+            <div class="api-entry">
+                <h4>wborder_set(WINDOW* win, ...)</h4>
+                <p>유니코드 문자를 사용하여 테두리를 그립니다.</p>
+            </div>
+            <div class="api-entry">
+                <h4>set_tabsize(int size)</h4>
+                <p>탭 크기를 설정합니다 (기본값은 8).</p>
+            </div>
+            <div class="api-entry">
+                <h4>typeahead(int fildes)</h4>
+                <p>타입 어헤드 검사를 위한 파일 설명자를 설정합니다.</p>
+            </div>
+            <div class="api-entry">
+                <h4>meta(WINDOW* win, bool bf)</h4>
+                <p>8 비트 입력 모드를 활성화/비활성화합니다.</p>
+            </div>
+            <div class="api-entry">
+                <h4>napms(int ms)</h4>
+                <p>ms 밀리초 동안 실행을 중단합니다.</p>
+            </div>
+            <div class="api-entry">
+                <h4>delay_output(int ms)</h4>
+                <p>출력에 기반하여 ms 밀리초 동안 중단합니다.</p>
+            </div>
+            <div class="api-entry">
+                <h4>clear()</h4>
+                <p>stdscr 을 지우고 새로고침 필요로 표시합니다.</p>
+            </div>
+            <div class="api-entry">
+                <h4>clrtobot()</h4>
+                <p>커서부터 화면 하단까지 지웁니다.</p>
+            </div>
+            <div class="api-entry">
+                <h4>clrtoeol()</h4>
+                <p>커서부터 줄 끝까지 지웁니다.</p>
+            </div>
+        </section>
+        <footer><p><a href="index.html">&#8592; 색인으로 돌아가기</a></p></footer>
+    </div>
+</body>
+</html>
