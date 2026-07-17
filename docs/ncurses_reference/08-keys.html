@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Key Definitions - ncurses API Reference</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Key Definitions</h1>
+        </div>
+    </header>
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="index.html">Home</a><span>→</span> Keys
+        </div>
+        <section>
+            <h3>Arrow Keys</h3>
+            <div class="api-entry">
+                <h4>KEY_UP</h4>
+                <p>Up arrow key.</p>
+                <div class="code-block"><span class="keyword">if</span> (ch == KEY_UP) { ... }</div>
+            </div>
+            <div class="api-entry">
+                <h4>KEY_DOWN</h4>
+                <p>Down arrow key.</p>
+            </div>
+            <div class="api-entry">
+                <h4>KEY_LEFT</h4>
+                <p>Left arrow key.</p>
+            </div>
+            <div class="api-entry">
+                <h4>KEY_RIGHT</h4>
+                <p>Right arrow key.</p>
+            </div>
+
+            <h3>Function Keys</h3>
+            <div class="api-entry">
+                <h4>KEY_F(0) through KEY_F(15)</h4>
+                <p>Function keys F1 through F16.</p>
+                <div class="code-block"><span class="keyword">if</span> (ch == KEY_F(1)) { <span class="comment">// F1 pressed</span> }</div>
+            </div>
+            <div class="api-entry">
+                <h4>KEY_BTAB</h4>
+                <p>BackTab key (Shift+Tab).</p>
+            </div>
+            <div class="api-entry">
+                <h4>KEY_B1</h4>
+                <p>Button 1 (mouse).</p>
+            </div>
+
+            <h3>Navigation Keys</h3>
+            <div class="api-entry">
+                <h4>KEY_HOME</h4>
+                <p>Home key.</p>
+            </div>
+            <div class="api-entry">
+                <h4>KEY_END</h4>
+                <p>End key.</p>
+            </div>
+            <div class="api-entry">
+                <h4>KEY_PPAGE</h4>
+                <p>Page Up key.</p>
+            </div>
+            <div class="api-entry">
+                <h4>KEY_NPAGE</h4>
+                <p>Page Down key.</p>
+            </div>
+
+            <h3>Editing Keys</h3>
+            <div class="api-entry">
+                <h4>KEY_ENTER</h4>
+                <p>Enter key.</p>
+            </div>
+            <div class="api-entry">
+                <h4>KEY_BACKSPACE</h4>
+                <p>Backspace key.</p>
+            </div>
+            <div class="api-entry">
+                <h4>KEY_IC</h4>
+                <p>Insert key.</p>
+            </div>
+            <div class="api-entry">
+                <h4>KEY_DC</h4>
+                <p>Delete key.</p>
+            </div>
+            <div class="api-entry">
+                <h4>KEY_NPAGE</h4>
+                <p>Next page (Page Down).</p>
+            </div>
+
+            <h3>Mouse Constants</h3>
+            <div class="api-entry">
+                <h4>BUTTON1_PRESSED</h4>
+                <p>Left mouse button pressed.</p>
+            </div>
+            <div class="api-entry">
+                <h4>BUTTON1_RELEASED</h4>
+                <p>Left mouse button released.</p>
+            </div>
+            <div class="api-entry">
+                <h4>BUTTON1_CLICKED</h4>
+                <p>Left mouse button clicked.</p>
+            </div>
+            <div class="api-entry">
+                <h4>BUTTON1_DOUBLE_CLICKED</h4>
+                <p>Left mouse button double-clicked.</p>
+            </div>
+            <div class="api-entry">
+                <h4>BUTTON1_TRIPLE_CLICKED</h4>
+                <p>Left mouse button triple-clicked.</p>
+            </div>
+            <div class="api-entry">
+                <h4>BUTTON1_CLICKED</h4>
+                <p>Left mouse button clicked.</p>
+            </div>
+
+            <h3>Special Constants</h3>
+            <div class="api-entry">
+                <h4>ERR</h4>
+                <p>Error indicator (-1).</p>
+                <div class="code-block"><span class="keyword">if</span> (ch == ERR) { <span class="comment">// Error occurred</span> }</div>
+            </div>
+            <div class="api-entry">
+                <h4>KEY_RESIZE</h4>
+                <p>Terminal was resized.</p>
+            </div>
+            <div class="api-entry">
+                <h4>KEY_MOUSE</h4>
+                <p>Mouse event occurred.</p>
+            </div>
+        </section>
+        <footer><p><a href="index.html">← Back to Index</a></p></footer>
+    </div>
+</body>
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Support - ncurses API Reference</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Color Support</h1>
+        </div>
+    </header>
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="index.html">Home</a><span>→</span> Color
+        </div>
+        <section>
+            <div class="api-entry">
+                <h4>start_color()</h4>
+                <p>Initializes color support. Must be called before using colors.</p>
+                <div class="code-block"><span class="function">start_color</span>();
+<span class="function">init_pair</span>(1, COLOR_RED, COLOR_BLACK);
+<span class="function">attron</span>(COLOR_PAIR(1));
+<span class="function">printw</span>(<span class="string">"Red text on black"</span>);
+<span class="function">attroff</span>(COLOR_PAIR(1));
+<span class="function">refresh</span>();</div>
+            </div>
+            <div class="api-entry">
+                <h4>has_colors()</h4>
+                <p>Returns TRUE if the terminal supports color.</p>
+            </div>
+            <div class="api-entry">
+                <h4>init_pair(short pair, short f, short b)</h4>
+                <p>Initializes a color pair.</p>
+            </div>
+            <div class="api-entry">
+                <h4>init_color(short color, short r, short g, short b)</h4>
+                <p>Initializes a color with RGB values.</p>
+            </div>
+            <div class="api-entry">
+                <h4>init_pair_nocolor(short pair, chtype attr)</h4>
+                <p>Initializes a color pair without colors.</p>
+            </div>
+            <div class="api-entry">
+                <h4>color_content(short color, short *r, short *g, short *b)</h4>
+                <p>Returns the RGB content of a color.</p>
+            </div>
+            <div class="api-entry">
+                <h4>color_pair(short pair)</h4>
+                <p>Returns the attribute for a color pair.</p>
+            </div>
+            <div class="api-entry">
+                <h4>pair_content(short pair, short *f, short *b)</h4>
+                <p>Returns the foreground/background colors of a pair.</p>
+            </div>
+            <div class="api-entry">
+                <h4>attron(chtype attr)</h4>
+                <p>TURNS on an attribute on stdscr.</p>
+                <div class="code-block"><span class="function">attron</span>(A_BOLD);
+<span class="function">printw</span>(<span class="string">"Bold"</span>);
+<span class="function">attroff</span>(A_BOLD);</div>
+            </div>
+            <div class="api-entry">
+                <h4>attroff(chtype attr)</h4>
+                <p>TURNS off an attribute on stdscr.</p>
+            </div>
+            <div class="api-entry">
+                <h4>attrset(chtype attr)</h4>
+                <p>Sets the attribute on stdscr.</p>
+            </div>
+            <div class="api-entry">
+                <h4>attr_get(chtype *attr, short *pair, void *opts)</h4>
+                <p>Returns the current attribute.</p>
+            </div>
+            <div class="api-entry">
+                <h4>attr_off(chtype attr, void *opts)</h4>
+                <p>TURNS off attributes on stdscr.</p>
+            </div>
+            <div class="api-entry">
+                <h4>attr_on(chtype attr, void *opts)</h4>
+                <p>TURNS on attributes on stdscr.</p>
+            </div>
+            <div class="api-entry">
+                <h4>color_set(short pair, void *opts)</h4>
+                <p>Sets the color for the next text output.</p>
+            </div>
+        </section>
+        <footer><p><a href="index.html">← Back to Index</a></p></footer>
+    </div>
+</body>
+</html>

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Input Handling - ncurses API Reference</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Input Handling</h1>
+        </div>
+    </header>
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="index.html">Home</a><span>→</span> Input
+        </div>
+        <section>
+            <div class="api-entry">
+                <h4>getch()</h4>
+                <p>Read a single character from stdscr (blocking).</p>
+                <div class="code-block">int ch = <span class="function">getch</span>();
+<span class="keyword">if</span> (ch == KEY_UP) {
+    <span class="comment">// Handle up arrow</span>
+}</div>
+            </div>
+            <div class="api-entry">
+                <h4>wgetch(WINDOW *win)</h4>
+                <p>Read a character from a window.</p>
+                <div class="code-block">WINDOW *win = <span class="function">newwin</span>(10, 40, 0, 0);
+int ch = <span class="function">wgetch</span>(win);</div>
+            </div>
+            <div class="api-entry">
+                <h4>mvgetch(int y, int x)</h4>
+                <p>Move cursor and read a character from stdscr.</p>
+            </div>
+            <div class="api-entry">
+                <h4>mvwgetch(WINDOW *win, int y, int x)</h4>
+                <p>Move cursor in window and read a character.</p>
+            </div>
+            <div class="api-entry">
+                <h4>nodelay(WINDOW *win, bool delay)</h4>
+                <p>Set non-blocking mode for input.</p>
+                <div class="code-block"><span class="function">nodelay</span>(stdscr, TRUE);
+<span class="keyword">int</span> ch = <span class="function">getch</span>();
+<span class="keyword">if</span> (ch == ERR) {
+    <span class="comment">// No input available</span>
+}</div>
+            </div>
+            <div class="api-entry">
+                <h4>halfdelay(int tenths)</h4>
+                <p>Set half-delay mode (timeout in tenths of seconds).</p>
+            </div>
+            <div class="api-entry">
+                <h4>cbreak()</h4>
+                <p>Disables line buffering (characters available immediately).</p>
+            </div>
+            <div class="api-entry">
+                <h4>nocbreak()</h4>
+                <p>Re-enables line buffering.</p>
+            </div>
+            <div class="api-entry">
+                <h4>echo()</h4>
+                <p>Enables echo (characters typed are displayed).</p>
+            </div>
+            <div class="api-entry">
+                <h4>noecho()</h4>
+                <p>Disables echo.</p>
+            </div>
+            <div class="api-entry">
+                <h4>raw()</h4>
+                <p>Disables all input processing (even more raw than cbreak).</p>
+            </div>
+            <div class="api-entry">
+                <h4>ungetch(int ch)</h4>
+                <p>Push a character back into the input buffer.</p>
+                <div class="code-block"><span class="function">ungetch</span>(<span class="string">'q'</span>);  <span class="comment">// Next getch() returns 'q'</span></div>
+            </div>
+            <div class="api-entry">
+                <h4>keypad(WINDOW *win, bool bf)</h4>
+                <p>Enable/disable keypad mode for special keys.</p>
+                <div class="code-block"><span class="function">keypad</span>(stdscr, TRUE);
+<span class="keyword">int</span> ch = <span class="function">getch</span>();
+<span class="keyword">if</span> (ch == KEY_UP) { ... }</div>
+            </div>
+            <div class="api-entry">
+                <h4>set_escdelay(int ms)</h4>
+                <p>Set the timeout for escape sequences.</p>
+            </div>
+            <div class="api-entry">
+                <h4>ESCDELAY</h4>
+                <p>Global variable for escape sequence timeout.</p>
+            </div>
+            <div class="api-entry">
+                <h4>getmouse(MOUSEEVENT *event)</h4>
+                <p>Get mouse event (requires <code>mousemask()</code> first).</p>
+            </div>
+            <div class="api-entry">
+                <h4>ungetmouse(MOUSEEVENT *event)</h4>
+                <p>Push a mouse event back into the buffer.</p>
+            </div>
+            <div class="api-entry">
+                <h4>mousemask(mmask_t newmask, mmask_t *oldmask)</h4>
+                <p>Enable/disable mouse events.</p>
+                <div class="code-block"><span class="function">mousemask</span>(BUTTON1_CLICKED | BUTTON1_DOUBLE_CLICKED, NULL);
+<span class="function">getch</span>();  <span class="comment">// Will now receive mouse events</span></div>
+            </div>
+            <div class="api-entry">
+                <h4>wgetmouse(WINDOW *win, int *y, int *x)</h4>
+                <p>Get the last mouse position.</p>
+            </div>
+            <div class="api-entry">
+                <h4>is_pad(WINDOW *win)</h4>
+                <p>Returns TRUE if win is a pad.</p>
+            </div>
+            <div class="api-entry">
+                <h4>is_termresized(WINDOW *win, int y, int x)</h4>
+                <p>Returns TRUE if the terminal has been resized.</p>
+            </div>
+        </section>
+        <footer><p><a href="index.html">← Back to Index</a></p></footer>
+    </div>
+</body>
+</html>

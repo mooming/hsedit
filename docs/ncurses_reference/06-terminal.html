@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terminal & Screen Management - ncurses API Reference</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Terminal & Screen Management</h1>
+        </div>
+    </header>
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="index.html">Home</a><span>→</span> Terminal
+        </div>
+        <section>
+            <div class="api-entry">
+                <h4>cols</h4>
+                <p>Global variable: number of columns in the terminal.</p>
+                <div class="code-block"><span class="function">printw</span>(<span class="string">"Terminal is %d columns wide"</span>, COLS);</div>
+            </div>
+            <div class="api-entry">
+                <h4>lines</h4>
+                <p>Global variable: number of lines in the terminal.</p>
+                <div class="code-block"><span class="function">printw</span>(<span class="string">"Terminal is %d lines tall"</span>, LINES);</div>
+            </div>
+            <div class="api-entry">
+                <h4>CR</h4>
+                <p>Character constant for carriage return.</p>
+            </div>
+            <div class="api-entry">
+                <h4>LF</h4>
+                <p>Character constant for line feed.</p>
+            </div>
+            <div class="api-entry">
+                <h4>TAB</h4>
+                <p>Character constant for tab.</p>
+            </div>
+            <div class="api-entry">
+                <h4>BEL</h4>
+                <p>Character constant for bell.</p>
+            </div>
+            <div class="api-entry">
+                <h4>BACKSPACE</h4>
+                <p>Character constant for backspace.</p>
+            </div>
+            <div class="api-entry">
+                <h4>ESC</h4>
+                <p>Character constant for escape.</p>
+            </div>
+            <div class="api-entry">
+                <h4>SIGWINCH</h4>
+                <p>Signal sent when terminal is resized.</p>
+            </div>
+            <div class="api-entry">
+                <h4>resize_term(int nlines, int ncols)</h4>
+                <p>Resize the terminal to new dimensions.</p>
+            </div>
+            <div class="api-entry">
+                <h4>is_term_resized(int nlines, int ncols)</h4>
+                <p>Returns TRUE if the terminal was resized.</p>
+            </div>
+            <div class="api-entry">
+                <h4>set_term(TERMINAL *term)</h4>
+                <p>Sets the current terminal.</p>
+            </div>
+            <div class="api-entry">
+                <h4>newterm(const char *type, FILE *outfd, FILE *infd)</h4>
+                <p>Creates a new terminal.</p>
+            </div>
+            <div class="api-entry">
+                <h4>delterm(TERMINAL *term)</h4>
+                <p>Deletes a terminal.</p>
+            </div>
+            <div class="api-entry">
+                <h4>termaddr(int addr)</h4>
+                <p>Returns the address of a terminal.</p>
+            </div>
+            <div class="api-entry">
+                <h4>termattrs()</h4>
+                <p>Returns the attributes supported by the terminal.</p>
+            </div>
+            <div class="api-entry">
+                <h4>termname()</h4>
+                <p>Returns the terminal name.</p>
+            </div>
+            <div class="api-entry">
+                <h4>newpad(int nlines, int ncols)</h4>
+                <p>Creates a pad (scrolling window).</p>
+                <div class="code-block">WINDOW *pad = <span class="function">newpad</span>(100, 80);
+<span class="function">prefresh</span>(pad, 0, 0, 0, 0, 20, 79);</div>
+            </div>
+            <div class="api-entry">
+                <h4>prefresh(WINDOW *pad, int pminrow, int pmincol, int sminrow, int smincol, int smaxrow, int smaxcol)</h4>
+                <p>Refreshes a portion of a pad to the screen.</p>
+            </div>
+            <div class="api-entry">
+                <h4>pnoutrefresh(WINDOW *pad, int pminrow, int pmincol, int sminrow, int smincol, int smaxrow, int smaxcol)</h4>
+                <p>Like <code>prefresh()</code> but doesn't call <code>doupdate()</code>.</p>
+            </div>
+        </section>
+        <footer><p><a href="index.html">← Back to Index</a></p></footer>
+    </div>
+</body>
+</html>

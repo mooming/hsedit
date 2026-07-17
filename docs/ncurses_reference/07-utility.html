@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Utility Functions - ncurses API Reference</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Utility Functions</h1>
+        </div>
+    </header>
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="index.html">Home</a><span>→</span> Utility
+        </div>
+        <section>
+            <div class="api-entry">
+                <h4>getyx(WINDOW *win, int *y, int *x)</h4>
+                <p>Returns the current cursor position in a window.</p>
+                <div class="code-block">WINDOW *win = <span class="function">initscr</span>();
+<span class="keyword">int</span> y, x;
+<span class="function">getyx</span>(win, y, x);
+<span class="function">printw</span>(<span class="string">"Cursor at (%d, %d)"</span>, y, x);</div>
+            </div>
+            <div class="api-entry">
+                <h4>getbegyx(WINDOW *win, int *y, int *x)</h4>
+                <p>Returns the top-left corner position of a window.</p>
+            </div>
+            <div class="api-entry">
+                <h4>getmaxyx(WINDOW *win, int *y, int *x)</h4>
+                <p>Returns the maximum dimensions of a window.</p>
+            </div>
+            <div class="api-entry">
+                <h4>getparyx(WINDOW *win, int *y, int *x)</h4>
+                <p>Returns the position of a window relative to its parent.</p>
+            </div>
+            <div class="api-entry">
+                <h4>mouse_trafo(int *y, int *x, int to_screen)</h4>
+                <p>Converts between screen and window coordinates.</p>
+            </div>
+            <div class="api-entry">
+                <h4>use_env(bool flag)</h4>
+                <p>Enables/disables use of $TERM and $COLUMNS/$LINES.</p>
+            </div>
+            <div class="api-entry">
+                <h4>use_default_colors()</h4>
+                <p>Sets default colors to -1 (transparent).</p>
+            </div>
+            <div class="api-entry">
+                <h4>setscrreg(int top, int bottom)</h4>
+                <p>Sets the scroll region for stdscr.</p>
+                <div class="code-block"><span class="function">setscrreg</span>(5, 20);  <span class="comment">// Lines 5-20 are scrollable</span></div>
+            </div>
+            <div class="api-entry">
+                <h4>wsetscrreg(WINDOW *win, int top, int bottom)</h4>
+                <p>Sets the scroll region for a window.</p>
+            </div>
+            <div class="api-entry">
+                <h4>scrollok(WINDOW *win, bool bf)</h4>
+                <p>Enables/disables scrolling in a window.</p>
+            </div>
+            <div class="api-entry">
+                <h4>wborder_set(WINDOW *win, ...)</h4>
+                <p>Draws a border using Unicode characters.</p>
+            </div>
+            <div class="api-entry">
+                <h4>set_tabsize(int size)</h4>
+                <p>Sets the tab size (default is 8).</p>
+            </div>
+            <div class="api-entry">
+                <h4>typeahead(int fildes)</h4>
+                <p>Sets the file descriptor for type-ahead checking.</p>
+            </div>
+            <div class="api-entry">
+                <h4>meta(WINDOW *win, bool bf)</h4>
+                <p>Enables/disables 8-bit input mode.</p>
+            </div>
+            <div class="api-entry">
+                <h4>napms(int ms)</h4>
+                <p>Pauses execution for ms milliseconds.</p>
+            </div>
+            <div class="api-entry">
+                <h4>delay_output(int ms)</h4>
+                <p>Pauses for ms milliseconds (output-based).</p>
+            </div>
+            <div class="api-entry">
+                <h4>clear()</h4>
+                <p>Clears stdscr and marks it as needing refresh.</p>
+            </div>
+            <div class="api-entry">
+                <h4>clrtobot()</h4>
+                <p>Clears from cursor to bottom of screen.</p>
+            </div>
+            <div class="api-entry">
+                <h4>clrtoeol()</h4>
+                <p>Clears from cursor to end of line.</p>
+            </div>
+        </section>
+        <footer><p><a href="index.html">← Back to Index</a></p></footer>
+    </div>
+</body>
+</html>

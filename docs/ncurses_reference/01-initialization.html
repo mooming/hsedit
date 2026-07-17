@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Initialization & Termination - ncurses API Reference</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Initialization & Termination</h1>
+        </div>
+    </header>
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="index.html">Home</a><span>→</span> Initialization
+        </div>
+        <section>
+            <div class="api-entry">
+                <h4>initscr()</h4>
+                <p>Initializes ncurses mode. Must be called before any other ncurses function.</p>
+                <div class="code-block"><span class="keyword">initscr</span>();
+<span class="comment">// Now you can use ncurses functions</span>
+<span class="function">printw</span>(<span class="string">"Hello, ncurses!"</span>);
+<span class="function">refresh</span>();
+<span class="function">getch</span>();
+<span class="function">endwin</span>();</div>
+            </div>
+            <div class="api-entry">
+                <h4>endwin()</h4>
+                <p>Restores the terminal to its previous state. Should be called before program exit.</p>
+                <div class="code-block"><span class="comment">// ... use ncurses ...</span>
+<span class="function">refresh</span>();
+<span class="function">getch</span>();
+<span class="function">endwin</span>();  <span class="comment">// Restore terminal</span></div>
+            </div>
+            <div class="api-entry">
+                <h4>refresh()</h4>
+                <p>Updates the physical screen to match the virtual screen (stdscr).</p>
+                <div class="code-block"><span class="function">mvprintw</span>(10, 20, <span class="string">"Updated at %ld"</span>, <span class="function">time</span>(NULL));
+<span class="function">refresh</span>();  <span class="comment">// Forces screen update</span></div>
+            </div>
+            <div class="api-entry">
+                <h4>doupdate()</h4>
+                <p>Updates the screen only after explicit calls to <code>wnoutrefresh()</code>.</p>
+                <div class="code-block"><span class="function">mvprintw</span>(0, 0, <span class="string">"Screen 1"</span>);
+<span class="function">wnoutrefresh</span>(stdscr);
+<span class="function">mvprintw</span>(10, 10, <span class="string">"Screen 2"</span>);
+<span class="function">wnoutrefresh</span>(stdscr);
+<span class="function">doupdate</span>();  <span class="comment">// Both updates applied here</span></div>
+            </div>
+            <div class="api-entry">
+                <h4>newterm(const char *type, FILE *outfd, FILE *infd)</h4>
+                <p>Alternative to <code>initscr()</code> for multiple screen types.</p>
+                <div class="code-block">TERMINAL *term = <span class="function">newterm</span>((<span class="keyword">char</span> *)<span class="string">"xterm"</span>, stdout, stdin);
+<span class="function">initscr</span>();
+<span class="comment">// ... use ncurses ...</span>
+<span class="function">endwin</span>();
+<span class="function">delterm</span>();</div>
+            </div>
+            <div class="api-entry">
+                <h4>delterm(TERMINAL *term)</h4>
+                <p>Deletes the terminal associated with the current screen.</p>
+            </div>
+        </section>
+        <footer><p><a href="index.html">← Back to Index</a></p></footer>
+    </div>
+</body>
+</html>
