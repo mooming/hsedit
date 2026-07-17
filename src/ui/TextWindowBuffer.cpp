@@ -7,32 +7,6 @@
 namespace hs::ui
 {
 // ========================================================================
-// HELPER FUNCTIONS
-// ========================================================================
-
-/// @brief Split a line by newline characters into multiple lines
-/// @param line Input line that may contain newline characters
-/// @return Vector of lines after splitting
-static std::vector<TextWindowBuffer::TLine> SplitByNewline(const TextWindowBuffer::TLine& line)
-{
-	std::vector<TextWindowBuffer::TLine> result;
-	size_t start = 0;
-	size_t pos = line.find(u8'\n');
-
-	while (pos != std::u8string::npos)
-	{
-		result.push_back(line.substr(start, pos - start));
-		start = pos + 1;
-		pos = line.find(u8'\n', start);
-	}
-
-	// Add the remaining part (or the whole line if no newlines)
-	result.push_back(line.substr(start));
-
-	return result;
-}
-
-// ========================================================================
 // CONSTRUCTORS
 // ========================================================================
 
@@ -55,6 +29,52 @@ TextWindowBuffer::TextWindowBuffer(size_t startLine, size_t hintNumLines, size_t
 }
 
 // ========================================================================
+// HELPER: Split a line by newlines and append to buffer (const reference)
+// ========================================================================
+
+/// @brief Split a const line by newline characters and append to buffer
+/// @param dest Destination buffer to append to
+/// @param line Input line (may contain newline characters)
+static void AppendSplitLinesConst(TextWindowBuffer::TLines& dest, const TextWindowBuffer::TLine& line)
+{
+	size_t start = 0;
+	size_t pos = line.find(u8'\n');
+
+	while (pos != std::u8string::npos)
+	{
+		dest.push_back(line.substr(start, pos - start));
+		start = pos + 1;
+		pos = line.find(u8'\n', start);
+	}
+
+	// Append the remainder (or entire string if no newlines)
+	dest.push_back(line.substr(start));
+}
+
+// ========================================================================
+// HELPER: Split a line by newlines and append to buffer (rvalue reference)
+// ========================================================================
+
+/// @brief Split a movable line by newline characters and append to buffer
+/// @param dest Destination buffer to append to
+/// @param line Input line (moved, may contain newline characters)
+static void AppendSplitLinesMove(TextWindowBuffer::TLines& dest, TextWindowBuffer::TLine&& line)
+{
+	size_t start = 0;
+	size_t pos = line.find(u8'\n');
+
+	while (pos != std::u8string::npos)
+	{
+		dest.push_back(TextWindowBuffer::TLine(line.data() + start, pos - start));
+		start = pos + 1;
+		pos = line.find(u8'\n', start);
+	}
+
+	// Append the remainder (or entire string if no newlines)
+	dest.push_back(TextWindowBuffer::TLine(line.data() + start, line.size() - start));
+}
+
+// ========================================================================
 // LINE OPERATIONS
 // ========================================================================
 
@@ -62,16 +82,14 @@ TextWindowBuffer::TextWindowBuffer(size_t startLine, size_t hintNumLines, size_t
 /// @param line Line content (may contain newline characters)
 void TextWindowBuffer::AddLine(const TLine& line)
 {
-	auto parts = SplitByNewline(line);
-	lines.insert(lines.end(), parts.begin(), parts.end());
+	AppendSplitLinesConst(lines, line);
 }
 
 /// @brief Append a line using move semantics, splitting by newlines if present
 /// @param line Line content (moved, may contain newline characters)
 void TextWindowBuffer::EmplaceLine(TLine&& line)
 {
-	auto parts = SplitByNewline(line);
-	lines.insert(lines.end(), std::make_move_iterator(parts.begin()), std::make_move_iterator(parts.end()));
+	AppendSplitLinesMove(lines, std::move(line));
 }
 
 /// @brief Insert a line at a specific position, splitting by newlines if present
@@ -79,8 +97,7 @@ void TextWindowBuffer::EmplaceLine(TLine&& line)
 /// @param line Line content (may contain newline characters)
 void TextWindowBuffer::InsertLine(TLineIndex lineNumber, const TLine& line)
 {
-	auto parts = SplitByNewline(line);
-	lines.insert(lines.begin() + lineNumber, parts.begin(), parts.end());
+	AppendSplitLinesConst(lines, line);
 }
 
 /// @brief Insert a line at a specific position using move semantics, splitting by newlines if present
@@ -88,8 +105,7 @@ void TextWindowBuffer::InsertLine(TLineIndex lineNumber, const TLine& line)
 /// @param line Line content (moved, may contain newline characters)
 void TextWindowBuffer::InsertLine(TLineIndex lineNumber, TLine&& line)
 {
-	auto parts = SplitByNewline(line);
-	lines.insert(lines.begin() + lineNumber, std::make_move_iterator(parts.begin()), std::make_move_iterator(parts.end()));
+	AppendSplitLinesMove(lines, std::move(line));
 }
 
 /// @brief Replace a line at a specific position with const reference, splitting by newlines if present
@@ -97,9 +113,8 @@ void TextWindowBuffer::InsertLine(TLineIndex lineNumber, TLine&& line)
 /// @param line New line content (may contain newline characters)
 void TextWindowBuffer::ReplaceLine(TLineIndex lineNumber, const TLine& line)
 {
-	auto parts = SplitByNewline(line);
 	lines.erase(lines.begin() + lineNumber);
-	lines.insert(lines.begin() + lineNumber, parts.begin(), parts.end());
+	AppendSplitLinesConst(lines, line);
 }
 
 /// @brief Replace a line at a specific position using move semantics, splitting by newlines if present
@@ -107,9 +122,8 @@ void TextWindowBuffer::ReplaceLine(TLineIndex lineNumber, const TLine& line)
 /// @param line New line content (moved, may contain newline characters)
 void TextWindowBuffer::ReplaceLine(TLineIndex lineNumber, TLine&& line)
 {
-	auto parts = SplitByNewline(line);
 	lines.erase(lines.begin() + lineNumber);
-	lines.insert(lines.begin() + lineNumber, std::make_move_iterator(parts.begin()), std::make_move_iterator(parts.end()));
+	AppendSplitLinesMove(lines, std::move(line));
 }
 
 /// @brief Extract and remove a line from the buffer
