@@ -35,21 +35,18 @@ TextWindowBuffer::TextWindowBuffer(size_t startLine, size_t hintNumLines, size_t
 /// @brief Split a line by newline characters and append to buffer
 /// @param dest Destination buffer to append to
 /// @param line Input line (may contain newline characters)
-/// @param moveSource Whether to move from the source string (requires owning string)
-static void AppendSplitLines(typename TextWindowBuffer::TLines& dest, const typename TextWindowBuffer::TLine& line, bool moveSource)
+static void AppendSplitLines(typename TextWindowBuffer::TLines& dest, const typename TextWindowBuffer::TLine& line)
 {
 	size_t start = 0;
 	size_t pos = line.find(u8'\n');
 
 	while (pos != std::u8string::npos)
 	{
-		// Construct directly from pointer and length (no temporary)
 		dest.emplace_back(line.data() + start, pos - start);
 		start = pos + 1;
 		pos = line.find(u8'\n', start);
 	}
 
-	// Append the remainder (or entire string if no newlines)
 	dest.emplace_back(line.data() + start, line.size() - start);
 }
 
@@ -57,18 +54,26 @@ static void AppendSplitLines(typename TextWindowBuffer::TLines& dest, const type
 // LINE OPERATIONS
 // ========================================================================
 
+TextWindowBuffer::TLine& TextWindowBuffer::AddLine()
+{
+	auto& line = lines.emplace_back();
+	line.reserve(hintLineWidth);
+
+	return line;
+}
+
 /// @brief Append a line to the end of the buffer, splitting by newlines if present
 /// @param line Line content (may contain newline characters)
 void TextWindowBuffer::AddLine(const TLine& line)
 {
-	AppendSplitLines(lines, line, false);
+	AppendSplitLines(lines, line);
 }
 
 /// @brief Append a line using move semantics, splitting by newlines if present
 /// @param line Line content (moved, may contain newline characters)
 void TextWindowBuffer::EmplaceLine(TLine&& line)
 {
-	AppendSplitLines(lines, line, true);
+	AppendSplitLines(lines, line);
 }
 
 /// @brief Insert a line at a specific position, splitting by newlines if present
@@ -76,7 +81,7 @@ void TextWindowBuffer::EmplaceLine(TLine&& line)
 /// @param line Line content (may contain newline characters)
 void TextWindowBuffer::InsertLine(TLineIndex lineNumber, const TLine& line)
 {
-	AppendSplitLines(lines, line, false);
+	AppendSplitLines(lines, line);
 }
 
 /// @brief Insert a line at a specific position using move semantics, splitting by newlines if present
@@ -84,7 +89,7 @@ void TextWindowBuffer::InsertLine(TLineIndex lineNumber, const TLine& line)
 /// @param line Line content (moved, may contain newline characters)
 void TextWindowBuffer::InsertLine(TLineIndex lineNumber, TLine&& line)
 {
-	AppendSplitLines(lines, line, true);
+	AppendSplitLines(lines, line);
 }
 
 /// @brief Replace a line at a specific position with const reference, splitting by newlines if present
@@ -93,7 +98,7 @@ void TextWindowBuffer::InsertLine(TLineIndex lineNumber, TLine&& line)
 void TextWindowBuffer::ReplaceLine(TLineIndex lineNumber, const TLine& line)
 {
 	lines.erase(lines.begin() + lineNumber);
-	AppendSplitLines(lines, line, false);
+	AppendSplitLines(lines, line);
 }
 
 /// @brief Replace a line at a specific position using move semantics, splitting by newlines if present
@@ -102,7 +107,7 @@ void TextWindowBuffer::ReplaceLine(TLineIndex lineNumber, const TLine& line)
 void TextWindowBuffer::ReplaceLine(TLineIndex lineNumber, TLine&& line)
 {
 	lines.erase(lines.begin() + lineNumber);
-	AppendSplitLines(lines, line, true);
+	AppendSplitLines(lines, line);
 }
 
 /// @brief Extract and remove a line from the buffer
@@ -132,7 +137,15 @@ void TextWindowBuffer::RemoveLine(TLineIndex lineNumber)
 TextWindowBuffer TextWindowBuffer::Split(TLineIndex splitLine)
 {
 	TextWindowBuffer newBuffer(startLine + splitLine, 0, hintLineWidth);
-	newBuffer.lines.insert(newBuffer.lines.end(), lines.begin() + splitLine, lines.end());
+	newBuffer.lines.reserve(lines.size() - splitLine);
+
+	// Move lines to new buffer
+	for (size_t i = splitLine; i < lines.size(); ++i)
+	{
+		newBuffer.lines.emplace_back(std::move(lines[i]));
+	}
+
+	// Remove moved lines from original buffer
 	lines.erase(lines.begin() + splitLine, lines.end());
 	return newBuffer;
 }

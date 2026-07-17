@@ -32,6 +32,8 @@ public:
 
 	[[nodiscard]] auto NumLines() const { return lines.size(); }
 
+	TLine& AddLine();
+
 	void AddLine(const TLine& line);
 	void EmplaceLine(TLine&& line);
 	void InsertLine(TLineIndex lineNumber, const TLine& line);
