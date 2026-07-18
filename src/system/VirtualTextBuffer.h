@@ -4,14 +4,13 @@
 
 #pragma once
 
-#include <string>
-#include <vector>
 #include <memory>
 #include <filesystem>
-#include <list>
-#include <unordered_map>
 
+#include "PageCache.h"
+#include "HSTypes.h"
 #include "TextBuffer.h"
+
 
 namespace hs::system
 {
@@ -21,58 +20,38 @@ namespace hs::system
 ///          Supports LRU cache for page eviction when memory is constrained.
 class VirtualTextBuffer final
 {
-public:
-	using TLine = std::u8string;
-	using TLineIndex = size_t;
-	using PageIndex = size_t;
-
 private:
-	/// @brief Page structure for virtualized buffer
-	struct Page
+	struct
 	{
-		std::unique_ptr<TextBuffer> buffer;
-		PageIndex pageId;
-		TLineIndex startLine;
-		TLineIndex endLine;
-		bool modified;
-		bool loaded;
+		// Cache Policy
 
-		Page();
-		Page(PageIndex id, TLineIndex start, TLineIndex end);
+		// duration for incremental LRU eviction (seconds)
+		float life;
+
+		// Time interval for incremental LRU update (seconds)
+		float incrementalLRUPeriod;
+
+		// Cache size hint in bytes
+		size_t cacheSizeInBytes;
+
+		// Initial page size in bytes. Page will be halved if its size exceeds double of this value.
+		size_t pageSizeInBytes;
 	};
 
-	/// @brief Page table - sorted mapping of line ranges to pages
-	std::vector<std::unique_ptr<Page>> pages;
-
-	/// @brief Storage path for page files
-	std::filesystem::path storagePath;
-
-	/// @brief Whether storage is enabled
-	bool storageEnabled;
-
-	/// @brief Next available page ID
-	PageIndex nextPageId;
-
-	/// @brief Line count hint for new pages
-	TLineIndex pageLineCount;
-
-	/// @brief LRU cache for tracking page access order
-	struct LRUNode
+	// Structure of Arrays
+	struct
 	{
-		PageIndex pageId;
-		std::list<PageIndex>::iterator listIt;
+		std::vector<TLineIndex> pageLineStart;
+		std::vector<TLineIndex> pageLength;
+		std::vector<TFilePath> pageFiles;
 	};
 
-	std::list<PageIndex> lruList;
-	std::unordered_map<PageIndex, LRUNode> lruMap;
-	PageIndex maxPages;
+	std::vector<PageCache> buffer;
 
 public:
 	/// @brief Constructor
-	/// @param storagePath Path to store page files (empty = no persistence)
-	/// @param pageLineCount Hint for initial line count per page
-	/// @param maxPages Maximum number of pages to keep in memory (0 = unlimited)
-	VirtualTextBuffer(const std::filesystem::path& storagePath = "", TLineIndex pageLineCount = 1000, PageIndex maxPages = 0);
+	VirtualTextBuffer();
+	explicit VirtualTextBuffer(const std::filesystem::path& filePath);
 
 	/// @brief Destructor
 	~VirtualTextBuffer();
@@ -84,6 +63,15 @@ public:
 	// Allow move
 	VirtualTextBuffer(VirtualTextBuffer&&) noexcept;
 	VirtualTextBuffer& operator=(VirtualTextBuffer&&) noexcept;
+
+	/// @brief Open a file and generated page files.
+	void Open();
+
+	/// @brief Collapse all pages into the single base file.
+	void Close();
+
+	/// @brief off-thread update function. It should be called by VirtualTextBufferSystem.
+	void Update_Async(float deltaTime);
 
 	/// @brief Get total number of lines across all pages
 	[[nodiscard]] TLineIndex NumLines() const;
@@ -109,12 +97,6 @@ public:
 	/// @brief Split the buffer at a line boundary
 	[[nodiscard]] std::unique_ptr<VirtualTextBuffer> Split(TLineIndex splitLine) const;
 
-	/// @brief Save all modified pages to storage
-	void Save();
-
-	/// @brief Load buffer from storage
-	void Load();
-
 	/// @brief Check if a specific page is loaded in memory
 	[[nodiscard]] bool IsPageLoaded(PageIndex pageId) const;
 
@@ -127,33 +109,32 @@ public:
 	/// @brief Get the storage path
 	[[nodiscard]] const std::filesystem::path& GetStoragePath() const;
 
-	/// @brief Set maximum number of pages in memory (0 = unlimited)
-	void SetMaxPages(PageIndex maxPages);
-
 private:
 	/// @brief Find which page contains a given line number
-	[[nodiscard]] Page* FindPage(TLineIndex lineNumber) const;
+	[[nodiscard]] TPageIndex FindPage(TLineIndex lineNumber) const;
 
 	/// @brief Ensure a page is loaded in memory (with LRU eviction)
-	void EnsurePageLoaded(Page* page);
+	void EnsurePageLoaded(TPageIndex PageIndex);
 
 	/// @brief Unload a page from memory (save to disk if modified)
-	void UnloadPage(Page* page);
+	void UnloadPage(TPageIndex PageIndex);
 
 	/// @brief Split a page at a specific line
-	void SplitPage(Page* page, TLineIndex splitLine);
+	void SplitPage(TPageIndex PageIndex, TLineIndex splitLine);
 
 	/// @brief Save a page to disk
-	void SavePageToDisk(const Page& page) const;
+	void SavePageToDisk(TPageIndex PageIndex) const;
+
+	void Prefetch(TPageIndex PageIndex);
 
 	/// @brief Load a page from disk
-	std::unique_ptr<TextBuffer> LoadPageFromDisk(PageIndex pageId, TLineIndex startLine) const;
+	void LoadPageFromDisk(TPageIndex pageIndex, TLineIndex startLine) const;
 
 	/// @brief Generate page file path
-	[[nodiscard]] std::filesystem::path GetPageFilePath(PageIndex pageId) const;
+	[[nodiscard]] TFilePath GetPageFilePath(TPageIndex pageIndex) const;
 
 	/// @brief Move a page to most recently used position in LRU cache
-	void UpdateLRU(PageIndex pageId);
+	void Touch(TPageIndex pageIndex);
 
 	/// @brief Evict least recently used page if at capacity
 	void EvictLRU();

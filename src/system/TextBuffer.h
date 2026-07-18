@@ -4,19 +4,14 @@
 
 #pragma once
 
-#include <string>
-#include <vector>
+#include "HSTypes.h"
+
 
 namespace hs
 {
 
 class TextBuffer final
 {
-public:
-	using TLine = std::u8string;
-	using TLines = std::vector<TLine>;
-	using TLineIndex = size_t;
-
 private:
 	TLines lines;
 

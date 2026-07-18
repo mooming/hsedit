@@ -1,23 +1,7 @@
 cmake_minimum_required (VERSION 3.12)
 project (libhsedit_module)
 
-set (CMAKE_CONFIGURATION_TYPES "Debug;Dev;Release" CACHE STRING "" FORCE)
-if (NOT CMAKE_BUILD_TYPE)
-    set (CMAKE_BUILD_TYPE "Release" CACHE STRING "Build type" FORCE)
-endif ()
-
-set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -O0")
-set (CMAKE_CXX_FLAGS_DEV "${CMAKE_CXX_FLAGS_DEBUG} -O1")
-set (CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
-
 set (CMAKE_CXX_STANDARD 23)
-
-if (APPLE)
-    set(PLATFORM_SOURCES
-    )
-else()
-    set(PLATFORM_SOURCES "")
-endif()
 
 if (MSVC)
 	add_compile_options (/W3 /WX)
@@ -28,6 +12,8 @@ endif (MSVC)
 include_directories ( ${CMAKE_SOURCE_DIR}
  ${CMAKE_SOURCE_DIR}/include
  )
+link_directories (${CMAKE_SOURCE_DIR}/lib)
+
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
 add_library (libhsedit_module STATIC 
@@ -35,13 +21,10 @@ add_library (libhsedit_module STATIC
  module_registry.cpp
  event_bus.h
  module_registry.h
-${PLATFORM_SOURCES}
 )
 
 if (APPLE)
-	include_directories ( /System/Library/Frameworks )
-	set(MACOSX_BUNDLE_TRUE TRUE)
-	set(MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/Info.plist)
+include_directories ( /System/Library/Frameworks )
 endif (APPLE)
 
 install (TARGETS libhsedit_module DESTINATION ${CMAKE_SOURCE_DIR}/lib)
