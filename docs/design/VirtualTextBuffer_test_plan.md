@@ -81,6 +81,16 @@
 | EL-02 | Extract removes line | ExtractLine(0). NumLines() | NumLines-1 |
 | EL-03 | Extract out of bounds | ExtractLine(NumLines) | Throws or error |
 
+### 4.5 Prefetch (Async Load)
+
+| Test ID | Description | Input | Expected Output |
+|---------|-------------|-------|-----------------|
+| PF-01 | Prefetch queues request | Prefetch(0) | Page not loaded yet |
+| PF-02 | Prefetch processed after Update_Async | Prefetch(0). Update_Async(1.0f) | Page loaded |
+| PF-03 | Prefetch with eviction at capacity | Prefetch(0). EnsurePageLoaded(1) with capacity=1 | Page 0 loaded, Page 1 triggers eviction |
+| PF-04 | Multiple prefetches queue correctly | Prefetch(0). Prefetch(1). Prefetch(2) | All three queued |
+| PF-05 | Prefetch after page already loaded | Prefetch(5). Page 5 already loaded | No-op or touch existing |
+
 ### 5. Persistence
 
 #### 5.1 Save/Load Roundtrip
