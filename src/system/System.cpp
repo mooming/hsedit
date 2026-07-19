@@ -17,10 +17,9 @@ System& System::GetInstance()
 }
 
 System::System()
-	: storageIOSystem_(std::make_unique<StorageIOSystem>())
-	, virtualTextBufferSystem_(std::make_unique<VirtualTextBufferSystem>())
-	, initialized_(false)
+	: virtualTextBufferSystem()
 {
+	Initialize();
 }
 
 System::~System()

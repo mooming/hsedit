@@ -7,6 +7,8 @@
 #include <memory>
 #include <mutex>
 
+#include "StorageIOSystem.h"
+#include "VirtualTextBufferSystem.h"
 
 namespace hs::system
 {
@@ -19,9 +21,17 @@ class VirtualTextBufferSystem;
 /// @details Manages subsystems and provides initialization/shutdown lifecycle
 class System final
 {
+private:
+	// Subsystems
+	StorageIOSystem storageIOSystem;
+	VirtualTextBufferSystem virtualTextBufferSystem;
+
 public:
 	/// @brief Get the singleton instance
 	[[nodiscard]] static System& GetInstance();
+
+	System(const System&) = delete;
+	System& operator=(const System&) = delete;
 
 	/// @brief Initialize the system and all subsystems
 	void Initialize();
@@ -46,20 +56,9 @@ private:
 	System();
 	~System();
 
-	// No copy
-	System(const System&) = delete;
-	System& operator=(const System&) = delete;
-
 	// Allow move
 	System(System&&) noexcept;
 	System& operator=(System&&) noexcept;
-
-	// Subsystems
-	std::unique_ptr<StorageIOSystem> storageIOSystem_;
-	std::unique_ptr<VirtualTextBufferSystem> virtualTextBufferSystem_;
-
-	// State
-	bool initialized_;
 };
 
 } // namespace hs::system
