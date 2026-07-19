@@ -24,6 +24,8 @@ add_library (libhsedit_system STATIC
 		PageCache.cpp
 		PageCache.h
 		IndexedItem.h
+		StorageIOSystem.cpp
+		StorageIOSystem.h
 )
 
 if (APPLE)

@@ -23,15 +23,15 @@ VirtualTextBuffer::VirtualTextBuffer()
 	: life(0.0f)
 	, incrementalLRUPeriod(0.0f)
 	, cacheSizeInBytes(0)
-	, pageSizeInBytes(0)
+	, pageSizeInBytes(4096)
 {
 }
 
 VirtualTextBuffer::VirtualTextBuffer(const TFilePath& filePath)
 	: life(0.0f)
 	, incrementalLRUPeriod(0.0f)
-	, cacheSizeInBytes(0)
-	, pageSizeInBytes(0)
+	, cacheSizeInBytes(64000000)
+	, pageSizeInBytes(4096)
 	, baseFilePath(filePath)
 {
 }
