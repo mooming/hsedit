@@ -379,4 +379,22 @@ std::vector<std::pair<size_t, size_t>> StorageIOSystem::GetPresetConfigs(
 	return configs;
 }
 
+void StorageIOSystem::Update(float deltaTime)
+{
+	// TODO: Implement periodic tasks such as:
+	// - File change detection
+	// - LRU cache updates
+	// - Prefetch scheduling
+	// - Wear leveling estimation updates
+	
+	accumulator_ += deltaTime;
+	
+	// Example: Check for file changes every 1 second
+	if (accumulator_ >= 1.0f)
+	{
+		accumulator_ -= 1.0f;
+		// CheckFileChanges();
+	}
+}
+
 } // namespace hs::system

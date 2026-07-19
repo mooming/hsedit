@@ -12,6 +12,7 @@ namespace hs::system
 {
 
 class StorageIOSystem;
+class VirtualTextBufferSystem;
 
 
 /// @brief Base system singleton for hsedit
@@ -28,8 +29,15 @@ public:
 	/// @brief Shutdown the system and all subsystems
 	void Shutdown();
 
+	/// @brief Update the system and all subsystems
+	/// @param deltaTime Time elapsed since last update (seconds)
+	void Update(float deltaTime);
+
 	/// @brief Get the storage I/O system
 	[[nodiscard]] StorageIOSystem& GetStorageIOSystem();
+
+	/// @brief Get the virtual text buffer system
+	[[nodiscard]] VirtualTextBufferSystem& GetVirtualTextBufferSystem();
 
 	/// @brief Check if system is initialized
 	[[nodiscard]] bool IsInitialized() const;
@@ -48,6 +56,7 @@ private:
 
 	// Subsystems
 	std::unique_ptr<StorageIOSystem> storageIOSystem_;
+	std::unique_ptr<VirtualTextBufferSystem> virtualTextBufferSystem_;
 
 	// State
 	bool initialized_;

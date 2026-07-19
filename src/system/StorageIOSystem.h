@@ -114,6 +114,10 @@ public:
 		int numRuns = 3
 	) const;
 
+	/// @brief Update the storage system (called by System::Update)
+	/// @param deltaTime Time elapsed since last update (seconds)
+	void Update(float deltaTime);
+
 	/// @brief Get recommended page size for a storage device
 	[[nodiscard]] size_t GetRecommendedPageSize(const StorageInfo& info) const;
 
