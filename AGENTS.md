@@ -18,6 +18,7 @@ This document defines the coding standards, architectural conventions, and toolc
 | **Warning policy** | `-Wall -Werror` (GCC/Clang), `/W3 /WX` (MSVC) |
 | **Editor** | CLion |
 | **Target** | Modular TUI text editor |
+| **Platforms** | Linux, macOS, Windows (MSYS2) |
 
 ---
 

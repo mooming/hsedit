@@ -11,7 +11,34 @@ A modular TUI text editor built with C++ and ncurses. HS Edit follows a microser
 - **Paged Text Buffer** — Handles large files efficiently with split-capable text buffers
 - **Multi-Window Support** — Multiple viewports, each showing any buffer
 - **Configurable** — Key-value config system with module extension points
+- **Configurable** — Key-value config system with module extension points
 - **Cross-Platform** — Works on Linux, macOS, and Windows (MSYS2)
+
+## Cross-Platform Requirements
+
+HS Edit must build and run on:
+- **Linux** (Ubuntu, Debian, Arch)
+- **macOS** (10.15+ / Catalina and later)
+- **Windows** (via MSYS2 / MinGW-w64)
+
+### Platform Constraints
+
+- **No platform-specific headers** — use `#ifdef __linux__`, `#ifdef __APPLE__`, `#ifdef _WIN32` only when absolutely necessary
+- **File paths** — use `std::filesystem::path` everywhere, never string concatenation
+- **Temporary files** — use `std::filesystem::current_path()` for temp locations, never assume `/tmp` or `%TEMP%`
+- **Line endings** — use `\n` in source, `std::endl` or `\r\n` for text output only when writing files
+- **Threading** — use `std::thread`, `std::mutex`, etc. (no pthreads/Windows API directly)
+- **ncurses** — abstract behind `hs::ui` layer; no direct `ncurses.h` usage in `hs::system`
+- **No C++23 features that aren't supported by MSVC** — verify C++23 feature availability on all platforms before using
+
+### Testing Checklist
+
+Before committing platform-sensitive code:
+- [ ] Builds with GCC (Linux)
+- [ ] Builds with Clang (macOS)
+- [ ] Builds with MSVC (Windows, MSYS2)
+- [ ] No hardcoded paths like `/tmp`, `C:\`, `%APPDATA%`
+- [ ] No `#include <unistd.h>` or `#include <windows.h>` outside of platform abstraction layers
 
 ## Architecture
 
