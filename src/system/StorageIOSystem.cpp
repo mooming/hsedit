@@ -16,21 +16,12 @@
 namespace hs::system
 {
 
-StorageIOSystem& StorageIOSystem::GetInstance()
-{
-	static StorageIOSystem instance;
-	return instance;
-}
-
 StorageIOSystem::StorageIOSystem()
 	: initialized_(false)
 {
 }
 
-StorageIOSystem::~StorageIOSystem()
-{
-	Shutdown();
-}
+StorageIOSystem::~StorageIOSystem() = default;
 
 StorageIOSystem::StorageIOSystem(StorageIOSystem&&) noexcept = default;
 

@@ -86,8 +86,8 @@ enum class IOBenchmarkPreset
 class StorageIOSystem final
 {
 public:
-	/// @brief Get the singleton instance
-	[[nodiscard]] static StorageIOSystem& GetInstance();
+	StorageIOSystem();
+	~StorageIOSystem();
 
 	/// @brief Initialize the storage system
 	void Initialize();
@@ -158,7 +158,7 @@ private:
 	) const;
 
 	// State
-	bool initialized_;
+	bool initialized_ = false;
 	std::vector<StorageInfo> storageDevices_;
 	mutable std::mutex mutex_;
 };

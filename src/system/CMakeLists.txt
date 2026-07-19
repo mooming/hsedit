@@ -26,6 +26,8 @@ add_library (libhsedit_system STATIC
 		IndexedItem.h
 		StorageIOSystem.cpp
 		StorageIOSystem.h
+		System.cpp
+		System.h
 )
 
 if (APPLE)
