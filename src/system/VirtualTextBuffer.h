@@ -38,11 +38,15 @@ private:
 		size_t pageSizeInBytes;
 	};
 
+	TFilePath baseFilePath;
+
 	// Structure of Arrays
 	struct
 	{
+		std::vector<TIndex> pageStarts;
+		std::vector<TIndex> pageEnds;
 		std::vector<TLineIndex> pageLineStart;
-		std::vector<TLineIndex> pageLength;
+		std::vector<TLineIndex> pageNumLines;
 		std::vector<TFilePath> pageFiles;
 	};
 
@@ -51,7 +55,7 @@ private:
 public:
 	/// @brief Constructor
 	VirtualTextBuffer();
-	explicit VirtualTextBuffer(const std::filesystem::path& filePath);
+	explicit VirtualTextBuffer(const TFilePath& filePath);
 
 	/// @brief Destructor
 	~VirtualTextBuffer();
@@ -64,8 +68,8 @@ public:
 	VirtualTextBuffer(VirtualTextBuffer&&) noexcept;
 	VirtualTextBuffer& operator=(VirtualTextBuffer&&) noexcept;
 
-	/// @brief Open a file and generated page files.
-	void Open();
+	/// @brief Create a virtual table for the given file.
+	void Open(const TFilePath& filePath);
 
 	/// @brief Collapse all pages into the single base file.
 	void Close();
@@ -95,19 +99,19 @@ public:
 	[[nodiscard]] const TLine& GetLine(TLineIndex lineNumber) const;
 
 	/// @brief Split the buffer at a line boundary
-	[[nodiscard]] std::unique_ptr<VirtualTextBuffer> Split(TLineIndex splitLine) const;
+	[[nodiscard]] TPageIndex Split(TPageIndex pageIndex, TLineIndex splitLine) const;
 
 	/// @brief Check if a specific page is loaded in memory
-	[[nodiscard]] bool IsPageLoaded(PageIndex pageId) const;
+	[[nodiscard]] bool IsPageLoaded(TPageIndex pageId) const;
 
 	/// @brief Get the number of pages currently in memory
-	[[nodiscard]] PageIndex NumLoadedPages() const;
+	[[nodiscard]] TPageIndex NumLoadedPages() const;
 
 	/// @brief Get the number of pages
-	[[nodiscard]] PageIndex NumPages() const;
+	[[nodiscard]] TPageIndex NumPages() const;
 
 	/// @brief Get the storage path
-	[[nodiscard]] const std::filesystem::path& GetStoragePath() const;
+	[[nodiscard]] const TFilePath& GetStoragePath() const { return baseFilePath; }
 
 private:
 	/// @brief Find which page contains a given line number
