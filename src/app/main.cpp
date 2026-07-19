@@ -4,6 +4,12 @@
 
 #include "System.h"
 
+// Verify high_resolution_clock is monotonic on this platform
+static_assert(
+    std::chrono::high_resolution_clock::is_steady,
+    "high_resolution_clock must be steady (monotonic) for accurate frame timing"
+);
+
 int main(int argc, char* argv[])
 {
     std::cout << "HS Edit - A modular TUI text editor" << std::endl;
