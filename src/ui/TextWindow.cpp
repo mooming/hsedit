@@ -1,5 +1,5 @@
 //
-// Created by Hansol Park on 2026. 7. 17..
+// Created by Hansol Park on 2026. 7. 17.
 //
 
 #include "TextWindow.h"
@@ -37,6 +37,29 @@ TextWindow::TextWindow(const TextWindow& other)
 		return;
 
 	window = dupwin(other.window);
+}
+
+TextWindow::TextWindow(TextWindow&& other) noexcept
+	: hasBorder(other.hasBorder)
+	, startPos(other.startPos)
+	, size(other.size)
+	, window(other.window)
+{
+	other.window = nullptr;
+}
+
+TextWindow& TextWindow::operator=(TextWindow&& other) noexcept
+{
+	if (this != &other)
+	{
+		hasBorder = other.hasBorder;
+		startPos = other.startPos;
+		size = other.size;
+		window = other.window;
+		other.window = nullptr;
+	}
+
+	return *this;
 }
 
 TextWindow::~TextWindow()

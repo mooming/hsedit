@@ -1,5 +1,5 @@
 //
-// Created by Hansol Park on 2026. 7. 17..
+// Created by Hansol Park on 2026. 7. 17.
 //
 
 #pragma once
@@ -50,7 +50,7 @@ public:
 
 	/// @brief Check if coordinates are valid (non-negative)
 	/// @return true if both row and column are >= 0
-	bool IsValid() const { return row >= 0 && column >= 0; }
+	[[nodiscard]] bool IsValid() const;
 
 	/// @brief Addition operator (returns new Vec2i)
 	/// @param rhs Right-hand side vector

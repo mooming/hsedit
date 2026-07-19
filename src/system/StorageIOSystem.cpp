@@ -98,7 +98,7 @@ IOBenchmarkResult StorageIOSystem::IOBenchmark(size_t chunkSize, size_t bufferSi
 		}
 	}
 
-	// Random read latency test
+	// Random I/O latency test
 	if (file)
 	{
 		const size_t numRandomOps = 100;
@@ -108,36 +108,40 @@ IOBenchmarkResult StorageIOSystem::IOBenchmark(size_t chunkSize, size_t bufferSi
 			offsets[i] = (i * chunkSize * 7) % bufferSize;
 		}
 
-		const auto randomStart = std::chrono::steady_clock::now();
-		for (size_t i = 0; i < numRandomOps; ++i)
+		// Random read latency
 		{
-			std::fseek(file, static_cast<long>(offsets[i]), SEEK_SET);
-			std::fread(readBuffer.data(), 1, chunkSize, file);
+			std::vector<char> readBuffer(chunkSize);
+			const auto randomStart = std::chrono::steady_clock::now();
+			for (size_t i = 0; i < numRandomOps; ++i)
+			{
+				std::fseek(file, static_cast<long>(offsets[i]), SEEK_SET);
+				std::fread(readBuffer.data(), 1, chunkSize, file);
+			}
+			const auto randomEnd = std::chrono::steady_clock::now();
+
+			const double totalUs = static_cast<double>(
+				std::chrono::duration_cast<std::chrono::microseconds>(randomEnd - randomStart).count()
+			);
+			result.randomReadLatencyUs = totalUs / static_cast<double>(numRandomOps);
 		}
-		const auto randomEnd = std::chrono::steady_clock::now();
 
-		const double totalUs = static_cast<double>(
-			std::chrono::duration_cast<std::chrono::microseconds>(randomEnd - randomStart).count()
-		);
-		result.randomReadLatencyUs = totalUs / static_cast<double>(numRandomOps);
-	}
-
-	// Random write latency test
-	if (file)
-	{
-		const auto randomStart = std::chrono::steady_clock::now();
-		for (size_t i = 0; i < numRandomOps; ++i)
+		// Random write latency
 		{
-			std::fseek(file, static_cast<long>(offsets[i]), SEEK_SET);
-			std::fwrite(writeBuffer.data(), 1, chunkSize, file);
-		}
-		std::fflush(file);
-		const auto randomEnd = std::chrono::steady_clock::now();
+			std::vector<char> writeBuffer(chunkSize, 'A');
+			const auto randomStart = std::chrono::steady_clock::now();
+			for (size_t i = 0; i < numRandomOps; ++i)
+			{
+				std::fseek(file, static_cast<long>(offsets[i]), SEEK_SET);
+				std::fwrite(writeBuffer.data(), 1, chunkSize, file);
+			}
+			std::fflush(file);
+			const auto randomEnd = std::chrono::steady_clock::now();
 
-		const double totalUs = static_cast<double>(
-			std::chrono::duration_cast<std::chrono::microseconds>(randomEnd - randomStart).count()
-		);
-		result.randomWriteLatencyUs = totalUs / static_cast<double>(numRandomOps);
+			const double totalUs = static_cast<double>(
+				std::chrono::duration_cast<std::chrono::microseconds>(randomEnd - randomStart).count()
+			);
+			result.randomWriteLatencyUs = totalUs / static_cast<double>(numRandomOps);
+		}
 	}
 
 	// Composite score (lower is better)
@@ -165,4 +169,4 @@ IOBenchmarkResult StorageIOSystem::IOBenchmark(size_t chunkSize, size_t bufferSi
 	return result;
 }
 
-} // hs::ssytem
+} // namespace hs::system

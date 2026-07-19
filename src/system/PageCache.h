@@ -29,13 +29,20 @@ public:
 
 	void Touch();
 
-	[[nodiscard]] auto GetIndex() const { return index; }
+	/// @brief Get the page index
+	[[nodiscard]] TIndex GetIndex() const { return index; }
 
-	[[nodiscard]] auto& GetLastTimeTouched() const { return lastTimeTouched; }
+	/// @brief Get the last time this page was touched
+	[[nodiscard]] TTimestamp GetLastTimeTouched() const { return lastTimeTouched; }
+
+	/// @brief Get the text buffer
 	[[nodiscard]] auto& GetTextBuffer() { return buffer; }
 	[[nodiscard]] auto& GetTextBuffer() const { return buffer; }
-	[[nodiscard]] auto GetNumberOfLines() const { return buffer.NumLines(); }
+
+	/// @brief Get the number of lines in this page
+	[[nodiscard]] TLineIndex GetNumberOfLines() const { return buffer.NumLines(); }
 
 	[[nodiscard]] double GetTimeSinceLastTouch() const;
 };
-} // hs::system
+
+} // namespace hs::system

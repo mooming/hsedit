@@ -11,23 +11,26 @@ endif (MSVC)
 
 include_directories ( ${CMAKE_SOURCE_DIR}
  ${CMAKE_SOURCE_DIR}/include
+ ${CMAKE_SOURCE_DIR}/src
  )
 link_directories (${CMAKE_SOURCE_DIR}/lib)
 
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
 add_library (libhsedit_system STATIC 
- TextBuffer.cpp
- TextBuffer.h
- VirtualTextBuffer.h
-        HSTypes.h
-		PageCache.cpp
-		PageCache.h
-		IndexedItem.h
-		StorageIOSystem.cpp
-		StorageIOSystem.h
-		System.cpp
-		System.h
+	TextBuffer.cpp
+	TextBuffer.h
+	VirtualTextBuffer.h
+	VirtualTextBufferSystem.cpp
+	VirtualTextBufferSystem.h
+	HSTypes.h
+	PageCache.cpp
+	PageCache.h
+	IndexedItem.h
+	StorageIOSystem.cpp
+	StorageIOSystem.h
+	System.cpp
+	System.h
 )
 
 if (APPLE)

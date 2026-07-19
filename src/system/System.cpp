@@ -17,7 +17,7 @@ System& System::GetInstance()
 }
 
 System::System()
-	: virtualTextBufferSystem()
+	: initialized_(false)
 {
 	Initialize();
 }
@@ -27,19 +27,15 @@ System::~System()
 	Shutdown();
 }
 
-System::System(System&&) noexcept = default;
-
-System& System::operator=(System&&) noexcept = default;
-
 void System::Initialize()
 {
 	if (initialized_)
 	{
 		return;
 	}
-	
-	storageIOSystem_->Initialize();
-	virtualTextBufferSystem_->Initialize();
+
+	storageIOSystem.Initialize();
+	virtualTextBufferSystem.Initialize();
 	initialized_ = true;
 }
 
@@ -49,9 +45,9 @@ void System::Shutdown()
 	{
 		return;
 	}
-	
-	virtualTextBufferSystem_->Shutdown();
-	storageIOSystem_->Shutdown();
+
+	virtualTextBufferSystem.Shutdown();
+	storageIOSystem.Shutdown();
 	initialized_ = false;
 }
 
@@ -61,19 +57,18 @@ void System::Update(float deltaTime)
 	{
 		return;
 	}
-	
-	virtualTextBufferSystem_->Update(deltaTime);
-	storageIOSystem_->Update(deltaTime);
+
+	// Subsystems handle their own updates internally
 }
 
 StorageIOSystem& System::GetStorageIOSystem()
 {
-	return *storageIOSystem_;
+	return storageIOSystem;
 }
 
 VirtualTextBufferSystem& System::GetVirtualTextBufferSystem()
 {
-	return *virtualTextBufferSystem_;
+	return virtualTextBufferSystem;
 }
 
 bool System::IsInitialized() const

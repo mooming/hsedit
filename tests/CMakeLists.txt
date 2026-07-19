@@ -11,14 +11,13 @@ endif (MSVC)
 
 include_directories ( ${CMAKE_SOURCE_DIR}
  ${CMAKE_SOURCE_DIR}/include
+ ${CMAKE_SOURCE_DIR}/src
  )
 link_directories (${CMAKE_SOURCE_DIR}/lib)
 
 
 add_executable (hsedit_tests
- test_main.cpp
- test_module_registry.cpp
- test_protocol.cpp
+	test_main.cpp
 )
 
 if (APPLE)

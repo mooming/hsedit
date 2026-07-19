@@ -11,16 +11,17 @@ endif (MSVC)
 
 include_directories ( ${CMAKE_SOURCE_DIR}
  ${CMAKE_SOURCE_DIR}/include
+ ${CMAKE_SOURCE_DIR}/src
  )
 link_directories (${CMAKE_SOURCE_DIR}/lib)
 
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
 add_library (libhsedit_module STATIC 
- event_bus.cpp
- module_registry.cpp
- event_bus.h
- module_registry.h
+	EventBus.cpp
+	ModuleRegistry.cpp
+	EventBus.h
+	ModuleRegistry.h
 )
 
 if (APPLE)

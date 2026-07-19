@@ -1,5 +1,5 @@
 //
-// Created by Hansol Park on 2026. 7. 17..
+// Created by Hansol Park on 2026. 7. 17.
 //
 
 #pragma once
@@ -7,7 +7,7 @@
 #include "HSTypes.h"
 
 
-namespace hs
+namespace hs::system
 {
 
 class TextBuffer final
@@ -42,4 +42,4 @@ public:
 	TextBuffer Split(TLineIndex splitLine);
 };
 
-} // namespace hs
+} // namespace hs::system

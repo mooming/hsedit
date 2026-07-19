@@ -4,14 +4,6 @@
 
 #pragma once
 
-#include <filesystem>
-#include <vector>
-#include <string>
-#include <functional>
-#include <chrono>
-#include <mutex>
-
-#include "HSTypes.h"
 #include "StorageInfo.h"
 #include "IOBenchmarkResult.h"
 
@@ -26,7 +18,7 @@ class StorageIOSystem final
 private:
 	// Current storage info
 	StorageInfo storageInfo;
-	IOBenchmarkResult benchmakrResult;
+	IOBenchmarkResult benchmarkResult;
 
 public:
 	StorageIOSystem();

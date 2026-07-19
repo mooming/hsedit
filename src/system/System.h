@@ -26,6 +26,9 @@ private:
 	StorageIOSystem storageIOSystem;
 	VirtualTextBufferSystem virtualTextBufferSystem;
 
+	// State
+	bool initialized_;
+
 public:
 	/// @brief Get the singleton instance
 	[[nodiscard]] static System& GetInstance();
@@ -57,8 +60,8 @@ private:
 	~System();
 
 	// Allow move
-	System(System&&) noexcept;
-	System& operator=(System&&) noexcept;
+	System(System&&);
+	System& operator=(System&&);
 };
 
 } // namespace hs::system

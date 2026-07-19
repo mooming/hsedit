@@ -11,6 +11,7 @@ endif (MSVC)
 
 include_directories ( ${CMAKE_SOURCE_DIR}
  ${CMAKE_SOURCE_DIR}/include
+ ${CMAKE_SOURCE_DIR}/src
  )
 link_directories (${CMAKE_SOURCE_DIR}/lib)
 

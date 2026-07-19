@@ -8,17 +8,6 @@
 namespace hs::system
 {
 
-namespace
-{
-
-TFilePath GeneratePageFilePath(const TFilePath& baseFilePath, TPageIndex pageIndex)
-{
-	return baseFilePath.parent_path() / (baseFilePath.stem().string() + "_page_" + std::to_string(pageIndex) + ".txt");
-}
-
-} // namespace
-
-
 VirtualTextBuffer::VirtualTextBuffer()
 	: life(0.0f)
 	, incrementalLRUPeriod(0.0f)
@@ -60,7 +49,7 @@ void VirtualTextBuffer::Close()
 	// After building a full copy of the temp file (in memory or in storage), swap the original base file content.
 }
 
-void VirtualTextBuffer::Update_Async(float deltaTime)
+void VirtualTextBuffer::UpdateAsync(float deltaTime)
 {
 
 }
@@ -87,7 +76,13 @@ void VirtualTextBuffer::ReplaceLine(TLineIndex lineNumber, const TLine& line)
 
 TLine VirtualTextBuffer::ExtractLine(TLineIndex lineNumber)
 {
-	return 0;
+	if (lineNumber >= NumLines())
+		return TLine{};
+
+	TLine extracted = std::move(lines[lineNumber]);
+	lines.erase(lines.begin() + lineNumber);
+	return extracted;
+}
 }
 
 void VirtualTextBuffer::RemoveLine(TLineIndex lineNumber)
@@ -159,7 +154,7 @@ void VirtualTextBuffer::LoadPageFromDisk(TPageIndex pageIndex, TLineIndex startL
 
 TFilePath VirtualTextBuffer::GetPageFilePath(TPageIndex pageIndex) const
 {
-	return TFilePath{};
+	return baseFilePath.parent_path() / (baseFilePath.stem().string() + "_page_" + std::to_string(pageIndex) + ".txt");
 }
 
 void VirtualTextBuffer::Touch(TPageIndex pageIndex)

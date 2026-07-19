@@ -1,10 +1,11 @@
 //
-// Created by Hansol Park on 2026. 7. 17..
+// Created by Hansol Park on 2026. 7. 17.
 //
 
 #include "TextBuffer.h"
 
-namespace hs
+
+namespace hs::system
 {
 // ========================================================================
 // CONSTRUCTORS
@@ -22,7 +23,7 @@ TextBuffer::TextBuffer()
 /// @brief Split a line by newline characters and append to buffer
 /// @param dest Destination buffer to append to
 /// @param line Input line (may contain newline characters)
-static void AppendSplitLines(typename TextBuffer::TLines& dest, const typename TextBuffer::TLine& line)
+static void AppendSplitLines(TLines& dest, const TLine& line)
 {
 	size_t start = 0;
 	size_t pos = line.find(u8'\n');
@@ -43,7 +44,7 @@ static void AppendSplitLines(typename TextBuffer::TLines& dest, const typename T
 
 /// @brief Append an empty line to the end of the buffer and return reference for modification
 /// @return Reference to the newly added line
-TextBuffer::TLine& TextBuffer::AddLine()
+TLine& TextBuffer::AddLine()
 {
 	return lines.emplace_back();
 }
@@ -99,8 +100,11 @@ void TextBuffer::ReplaceLine(TLineIndex lineNumber, TLine&& line)
 /// @brief Extract and remove a line from the buffer
 /// @param lineNumber Line index to extract
 /// @return Extracted line content
-TextBuffer::TLine TextBuffer::ExtractLine(TLineIndex lineNumber)
+TLine TextBuffer::ExtractLine(TLineIndex lineNumber)
 {
+	if (lineNumber >= lines.size())
+		return TLine{};
+
 	TLine extracted = std::move(lines[lineNumber]);
 	lines.erase(lines.begin() + lineNumber);
 	return extracted;
@@ -144,4 +148,4 @@ TextBuffer TextBuffer::Split(TLineIndex splitLine)
 	return newBuffer;
 }
 
-} // namespace hs
+} // namespace hs::system

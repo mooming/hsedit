@@ -1,8 +1,9 @@
 //
-// Created by Hansol Park on 2026. 7. 17..
+// Created by Hansol Park on 2026. 7. 17.
 //
 
 #pragma once
+
 
 namespace hs::ui
 {
@@ -13,8 +14,8 @@ public:
 	TextApplication();
 	~TextApplication();
 
-	// Copy window buffer to stdscr
+	/// @brief Copy window buffer to stdscr
 	void EndFrame();
 };
 
-} // namespace hs
+} // namespace hs::ui

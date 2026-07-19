@@ -5,14 +5,15 @@
 #pragma once
 #include "HSTypes.h"
 
-namespace hs
+
+namespace hs::system
 {
 template<typename TContainer>
 class IndexedItem final
 {
 private:
-    TIndex index = 0;
-    TContainer& container;
+	TIndex index = 0;
+	TContainer& container;
 
 public:
     IndexedItem(TContainer& container, TIndex index) : container(container), index(index)
@@ -32,6 +33,7 @@ public:
 	[[nodiscard]] const TItem& operator* () const { return container[index]; }
 
 	[[nodiscard]] bool operator == (const IndexedItem& other) const { return index == other.index && &container == &other.container; }
-	[[nodiscard]] bool operator != (const IndexedItem& other) const { return  *this != other; }
+	[[nodiscard]] bool operator != (const IndexedItem& other) const { return !(*this == other); }
 };
-} // hs
+
+} // namespace hs::system

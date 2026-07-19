@@ -75,7 +75,7 @@ public:
 	void Close();
 
 	/// @brief off-thread update function. It should be called by VirtualTextBufferSystem.
-	void Update_Async(float deltaTime);
+	[[nodiscard]] void UpdateAsync(float deltaTime);
 
 	/// @brief Get total number of lines across all pages
 	[[nodiscard]] TLineIndex NumLines() const;

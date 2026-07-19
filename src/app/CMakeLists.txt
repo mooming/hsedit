@@ -11,19 +11,19 @@ endif (MSVC)
 
 include_directories ( ${CMAKE_SOURCE_DIR}
  ${CMAKE_SOURCE_DIR}/include
+ ${CMAKE_SOURCE_DIR}/src
  )
 link_directories (${CMAKE_SOURCE_DIR}/lib)
 
 
 add_executable (hsedit
- main.cpp
+	main.cpp
 )
+
+target_link_libraries (hsedit PRIVATE libhsedit_system libhsedit_module libhsedit_ui)
 
 if (APPLE)
 include_directories ( /System/Library/Frameworks )
 endif (APPLE)
 
 install (TARGETS hsedit DESTINATION ${CMAKE_SOURCE_DIR}/bin)
-
-
-

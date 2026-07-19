@@ -5,7 +5,7 @@
 #pragma once
 
 #include <atomic>
-
+#include <thread>
 
 namespace hs::system
 {
@@ -16,19 +16,18 @@ namespace hs::system
 class VirtualTextBufferSystem final
 {
 private:
-	std::atomic<bool> isRunning;
+	std::atomic<bool> running;
+	std::thread workerThread;
 
 public:
 	VirtualTextBufferSystem();
 	~VirtualTextBufferSystem();
 
-	// No copy
+	// No copy, no move
 	VirtualTextBufferSystem(const VirtualTextBufferSystem&) = delete;
 	VirtualTextBufferSystem& operator=(const VirtualTextBufferSystem&) = delete;
-
-	// Allow move
 	VirtualTextBufferSystem(VirtualTextBufferSystem&&) = delete;
-	VirtualTextBufferSystem& operator=(VirtualTextBufferSystem&&) noexcept;
+	VirtualTextBufferSystem& operator=(VirtualTextBufferSystem&&) = delete;
 
 	void Initialize();
 	void Shutdown();

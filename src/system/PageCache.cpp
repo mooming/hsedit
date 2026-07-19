@@ -4,6 +4,7 @@
 
 #include "PageCache.h"
 
+
 namespace hs::system
 {
 
@@ -18,7 +19,7 @@ void PageCache::Touch()
 	lastTimeTouched = std::chrono::steady_clock::now();
 }
 
-double PageCache::GetTimeSinceLastTouch() const
+[[nodiscard]] double PageCache::GetTimeSinceLastTouch() const
 {
 	const auto now = std::chrono::steady_clock::now();
 	const auto duration = now - lastTimeTouched;

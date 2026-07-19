@@ -5,9 +5,42 @@
 #include "VirtualTextBufferSystem.h"
 
 
-hs::system::VirtualTextBufferSystem::VirtualTextBufferSystem()
-	: isRunning(false)
+namespace hs::system
+{
+
+VirtualTextBufferSystem::VirtualTextBufferSystem()
+	: running(false)
 {
 }
 
-void hs::system::VirtualTextBufferSystem::Initialize() {}
+VirtualTextBufferSystem::~VirtualTextBufferSystem()
+{
+	if (running.load(std::memory_order_acquire))
+	{
+		Shutdown();
+	}
+}
+
+void VirtualTextBufferSystem::Initialize()
+{
+	running.store(true, std::memory_order_release);
+	workerThread = std::thread([this]()
+	{
+		while (running.load(std::memory_order_acquire))
+		{
+			// Worker thread loop
+		}
+	});
+}
+
+void VirtualTextBufferSystem::Shutdown()
+{
+	running.store(false, std::memory_order::release);
+
+	if (workerThread.joinable())
+	{
+		workerThread.join();
+	}
+}
+
+} // namespace hs::system

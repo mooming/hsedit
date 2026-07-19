@@ -1,8 +1,9 @@
 //
-// Created by Hansol Park on 2026. 7. 17..
+// Created by Hansol Park on 2026. 7. 17.
 //
 
 #include "Vec2i.h"
+
 
 namespace hs::ui
 {
@@ -13,18 +14,18 @@ namespace hs::ui
 
 /// @brief Default constructor: initializes to origin (0, 0)
 Vec2i::Vec2i()
+	: row(0)
+	, column(0)
 {
-	row = 0;
-	column = 0;
 }
 
 /// @brief Parameterized constructor
 /// @param row Initial row/y coordinate
 /// @param column Initial column/x coordinate
 Vec2i::Vec2i(int row, int column)
+	: row(row)
+	, column(column)
 {
-	this->row = row;
-	this->column = column;
 }
 
 // ========================================================================
@@ -32,8 +33,17 @@ Vec2i::Vec2i(int row, int column)
 // ========================================================================
 
 /// @brief Default destructor (no resources to clean up)
-Vec2i::~Vec2i()
+Vec2i::~Vec2i() = default;
+
+// ========================================================================
+// VALIDATION
+// ========================================================================
+
+/// @brief Check if coordinates are valid (non-negative)
+/// @return true if both row and column are >= 0
+[[nodiscard]] bool Vec2i::IsValid() const
 {
+	return row >= 0 && column >= 0;
 }
 
 // ========================================================================

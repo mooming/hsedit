@@ -1,5 +1,5 @@
 //
-// Created by Hansol Park on 2026. 7. 17..
+// Created by Hansol Park on 2026. 7. 17.
 //
 
 #include "TextApplication.h"
@@ -25,4 +25,4 @@ void TextApplication::EndFrame()
 	doupdate();
 }
 
-} // hs::ui
+} // namespace hs::ui
