@@ -14,21 +14,21 @@ namespace hs::system
 struct IOBenchmarkResult final
 {
 	// Read/Write block size for benchmark tests
-	size_t chunkSie;
+	size_t chunkSie = 0;
 
 	// Memory buffer size for benchmark tests
-	size_t bufferSize;
+	size_t bufferSize = 0;
 
 	// Performance metrics
-	double openTimeMs;             // Time to open a file (ms)
-	double readThroughputMBs;      // Sequential read throughput (MB/s)
-	double writeThroughputMBs;     // Sequential write throughput (MB/s)
-	double randomReadLatencyUs;    // Random read latency (us)
-	double randomWriteLatencyUs;   // Random write latency (us)
-	size_t memoryUsageBytes;       // Estimated memory usage
+	double openTimeMs = 0.0;
+	double readThroughputMBs = 0.0;
+	double writeThroughputMBs = 0.0;
+	double randomReadLatencyUs = 0.0;
+	double randomWriteLatencyUs = 0.0;
+	size_t memoryUsageBytes = 0;
 
 	// Composite score (lower is better)
-	double score;
+	double score = 0.0;
 };
 
 } // namespace hs::system

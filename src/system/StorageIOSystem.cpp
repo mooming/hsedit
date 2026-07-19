@@ -30,15 +30,9 @@ void StorageIOSystem::Shutdown()
 IOBenchmarkResult StorageIOSystem::IOBenchmark(size_t chunkSize, size_t bufferSize) const
 {
 	IOBenchmarkResult result;
+
 	result.chunkSie = chunkSize;
 	result.bufferSize = bufferSize;
-	result.openTimeMs = 0.0;
-	result.readThroughputMBs = 0.0;
-	result.writeThroughputMBs = 0.0;
-	result.randomReadLatencyUs = 0.0;
-	result.randomWriteLatencyUs = 0.0;
-	result.memoryUsageBytes = bufferSize;
-	result.score = 0.0;
 
 	// Create temporary file for benchmarking
 	const TFilePath tempFile = TFilePath("/tmp/hsedit_benchmark_XXXXXX");
