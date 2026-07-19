@@ -35,7 +35,7 @@ IOBenchmarkResult StorageIOSystem::IOBenchmark(size_t chunkSize, size_t bufferSi
 	result.bufferSize = bufferSize;
 
 	// Create temporary file for benchmarking
-	const TFilePath tempFile = TFilePath("/tmp/hsedit_benchmark_XXXXXX");
+	const TFilePath tempFile = TFilePath(std::filesystem::current_path().string() + "/hsedit_benchmark_temp.bin");
 	FILE* file = nullptr;
 
 	// Open timing test
